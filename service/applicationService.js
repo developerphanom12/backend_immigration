@@ -104,11 +104,32 @@ function getImageName(imagePath) {
 
 
 
+const getAllCofdsfsdfgursesHandler = async (req, res) => {
+  try {
+     
+      const courses = await applicationservice.getAllCoursesWithUserDaghfjgity();
+
+      const successMessage = 'application data  fetch successfully';
+      res.status(201).json({
+          message: successMessage,
+          data: courses,
+      });
+  } catch (error) {
+      console.error('Error fetching courses with user and university data:', error);
+      const errorMessage = 'Error fetching courses';
+      res.status(500).json({ error: errorMessage });
+  }
+};
+
+
+
+
 
 
 
 // Export the new function
 module.exports = {
   getDocumentByFileId,
-  uploadDocuments, addApplication
+  uploadDocuments, addApplication,
+  getAllCofdsfsdfgursesHandler
 };

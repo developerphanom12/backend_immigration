@@ -124,3 +124,20 @@
 2023-09-29T11:01:00.871Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
             INNER JOIN users3 u ON c.user_id = u.id
             LEF' at line 11
+2023-10-10T12:01:31.275Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
+2023-10-10T12:02:30.200Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
+2023-10-10T12:14:20.225Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.user_id' in 'field list'
+2023-10-10T12:18:05.482Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
+2023-10-10T13:08:01.417Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_id,
+        c.course_name,
+        c.course_level
+      FROM application' at line 12
+2023-10-10T13:08:31.489Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_id,
+        c.course_name,
+        c.course_level,
+      FROM applicatio' at line 12
+2023-10-10T13:09:05.487Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications a
+      INNER JOIN users3 u ON a.user_id = u.id
+      LEFT JOI' at line 15
+2023-10-10T13:09:24.115Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'c.course_id' in 'field list'
+2023-10-10T13:15:00.397Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
