@@ -1,0 +1,126 @@
+2023-09-22T05:48:20.265Z [31merror[39m: Error getting user by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.username,
+        u.firstname,
+        u.lastname,
+        u.email,
+        u.p' at line 3
+2023-09-28T05:59:52.109Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:00:37.744Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:01:55.308Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:03:15.272Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:04:57.798Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:06:48.195Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:09:50.661Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:10:19.857Z [31merror[39m: Error registering university: ER_NO_DEFAULT_FOR_FIELD: Field 'id' doesn't have a default value
+2023-09-28T06:11:24.712Z [31merror[39m: Error registering university: db.queryAsync is not a function
+2023-09-28T06:22:18.832Z [31merror[39m: Missing or null values in university data
+2023-09-28T06:24:05.367Z [31merror[39m: Missing or null values in university data
+2023-09-28T06:52:51.753Z [31merror[39m: Error registering university: ER_BAD_FIELD_ERROR: Unknown column 'create_update' in 'field list'
+2023-09-28T06:53:07.392Z [31merror[39m: Error registering university: ER_BAD_FIELD_ERROR: Unknown column 'create_update' in 'field list'
+2023-09-28T06:53:37.724Z [31merror[39m: Error registering university: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-09-28T06:54:44.725Z [31merror[39m: Error registering university: ER_BAD_FIELD_ERROR: Unknown column 'create_update' in 'field list'
+2023-09-28T06:57:09.482Z [31merror[39m: Error registering university: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?,?,?)' at line 3
+2023-09-28T09:05:04.770Z [31merror[39m: Error updating university: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''Rayat Bhara' WHERE id = NULL' at line 1
+2023-09-28T09:35:06.497Z [31merror[39m: Error getting university by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', `university_name` = 'Rayat Bhara', `course_type` = NULL, `founded_year` = NULL' at line 2
+2023-09-28T09:56:49.001Z [31merror[39m: Error updating university: WARN_DATA_TRUNCATED: Data truncated for column 'course_type' at row 1
+2023-09-29T06:50:28.580Z [31merror[39m: Error getting all courses with user and university data: ER_NO_SUCH_TABLE: Table 'immigration_database.user_university' doesn't exist
+2023-09-29T06:51:31.797Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'ua.university_id' in 'field list'
+2023-09-29T06:51:46.724Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'ua.university_id' in 'on clause'
+2023-09-29T06:59:44.045Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cour1
+                u.id AS user_id,
+                u.username,
+             ' at line 2
+2023-09-29T07:02:52.803Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'cour1
+                u.id AS user_id,
+                u.username,
+             ' at line 2
+2023-09-29T07:06:19.678Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_name,
+                c.course_level,
+                c.is_active,
+     ' at line 3
+2023-09-29T07:15:49.067Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+                au.founded_year.
+                au.is_active 
+   ' at line 19
+2023-09-29T07:17:24.106Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+                au.founded_year.
+                au.is_active 
+   ' at line 19
+2023-09-29T07:18:38.544Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+                au.founded_year.
+                au.is_active 
+   ' at line 19
+2023-09-29T07:19:31.835Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+                // au.founded_year.
+                // au.is_activ' at line 19
+2023-09-29T07:20:03.921Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+              
+            FROM cour1 c
+            INNER JOIN use' at line 19
+2023-09-29T07:20:54.900Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+              
+            FROM cour1 c
+            INNER JOIN use' at line 19
+2023-09-29T07:21:07.701Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type,
+              
+            FROM cour1 c
+            INNER JOIN use' at line 16
+2023-09-29T07:23:59.162Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_type
+            FROM cour1 c
+            INNER JOIN users3 u ON c.user_' at line 16
+2023-09-29T07:36:12.866Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+          
+    ' at line 27
+2023-09-29T07:36:33.790Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+          
+    ' at line 27
+2023-09-29T07:37:01.827Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.id AS user_id,
+                u.username,
+                u.firstname,
+       ' at line 9
+2023-09-29T07:39:01.898Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'au.university_name,
+                au.founded_year,
+                au.course_t' at line 21
+2023-09-29T07:39:39.600Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+          
+    ' at line 24
+2023-09-29T07:42:44.654Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.id AS user_id,
+                u.username,
+                u.firstname,
+       ' at line 9
+2023-09-29T08:08:43.437Z [31merror[39m: Error getting all users: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'all_university where is_deleted = 1' at line 1
+2023-09-29T08:09:58.646Z [31merror[39m: Error getting all users: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'all_university WHERE is_deleted = 1' at line 1
+2023-09-29T08:10:06.789Z [31merror[39m: Error getting all users: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'all_university WHERE is_deleted = 1' at line 1
+2023-09-29T08:11:12.980Z [31merror[39m: Error getting all users: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'all_university WHERE is_deleted = 1' at line 1
+2023-09-29T10:28:33.214Z [31merror[39m: Erroe getting BY course By Id: ER_BAD_FIELD_ERROR: Unknown column 'id' in 'where clause'
+2023-09-29T10:32:58.745Z [31merror[39m: Erroe getting BY course By Id: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'AND
+        u.id AS user_id, 
+        INNER JOIN users3 u ON all_university.user' at line 1
+2023-09-29T10:34:15.765Z [31merror[39m: Error getting course by ID: ER_NO_SUCH_TABLE: Table 'immigration_database.users' doesn't exist
+2023-09-29T10:36:00.349Z [31merror[39m: Error getting course by ID: ER_NO_SUCH_TABLE: Table 'immigration_database.courses' doesn't exist
+2023-09-29T10:36:26.628Z [31merror[39m: Error getting course by ID: ER_BAD_FIELD_ERROR: Unknown column 'u.user_id' in 'field list'
+2023-09-29T10:36:53.660Z [31merror[39m: Error getting course by ID: ER_BAD_FIELD_ERROR: Unknown column 'u.user_id' in 'field list'
+2023-09-29T10:37:24.799Z [31merror[39m: Error getting course by ID: ER_BAD_DB_ERROR: Unknown database 'u'
+2023-09-29T10:43:52.609Z [31merror[39m: Error getting course by ID: ER_NO_SUCH_TABLE: Table 'immigration_database.courses' doesn't exist
+2023-09-29T10:52:23.582Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+            LEF' at line 7
+2023-09-29T10:53:11.380Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id,
+            LE' at line 7
+2023-09-29T10:57:25.673Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.id AS university_id,
+            au.university_name,
+            au.founded_yea' at line 3
+2023-09-29T10:57:42.455Z [31merror[39m: Error getting course by ID: ER_BAD_FIELD_ERROR: Unknown column 'u.create_date' in 'field list'
+2023-09-29T10:58:08.806Z [31merror[39m: Error getting course by ID: ER_BAD_FIELD_ERROR: Unknown column 'u.create_date' in 'field list'
+2023-09-29T10:59:37.746Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+            LEF' at line 11
+2023-09-29T11:00:28.694Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+            LEF' at line 11
+2023-09-29T11:01:00.871Z [31merror[39m: Error getting course by ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM cour1 c
+            INNER JOIN users3 u ON c.user_id = u.id
+            LEF' at line 11
