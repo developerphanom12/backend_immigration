@@ -130,14 +130,11 @@ const uploadImage = async (req, res) => {
   });
 
 };
-
-
-
 const loginUserController = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-   userservice.loginUser(username, password, (err, result) => {
+    userservice.loginUser(username, password, (err, result) => {
       if (err) {
         console.error('Error:', err);
         return res.status(500).json({ error: 'An internal server error occurred' });
@@ -147,17 +144,21 @@ const loginUserController = async (req, res) => {
         return res.status(401).json({ error: result.error });
       }
 
-      res.status(200).json({
-        message: result.message,
+    
+      res.status(messages.USER_API.USER_LOGIN_SUCCESS.status).json({
+        message: messages.USER_API.USER_LOGIN_SUCCESS.message,
         data: result.data,
-        
+        token: result.token,
       });
+      // Return a success message along with the token and user data
+     
     });
   } catch (error) {
     console.error('Error logging in user:', error);
     res.status(500).json({ error: 'An internal server error occurred' });
   }
 };
+
 
 
 
@@ -215,5 +216,4 @@ module.exports = {
   loginUserController,
   forgetpass,
   updateUser,
-  
 };

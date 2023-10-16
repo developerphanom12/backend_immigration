@@ -171,10 +171,9 @@ function updateProfileImage(userId, imagePath, callback) {
 
   })
 }
-
-// function for login user generate token for auntetication
+// function for login user generate token for authentication
 function loginUser(username, password, callback) {
-  const query = 'SELECT * FROM users3 WHERE username = ?';
+  const query = 'SELECT * FROM user WHERE username = ?';
   db.query(query, [username], async (err, results) => {
     if (err) {
       return callback(err, null);
@@ -195,15 +194,11 @@ function loginUser(username, password, callback) {
     const secretKey = 'secretkey';
     const token = jwt.sign({ id: user.id, username: user.username }, secretKey);
 
-    const updateQuery = 'UPDATE users3 SET token = ? WHERE id = ?';
-    db.query(updateQuery, [token, user.id], (updateErr) => {
-      if (updateErr) {
-        return callback(updateErr, null);
-      }
-      return callback(null, { message: 'Login successful', data: user, token });
-    });
+    // Return the token to the client
+    return callback(null, { token: token });
   });
 }
+
 
 
 // function for forgot password
@@ -289,7 +284,7 @@ async function updateUserField(userId, field, newValue) {
 
 function insertAddress(street_address, city, state, postal_code, user_id) {
   return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO address0 (street_address, city, state, postal_code, user_id) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO address(street_address, city, state, postal_code, user_id) VALUES (?, ?, ?, ?, ?)';
     db.query(query, [street_address, city, state, postal_code, user_id], (err, result) => {
       if (err) {
         reject(err);
@@ -301,7 +296,7 @@ function insertAddress(street_address, city, state, postal_code, user_id) {
 }
 function insertUser(username, password, firstname, lastname, email, phone_number, addressId) {
     return new Promise((resolve, reject) => {
-        const query = 'INSERT INTO users3 (username, password, firstname, lastname, email, phone_number, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO user (username, password, firstname, lastname, email, phone_number, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
         db.query(query, [username, password, firstname, lastname, email, phone_number, addressId], (err, result) => {
             if (err) {
                 reject(err);
@@ -315,7 +310,7 @@ function insertUser(username, password, firstname, lastname, email, phone_number
 // updateUserAddress function remains the same
 function updateUserAddress(userId, addressId) {
   return new Promise((resolve, reject) => {
-    const query = 'UPDATE users3 SET address_id = ? WHERE id = ?';
+    const query = 'UPDATE user SET address_id = ? WHERE user_id = ?';
     db.query(query, [addressId, userId], (err, result) => {
       if (err) {
         reject(err);
@@ -325,6 +320,7 @@ function updateUserAddress(userId, addressId) {
     });
   });
 }
+
 // Function to get a user by email
 const getUserByEmail = async (email) => {
   return new Promise((resolve, reject) => {

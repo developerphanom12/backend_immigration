@@ -265,6 +265,31 @@ const getById = async (req, res) => {
 //     return imageName;
 // }
 
+
+
+
+const uploadImage1 = async (req, res) => {
+    const id = req.params.id;
+    if (!req.file) {
+      return res.status(400).json({ error: 'No image file provided' });
+    }
+    const imagePath = req.file.path;
+    const imageName = imagePath.replace(/\\/g, '/').split('/').pop(); // Normalize path and get the image name
+  
+    userservice.addimageuniversity(id, imageName, (err, result) => {
+  
+      if (err) {
+        return res.status(500).json({ error: 'Profile image update failed' });
+      }
+      res.status(messages.USER_API.USER_PHOTO.status).json({
+        message: messages.USER_API.USER_PHOTO.message,
+        data: id
+      });
+    });
+  
+  };
+  
+  
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -272,5 +297,6 @@ module.exports = {
     updateUniversity11,
     getAllCoursesHandler,
     getalluniversity,
-    getById
+    getById,
+    uploadImage1
 }

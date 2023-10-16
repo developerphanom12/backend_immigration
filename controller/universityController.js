@@ -315,6 +315,19 @@ function getAllCoursesWithUserDataAndUniversity() {
 
 
 
+// function for upload image 
+function addimageuniversity(userId, imagePath, callback) {
+    const sql = 'UPDATE all_university SET  image = ? WHERE id = ?';
+    db.query(sql, [imagePath, userId], (err, result) => {
+      if (err) {
+        return callback(err);
+      }
+  
+      return callback(null, result);
+  
+    })
+  }
+  
 
 // function insertUserDocuments(userId, fileData, callback) {
 //     const sql = 'INSERT INTO user_documents_files (user_id, file_type, file_path) VALUES (?, ?, ?)';
@@ -331,5 +344,6 @@ module.exports = {
     getUniversityById,
     getAllCoursesWithUserDataAndUniversity,
     getalluniversity,
-    getCourseById
+    getCourseById,
+    addimageuniversity
 }
