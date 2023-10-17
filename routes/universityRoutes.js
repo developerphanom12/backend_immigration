@@ -25,7 +25,7 @@ router.post('/image/:id', upload.single('university_image'), univeristy.uploadIm
 
 /******************************  Courses Api  ********************************************************** */
     
-router.post('/courses1' ,coursesValid, authenticateToken, univeristy.updateUniversity11)
+router.post('/courses1' ,coursesValid, authenticateToken, univeristy.courseCreate)
 
 
 router.get('/get/allcourse', univeristy.getAllCoursesHandler);

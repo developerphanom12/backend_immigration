@@ -181,11 +181,12 @@ function createCourse(courseData, userId) {
     return new Promise((resolve, reject) => {
         // Prepare the INSERT query
         const query = `
-        INSERT INTO cour1
-        (user_id, university_id, course_name, course_level, is_active, create_date, update_date, is_deleted) 
-        VALUES (?, ?, ?, ?,  true,NOW(), NOW(), 0)`;
+        INSERT INTO courses
+(user_id, university_id, course_name, course_level, is_active, create_date, update_date, is_deleted) 
+VALUES (?, ?, ?, ?,  true, NOW(), NOW(), 0)
+`;
 
-        // Prepare the values to be inserted
+        // Prepare the values to be inserted  //
         const values = [
             userId,
             courseData.university_id,
@@ -257,14 +258,14 @@ function getAllCoursesWithUserDataAndUniversity() {
                 u.email,
                 u.is_active,
                 u.phone_number,
-                au.id AS university_id,
+                au.university_id AS university_id,
                 au.university_name,
                 au.founded_year,
                 au.course_type
                 
-            FROM cour1 c
-            INNER JOIN users3 u ON c.user_id = u.id
-            LEFT JOIN all_university au ON c.university_id = au.id
+            FROM courses c
+            INNER JOIN user01 u ON c.user_id = u.id
+            LEFT JOIN university au ON c.university_id = au.university_id
         `;
 
         db.query(query, (error, results) => {

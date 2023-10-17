@@ -61,7 +61,7 @@ const universityValid = (req, res, next) => {
 const cour1Schema = Joi.object({
   university_id: Joi.number().integer().required(),
   course_name: Joi.string().max(255).required(),
-  course_level: Joi.string().valid('undergraduate', 'postgraduate', 'doctorate').required(),
+  course_level: Joi.string().valid('POSTGRADUATION', 'GRADUATION').required(),
 
 });
 

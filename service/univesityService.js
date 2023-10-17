@@ -105,7 +105,7 @@ function validateUniversityId(id) {
 }
 
 
-const updateUniversity11 = async (req, res) => {
+const courseCreate = async (req, res) => {
     try {
         const courseData = req.body;
         const userId = req.user.id;
@@ -128,11 +128,12 @@ const updateUniversity11 = async (req, res) => {
      
         const responseData = {
             course_id: courseId,
-            user_id :userId,
+            user_id: userId,
             university_id: courseData.university_id,
             course_name: courseData.course_name,
             course_level: courseData.course_level,
-            is_active: courseData,
+            is_active: courseData.is_active || 1,  
+            is_deleted :courseData.is_deleted || 0,
             create_date: currentDate,
             update_date: currentDate,
         };
@@ -296,7 +297,7 @@ module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
     updateUniversity1,
-    updateUniversity11,
+    courseCreate,
     getAllCoursesHandler,
     getalluniversity,
     getById,
