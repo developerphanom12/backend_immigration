@@ -67,13 +67,15 @@ const getUserById1 = (userId) => {
         u.lastname,
         u.email,
         u.phone_number,
-        a.id AS address_id,
+        u.create_date,
+        u.update_date,
+        a.address_id AS address_id,
         a.street_address,
         a.city,
         a.state,
         a.postal_code
-      FROM users3 u
-      INNER JOIN address0 a ON u.id = a.user_id
+      FROM user01 u
+      INNER JOIN user_address_by a ON u.id = a.user_id
       WHERE u.id = ?`;
 
     db.query(query, [userId], (error, results) => {
@@ -93,6 +95,8 @@ const getUserById1 = (userId) => {
             lastname: results[0].lastname,
             email: results[0].email,
             phone_number: results[0].phone_number,
+            create_date  : results[0].create_date,
+            update_date : results[0].update_date,
             address: {
               address_id: results[0].address_id,
               street_address: results[0].street_address,
@@ -122,13 +126,13 @@ function getalluser() {
       u.email,
       u.is_active,
       u.phone_number,
-      a.id AS address_id,
+      a.address_id AS address_id,
       a.street_address,
       a.city,
       a.state,
       a.postal_code
-    FROM users3 u
-    INNER JOIN address0 a ON u.id = a.user_id
+    FROM user01 u
+    INNER JOIN user_address_by a ON u.id = a.user_id
     WHERE u.is_active = 1`;
 
     db.query(query, (error, results) => {
@@ -161,7 +165,7 @@ function getalluser() {
 }
 // function for upload image 
 function updateProfileImage(userId, imagePath, callback) {
-  const sql = 'UPDATE users3 SET profile_image = ? WHERE id = ?';
+  const sql = 'UPDATE user01 SET profile_image = ? WHERE id = ?';
   db.query(sql, [imagePath, userId], (err, result) => {
     if (err) {
       return callback(err);
@@ -171,9 +175,24 @@ function updateProfileImage(userId, imagePath, callback) {
 
   })
 }
-// function for login user generate token for authentication
+function getProfileImageFilename(userId, callback) {
+  const sql = 'SELECT profile_image FROM user01 WHERE id = ?';
+  db.query(sql, [userId], (err, results) => {
+    if (err) {
+      return callback(err, null);
+    }
+
+    if (results.length === 0) {
+      return callback(null, null); // User not found or no profile image
+    }
+
+    return callback(null, results[0].profile_image);
+  });
+}
+
+// function for login user generate token for auntetication
 function loginUser(username, password, callback) {
-  const query = 'SELECT * FROM user WHERE username = ?';
+  const query = 'SELECT * FROM user01 WHERE username = ?';
   db.query(query, [username], async (err, results) => {
     if (err) {
       return callback(err, null);
@@ -194,18 +213,16 @@ function loginUser(username, password, callback) {
     const secretKey = 'secretkey';
     const token = jwt.sign({ id: user.id, username: user.username }, secretKey);
 
-    // Return the token to the client
     return callback(null, { token: token });
-  });
+  })
 }
-
 
 
 // function for forgot password
 function forgetPassword(userId, currentPassword, newPassword) {
   return new Promise((resolve, reject) => {
     
-    const selectQuery = 'SELECT * FROM users3 WHERE id = ?';
+    const selectQuery = 'SELECT * FROM user01 WHERE id = ?';
 
     db.query(selectQuery, [userId], async (selectError, userResults) => {
       if (selectError) {
@@ -284,7 +301,7 @@ async function updateUserField(userId, field, newValue) {
 
 function insertAddress(street_address, city, state, postal_code, user_id) {
   return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO address(street_address, city, state, postal_code, user_id) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO user_address_by(street_address, city, state, postal_code, user_id) VALUES (?, ?, ?, ?, ?)';
     db.query(query, [street_address, city, state, postal_code, user_id], (err, result) => {
       if (err) {
         reject(err);
@@ -296,7 +313,7 @@ function insertAddress(street_address, city, state, postal_code, user_id) {
 }
 function insertUser(username, password, firstname, lastname, email, phone_number, addressId) {
     return new Promise((resolve, reject) => {
-        const query = 'INSERT INTO user (username, password, firstname, lastname, email, phone_number, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        const query = 'INSERT INTO user01 (username, password, firstname, lastname, email, phone_number, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
         db.query(query, [username, password, firstname, lastname, email, phone_number, addressId], (err, result) => {
             if (err) {
                 reject(err);
@@ -309,8 +326,8 @@ function insertUser(username, password, firstname, lastname, email, phone_number
 
 // updateUserAddress function remains the same
 function updateUserAddress(userId, addressId) {
-  return new Promise((resolve, reject) => {
-    const query = 'UPDATE user SET address_id = ? WHERE user_id = ?';
+  return new Promise((resolve, reject) => { 
+    const query = 'UPDATE user01 SET address_id = ? WHERE id = ?';
     db.query(query, [addressId, userId], (err, result) => {
       if (err) {
         reject(err);
@@ -326,7 +343,7 @@ const getUserByEmail = async (email) => {
   return new Promise((resolve, reject) => {
 
     // Execute a database query to find a user by email
-    const query = 'SELECT * FROM users3 WHERE email = ?  ';
+    const query = 'SELECT * FROM user01 WHERE email = ?  ';
     db.query(query, [email], (err, result) => {
       if (err) {
           reject(err);
@@ -488,5 +505,6 @@ module.exports = {
   insertAddress,
   insertUser,
   getUserByEmail,
-  updateUserAddress
+  updateUserAddress,
+  getProfileImageFilename
 }

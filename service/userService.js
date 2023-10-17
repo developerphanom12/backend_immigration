@@ -7,7 +7,7 @@ const saltRounds = 10;
 // const path = require('path')
 // const { upload } = require('../service/multer')
 const db = require('../config/configration'); // Import the database connection
-
+const fs = require('fs')
 
 
 
@@ -71,7 +71,7 @@ const registerUser = async (req, res) => {
 // //GET USER BY ID
 const getByIdUser = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user.id;
     const user = await userservice.getUserById1(userId);
 
     if (!user) {
@@ -107,29 +107,38 @@ const getAllUsers = async (req, res) => {
     });
   }
 };
-
-
-
 const uploadImage = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.user.id;
   if (!req.file) {
     return res.status(400).json({ error: 'No image file provided' });
   }
   const imagePath = req.file.path;
-  const imageName = imagePath.replace(/\\/g, '/').split('/').pop(); // Normalize path and get the image name
+  const imageName = imagePath.replace(/\\/g, '/').split('/').pop();
 
-  userservice.updateProfileImage(userId, imageName, (err, result) => {
-
-    if (err) {
-      return res.status(500).json({ error: 'Profile image update failed' });
+  // Get the user's previous profile image filename
+  userservice.getProfileImageFilename(userId, (prevImageName) => {
+    if (prevImageName) {
+      const prevImagePath = `uploads/${prevImageName}`;
+      fs.unlink(prevImagePath, (err) => {
+        if (err) {
+          console.error('Error deleting previous image:', err);
+        }
+      });
     }
-    res.status(messages.USER_API.USER_PHOTO.status).json({
-      message: messages.USER_API.USER_PHOTO.message,
-      data: userId
+
+    // Update the user's profile image with the new image
+    userservice.updateProfileImage(userId, imageName, (err, result) => {
+      if (err) {
+        return res.status(500).json({ error: 'Profile image update failed' });
+      }
+      res.status(messages.USER_API.USER_PHOTO.status).json({
+        message: messages.USER_API.USER_PHOTO.message,
+        data: userId
+      });
     });
   });
-
 };
+
 const loginUserController = async (req, res) => {
   try {
     const { username, password } = req.body;

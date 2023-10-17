@@ -19,7 +19,7 @@ router.post('/login1', userService.loginUserController);
 
 
 /**---3---**/ 
-router.get('/:id', userService.getByIdUser);
+router.get('/get/detail',authenticateToken, userService.getByIdUser);
 
 
 /**---4---**/
@@ -28,7 +28,7 @@ router.put('/:id', authenticateToken,userService.updateUser);
 
 //***********************---5---************************//
 
-router.post('/upload-profile-image/:userId', upload.single('profile_image'), userService.uploadImage)
+router.post('/upload-profile-image',authenticateToken, upload.single('profile_image'), userService.uploadImage)
 
 //            
 /**---6---**/

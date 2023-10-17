@@ -141,3 +141,4 @@
       LEFT JOI' at line 15
 2023-10-10T13:09:24.115Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'c.course_id' in 'field list'
 2023-10-10T13:15:00.397Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
+2023-10-17T06:15:09.268Z [31merror[39m: Error getting user by ID: ER_BAD_FIELD_ERROR: Unknown column 'a.id' in 'field list'
