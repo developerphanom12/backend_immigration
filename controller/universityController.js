@@ -4,14 +4,14 @@ const { logger } = require('../utils/logging')
 
 function UniversityRegister(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, course_type, founded_year } = university;
+        const { university_name, course_type, founded_year,person_name,contact_number } = university;
         const query = `
-        INSERT INTO all_university 
-        (university_name, course_type, founded_year)
-        VALUES (?, ?, ?)
+        INSERT INTO university 
+        (university_name, course_type, founded_year,person_name,contact_number)
+        VALUES (?, ?, ?,?,?)
       `;
 
-        db.query(query, [university_name, course_type, founded_year], (error, result) => {
+        db.query(query, [university_name, course_type, founded_year,person_name,contact_number], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering university:', error);
@@ -21,6 +21,7 @@ function UniversityRegister(university) {
                     university_name,
                     course_type,
                     founded_year,
+                    person_name,
                     is_active: true,
                     create_date: new Date(),
                     update_date: new Date()
@@ -98,7 +99,7 @@ function getCourseById(id) {
 
 function getalluniversity() {
     return new Promise((resolve, reject) => {
-        const query = `SELECT  * FROM all_university WHERE is_deleted = 0`
+        const query = `SELECT  * FROM university WHERE is_deleted = 0`
 
         db.query(query, (error, results) => {
             if (error) {
@@ -110,6 +111,8 @@ function getalluniversity() {
                     id: row.id,
                     university_name: row.university_name,
                     course_type: row.course_type,
+                    person_name:row.person_name,
+                    contact_number: row.contact_number,
                     founded_year: row.founded_year,
                     is_active: row.is_active,
                     create_date: row.create_date,
@@ -125,20 +128,22 @@ function getalluniversity() {
 }
 function updateUniversity(id, updatedUniversityData) {
     return new Promise((resolve, reject) => {
-        const { university_name, course_type, founded_year } = updatedUniversityData;
+        const { university_name, course_type, founded_year,person_name,contact_number } = updatedUniversityData;
 
         // Construct the SQL query
         const query = `
-        UPDATE all_university
+        UPDATE university
         SET 
           university_name = COALESCE(?, university_name),
           course_type = COALESCE(?, course_type),
-          founded_year = COALESCE(?, founded_year)
-        WHERE id = ?;
+          founded_year = COALESCE(?, founded_year),
+          person_name = COALESCE(?, person_name),\
+          contact_number = COALESCE(?,contact_number)
+        WHERE university_id = ?;
       `;
 
 
-        db.query(query, [university_name, course_type, founded_year, id], (error, result) => {
+        db.query(query, [university_name, course_type, founded_year, contact_number,person_name,id], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error updating university:', error);
@@ -146,7 +151,7 @@ function updateUniversity(id, updatedUniversityData) {
                 if (result.affectedRows > 0) {
 
                     const fetchQuery = `
-              SELECT * FROM all_university WHERE id = ?;
+              SELECT * FROM university WHERE university_id = ?;
             `;
 
                     db.query(fetchQuery, [id], (fetchError, fetchResult) => {
@@ -209,8 +214,8 @@ function getUniversityById(universityId) {
     return new Promise((resolve, reject) => {
 
         const query = `
-            SELECT * FROM all_university
-            WHERE id = ?;
+            SELECT * FROM university
+            WHERE university_id = ?;
         `;
 
 
@@ -317,7 +322,7 @@ function getAllCoursesWithUserDataAndUniversity() {
 
 // function for upload image 
 function addimageuniversity(userId, imagePath, callback) {
-    const sql = 'UPDATE all_university SET  image = ? WHERE id = ?';
+    const sql = 'UPDATE university SET  university_image = ? WHERE university_id = ?';
     db.query(sql, [imagePath, userId], (err, result) => {
       if (err) {
         return callback(err);

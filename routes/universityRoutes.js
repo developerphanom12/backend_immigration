@@ -21,7 +21,7 @@ router.get('/getall/university', univeristy.getalluniversity)
 router.put('/updateUniversity/:id', univeristy.updateUniversity1);
  
 
-router.post('/image/:id', upload.single('profile_image'), univeristy.uploadImage1)
+router.post('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
 
 /******************************  Courses Api  ********************************************************** */
     

@@ -35,6 +35,8 @@ const UniversitySchema = Joi.object({
   university_name: Joi.string().required(),
   course_type: Joi.string().valid('graduation', 'postgraduation').required(),
   founded_year: Joi.number().integer().required(),
+  contact_number:Joi.number().integer().required(),
+  person_name:  Joi.string().required(),
   
 });
 

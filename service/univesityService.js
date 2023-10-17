@@ -1,5 +1,5 @@
 const userservice = require('../controller/universityController');
-const messages = require('../constants/message')
+const univeristy = require('../constants/universitymssg')
 const universityStatusMessages = require('../constants/universitymssg')
 
 
@@ -10,18 +10,20 @@ const handleServerError = (res, error) => {
 };
 
 const registerUniversity = async (req, res) => {
-    const { university_name, course_type, founded_year } = req.body;
+    const { university_name, course_type, founded_year ,contact_number,person_name} = req.body;
 
     try {
         const universityData = await userservice.UniversityRegister({
             university_name,
             course_type,
-            founded_year
+            founded_year,
+            person_name,
+            contact_number
         });
 
 
-        res.status(messages.USER_API.USER_UPDATE.status).json({
-            message: messages.USER_API.USER_UPDATE.message,
+        res.status(univeristy.universityApi.universityCreateSuccess.status).json({
+            message: messages.universityApi.universityCreateSuccess.message,
             data: universityData
         });
     } catch (error) {
@@ -281,8 +283,8 @@ const uploadImage1 = async (req, res) => {
       if (err) {
         return res.status(500).json({ error: 'Profile image update failed' });
       }
-      res.status(messages.USER_API.USER_PHOTO.status).json({
-        message: messages.USER_API.USER_PHOTO.message,
+      res.status(univeristy.universityApi.universityPhotoUploadSuccess.status).json({
+        message: univeristy.universityApi.universityPhotoUploadSuccess.message,
         data: id
       });
     });

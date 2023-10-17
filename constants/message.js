@@ -95,5 +95,10 @@ module.exports = {
             message: " COURSE FETCH SUCCESSFULLY BY ID",
             status: 200
         },
+
+        UNIVERSITY_CREATE: {
+            message: " UNIVERSITY CREATE  SUCCESSFULLY",
+            status: 200
+        },
     }
 }

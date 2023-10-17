@@ -10,15 +10,18 @@ const db = require('../config/configration'); // Import the database connection
 const fs = require('fs')
 
 
-
-
 const registerUser = async (req, res) => {
   const { username, password, firstname, lastname, email, phone_number, address } = req.body;
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10); 
+    // Check if the username is already taken
+    const existingUser = await userservice.getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username is already register.' });
+    }
 
-  
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const userId = await userservice.insertUser(
       username,
       hashedPassword,
@@ -26,7 +29,7 @@ const registerUser = async (req, res) => {
       lastname,
       email,
       phone_number,
-      null // Pass null as //
+      null // Pass null as //,
     );
 
     const addressId = await userservice.insertAddress(
@@ -34,13 +37,11 @@ const registerUser = async (req, res) => {
       address.city,
       address.state,
       address.postal_code,
-      userId
+      userId,
     );
 
- 
     await userservice.updateUserAddress(userId, addressId);
-                                                                                                                                                                                                                         
-    
+
     const user = {
       id: userId,
       username,
@@ -53,19 +54,20 @@ const registerUser = async (req, res) => {
         street_address: address.street_address,
         city: address.city,
         state: address.state,
-        postal_code: address.postal_code
-      }
+        postal_code: address.postal_code,
+      },
     };
 
     res.status(messages.USER_API.USER_CREATE.status).json({
       message: messages.USER_API.USER_CREATE.message,
-      data: user
+      data: user,
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'An error occurred during user registration.' });
   }
 };
+
 
 
 // //GET USER BY ID

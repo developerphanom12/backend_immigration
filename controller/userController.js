@@ -324,6 +324,27 @@ function insertUser(username, password, firstname, lastname, email, phone_number
     });
 }
 
+function getUserByUsername(username) {
+  return new Promise((resolve, reject) => {
+    const query = 'SELECT * FROM user01 WHERE username = ?';
+    db.query(query, [username], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        // Check if any user with the given username was found
+        if (results.length > 0) {
+          // User found, return the user data
+          resolve(results[0]);
+        } else {
+          // No user with the given username found
+          resolve(null);
+        }
+      }
+    });
+  });
+}
+
+
 // updateUserAddress function remains the same
 function updateUserAddress(userId, addressId) {
   return new Promise((resolve, reject) => { 
@@ -497,6 +518,7 @@ module.exports = {
   registerUser,
   authenticateUser,
   getUserById1,
+  getUserByUsername,
   getalluser,
   updateProfileImage,
   loginUser,
