@@ -183,9 +183,10 @@ const getalluniversity = async (req, res) => {
     try {
       const allUsers = await userservice.getalluniversity();
   
-      res.status(messages.USER_API.USER_FETCH.status).json({
-        message: messages.USER_API.USER_FETCH.message,
-        data: allUsers,
+      const successMessage = universityStatusMessages.universityApi.universityFetchSuccess;
+      res.status(successMessage.status).json({
+          message: successMessage.message,
+          data: allUsers,
       });
     } catch (error) {
       console.error('Error retrieving all users:', error);

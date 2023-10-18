@@ -114,6 +114,7 @@ function getalluniversity() {
                     person_name:row.person_name,
                     contact_number: row.contact_number,
                     founded_year: row.founded_year,
+                    university_image: row.university_image,
                     is_active: row.is_active,
                     create_date: row.create_date,
                     update_date: row.update_date,

@@ -9,7 +9,8 @@ router.get('/jj/:id', application.getDocumentByFileId);
 
 router.post('/cr', authenticateToken, application.addApplication) 
 
-router.post('/upload/documents/:userId',  upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application .uploadDocuments);
+// router.post('/upload/documents/:userId',  upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application .uploadDocuments);
+router.put('/upload/documents/:id', authenticateToken,upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application.uploadDocuments);
 
 
 router.get('/dbfj' , application.getAllCofdsfsdfgursesHandler)

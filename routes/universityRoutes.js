@@ -17,7 +17,7 @@ router.get('/:id' ,  univeristy.getUniversityByIdHandler)
 router.get('/getall/university', univeristy.getalluniversity)
 
 
- 
+  
 router.put('/updateUniversity/:id', univeristy.updateUniversity1);
  
 

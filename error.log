@@ -145,3 +145,29 @@
 2023-10-17T11:09:27.686Z [31merror[39m: Error updating university: ER_BAD_FIELD_ERROR: Unknown column 'id' in 'where clause'
 2023-10-17T11:10:07.999Z [31merror[39m: Error updating university: ER_BAD_FIELD_ERROR: Unknown column 'id' in 'where clause'
 2023-10-17T12:17:32.128Z [31merror[39m: Error getting all courses with user and university data: ER_NO_SUCH_TABLE: Table 'immigration_database.cour1' doesn't exist
+2023-10-18T09:22:09.813Z [31merror[39m: Error getting all courses with user and university data: ER_NO_SUCH_TABLE: Table 'immigration_database.users3' doesn't exist
+2023-10-18T09:22:46.194Z [31merror[39m: Error getting all courses with user and university data: ER_NO_SUCH_TABLE: Table 'immigration_database.cour1' doesn't exist
+2023-10-18T09:23:07.739Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'a.firstname' in 'field list'
+2023-10-18T09:44:39.486Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.file_type' in 'field list'
+2023-10-18T09:49:47.767Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.id AS user_id,
+        u.username,
+        au.university_id AS university_id,
+ ' at line 4
+2023-10-18T10:26:15.098Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.application_id' in 'on clause'
+2023-10-18T10:37:32.885Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.application_id' in 'on clause'
+2023-10-18T10:39:39.088Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.application_id' in 'on clause'
+2023-10-18T10:40:59.006Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.application_id' in 'on clause'
+2023-10-18T10:51:26.442Z [31merror[39m: Error getting all courses with user and university data: ER_BAD_FIELD_ERROR: Unknown column 'udf.application_id' in 'on clause'
+2023-10-18T10:52:12.286Z [31merror[39m: Error getting all courses with user and university data: ER_NO_SUCH_TABLE: Table 'immigration_database.documents' doesn't exist
+2023-10-18T12:07:46.155Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'd.file_type,
+        d.file_path,
+        c.course_id AS course_id,
+        c.co' at line 9
+2023-10-18T12:08:00.970Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'd.file_type,
+        d.file_path,
+        c.course_id AS course_id,
+        c.co' at line 9
+2023-10-18T12:33:40.646Z [31merror[39m: Error getting all courses with user and university data: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.file_type,
+        d.file_path,
+        c.course_id AS course_id,
+        c.cou' at line 12

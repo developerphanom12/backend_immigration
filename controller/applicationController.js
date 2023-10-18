@@ -6,17 +6,27 @@ const {logger} = require('../utils/logging')
 function addApplication(courseData,userId) {
     return new Promise((resolve, reject) => {
 
-        const insertSql = `INSERT INTO applications (user_id,course_id,univertsity_id,firstname, lastname, email) 
-        VALUES (?, ?, ?, ?, ?,?)`;
+        const insertSql = `INSERT INTO applications_table (user_id,course_id,university_id,student_firstname, student_lastname,
+          student_email,student_whatsapp_number,student_passport_no,marital_status,previous_visa_refusals,ielts_reading,
+          ielts_listening,ielts_writing,ielts_speaking) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
 
         const values = [
             userId,
             courseData.course_id,
-            courseData.univertsity_id,
-            courseData.firstname,
-            courseData.lastname,
-            courseData.email,  
+            courseData.university_id,
+            courseData.student_firstname,
+            courseData.student_lastname,
+            courseData.student_email,  
+            courseData.student_whatsapp_number,
+            courseData.student_passport_no,
+            courseData.marital_status,
+            courseData.previous_visa_refusals,
+            courseData.ielts_reading,
+            courseData.ielts_listening,
+            courseData.ielts_writing,
+            courseData.ielts_speaking,
          ];
         db.query(insertSql, values, (error, result) => {
             if (error) {
@@ -34,7 +44,7 @@ function addApplication(courseData,userId) {
 
 function getApplication(applicationId) {
     return new Promise((resolve, reject) => {
-      const selectSql = `SELECT * FROM applications WHERE application_id = ?`;
+      const selectSql = `SELECT * FROM applications_table WHERE application_id = ?`;
   
       db.query(selectSql, [applicationId], (error, result) => {
         if (error) {
@@ -49,22 +59,43 @@ function getApplication(applicationId) {
     });
   }
 
-function insertApplicationDocuments(userId, fileData, callback) {
-    const query = 'INSERT INTO user_documents_files (user_id, file_type, file_path) VALUES (?, ?, ?)';
-    const values = [userId, fileData.fileType, fileData.filePath];
 
-    db.query(query, values, callback);
+function insertApplicationDocuments(userId, fileData, callback) {
+  const query = 'INSERT INTO documnets (application_id, file_type, file_path) VALUES (?, ?, ?)';
+  const values = [userId, fileData.fileType, fileData.filePath];
+
+  db.query(query, values, (error, result) => {
+      if (error) {
+          console.error('Database error:', error);
+          callback(error);
+      } else {
+          const documentId = result.insertId;
+          callback(null, documentId);
+      }
+  });
 }
 
 function getDocumentByFileId(userId, callback) {
-    const query = 'SELECT * FROM user_documents_files WHERE user_id = ?';
-    const values = [userId];
+  // Assuming you have a 'user_documents_files' table with a 'file_id' column
+  const query = 'SELECT * FROM user_documents_files WHERE user_id = ?';
+  const values = [userId];
 
-    console.log('Query:', query);
-    console.log('Values:', values);
-    db.query(query, values, callback);
+  // Execute the database query
+  db.query(query, values, (error, results) => {
+    if (error) {
+      return callback(error, null);
+    }
+
+    if (results.length === 0) {
+      // No documents found for the given user
+      return callback(null, null);
+    }
+
+    // Assuming you want to return the first document found
+    const document = results[0];
+    callback(null, document);
+  });
 }
-
 
 
 
@@ -132,31 +163,32 @@ function getDocumentByFileId(userId, callback) {
 //       }
 //     });
 //   });
-// }
-
-
 function getAllCoursesWithUserDaghfjgity() {
   return new Promise((resolve, reject) => {
     const query = `
       SELECT
         a.application_id,
-        a.firstname,
-        a.lastname,
-        a.email,
+        a.student_firstname,
+        a.student_passport_no,
+        a.application_status,
+        a.created_at,
         u.id AS user_id,
         u.username,
-        au.id AS univertsity_id,
+        u.phone_number,
+        au.university_id AS university_id,
         au.university_name,
-        udf.file_type,
-        udf.file_path,
+        au.person_name,
+        au.contact_number,
+        d.file_type,
+        d.file_path,
         c.course_id AS course_id,
         c.course_name,
         c.course_level
-      FROM applications a
-      INNER JOIN users3 u ON a.user_id = u.id
-      LEFT JOIN all_university au ON a.univertsity_id = au.id
-      LEFT JOIN user_documents_files udf ON a.user_id = udf.user_id
-      LEFT JOIN cour1 c ON a.course_id = c.course_id
+      FROM applications_table a
+      INNER JOIN user01 u ON a.user_id = u.id
+      LEFT JOIN university au ON a.university_id = au.university_id
+      LEFT JOIN documnets d ON a.application_id = d.application_id
+      LEFT JOIN courses c ON a.course_id = c.course_id
     `;
 
     db.query(query, (error, results) => {
@@ -168,39 +200,48 @@ function getAllCoursesWithUserDaghfjgity() {
         // Create an object to store merged data by user_id
         const mergedDataByUserId = {};
 
-        // Define a function to remove duplicate documents
-        function removeDuplicateDocuments(documents) {
-          const uniqueDocuments = [];
-          const seenDocuments = new Set();
-
-          for (const document of documents) {
-            const documentKey = `${document.file_type}_${document.file_path}`;
-
-            if (!seenDocuments.has(documentKey)) {
-              uniqueDocuments.push(document);
-              seenDocuments.add(documentKey);
-            }
-          }
-
-          return uniqueDocuments;
-        }
-
         // Iterate through the database results
         results.forEach((row) => {
           const user_id = row.user_id;
+          const application_id = row.application_id;
+
           if (!mergedDataByUserId[user_id]) {
             // Initialize the user's data if not already present
             mergedDataByUserId[user_id] = {
-              application_id: row.application_id,
-              firstname: row.firstname,
-              lastname: row.lastname,
-              email: row.email,
+            
+              applications: [],
+            };
+          }
+
+          // Check if the application with the same ID already exists
+          const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
+
+          if (existingApplication) {
+            // If the application already exists, add the document if it exists
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              existingApplication.documents.push(document);
+            }
+          } else {
+            // If the application doesn't exist, add it
+            const newApplication = {
+              application_id: application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              application_status:row.application_status,
+              created_at:row.application_status,
+              university_id: {
+                university_name: row.university_name,
+                person_name:row.person_name,
+                contact_number:row.contact_number
+              },
               user_id: {
                 id: user_id,
                 username: row.username,
-              },
-              university_id: {
-                university_name: row.university_name,
+                phone_number: row.phone_number,
               },
               course_id: {
                 course_id: row.course_id,
@@ -209,23 +250,21 @@ function getAllCoursesWithUserDaghfjgity() {
               },
               documents: [],
             };
-          }
 
-          // Add the document 
-          if (row.file_type !== null && row.file_path !== null) {
-            mergedDataByUserId[user_id].documents.push({
-              file_type: row.file_type,
-              file_path: row.file_path,
-            });
+            // Add the document if it exists
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              newApplication.documents.push(document);
+            }
+
+            mergedDataByUserId[user_id].applications.push(newApplication);
           }
         });
 
-        // Remove duplicate documents for each user
-        for (const user_id in mergedDataByUserId) {
-          mergedDataByUserId[user_id].documents = removeDuplicateDocuments(mergedDataByUserId[user_id].documents);
-        }
-
-        // Convert the object values to an array to 
+        // Convert the object values to an array to get the final result  //
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -234,6 +273,7 @@ function getAllCoursesWithUserDaghfjgity() {
     });
   });
 }
+
 
 
 module.exports = {

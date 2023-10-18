@@ -27,51 +27,46 @@ const addApplication = async (req, res) => {
   }
 };
 
-
-
-
 const uploadDocuments = async (req, res) => {
-  const userId = req.params.userId;
+  const userId = req.params.id;
+  const files = req.files;
 
-  if (!req.files || !req.files['aadhar_card_blob'] || !req.files['pan_card_blob']) {
-    return res.status(400).json({ error: 'Please provide Aadhar Card and PAN Card images.' });
+  if (!files) {
+    return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
   }
 
-  const aadharCardImageName = getImageName(req.files['aadhar_card_blob'][0].path);
-  const panCardImageName = getImageName(req.files['pan_card_blob'][0].path);
+  if (!files['aadhar_card_blob'] || !files['pan_card_blob']) {
+    return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
+  }
 
-
+  const aadharCardImageName = getImageName(files['aadhar_card_blob'][0].path);
   const aadharCardData = {
     fileType: 'aadhar_card',
     filePath: aadharCardImageName,
   };
 
+  const panCardImageName = getImageName(files['pan_card_blob'][0].path);
   const panCardData = {
     fileType: 'pan_card',
     filePath: panCardImageName,
   };
 
- 
   applicationservice.insertApplicationDocuments(userId, aadharCardData, (aadharCardError) => {
     if (aadharCardError) {
       console.error('Database error for Aadhar Card:', aadharCardError);
-      return res.status(500).json({ error: 'Document upload failed' });
+      return res.status(500).json({ error: 'Aadhar Card upload failed' });
     }
 
-    
     applicationservice.insertApplicationDocuments(userId, panCardData, (panCardError) => {
       if (panCardError) {
         console.error('Database error for PAN Card:', panCardError);
-        return res.status(500).json({ error: 'Document upload failed' });
+        return res.status(500).json({ error: 'PAN Card upload failed' });
       }
 
-   
-      res.status(201).json({ message: 'Documents uploaded successfully', data: applicationservice });
+      res.status(201).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
     });
   });
-}
-
-
+};
 
 
 const getDocumentByFileId = async (req, res) => {
@@ -103,24 +98,20 @@ function getImageName(imagePath) {
 }
 
 
-
 const getAllCofdsfsdfgursesHandler = async (req, res) => {
   try {
-     
-      const courses = await applicationservice.getAllCoursesWithUserDaghfjgity();
-
-      const successMessage = 'application data  fetch successfully';
-      res.status(201).json({
-          message: successMessage,
-          data: courses,
-      });
+    const courses = await applicationservice.getAllCoursesWithUserDaghfjgity();
+    const successMessage = 'Application data fetched successfully';
+    res.status(200).json({
+      message: successMessage,
+      data: courses,
+    });
   } catch (error) {
-      console.error('Error fetching courses with user and university data:', error);
-      const errorMessage = 'Error fetching courses';
-      res.status(500).json({ error: errorMessage });
+    console.error('Error in getAllCofdsfsdfgursesHandler:', error);
+    const errorMessage = 'Error fetching courses: ' + error.message;
+    res.status(500).json({ error: errorMessage });
   }
 };
-
 
 
 
