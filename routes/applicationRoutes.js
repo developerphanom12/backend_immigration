@@ -3,16 +3,39 @@ const router = express.Router()
 const application = require ('../service/applicationService')
 const {upload1} =  require('../service/multerfileforapp');
 const authenticateToken = require('../service/token');
-
-router.get('/jj/:id', application.getDocumentByFileId);
-
-
-router.post('/cr', authenticateToken, application.addApplication) 
-
-// router.post('/upload/documents/:userId',  upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application .uploadDocuments);
-router.put('/upload/documents/:id', authenticateToken,upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application.uploadDocuments);
+const { validateApplicationData } = require('../validation/validation');
 
 
-router.get('/dbfj' , application.getAllCofdsfsdfgursesHandler)
+
+router.post('/addappplications', validateApplicationData,authenticateToken, application.addApplication) 
+
+
+
+router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar_card_blob' }, { name: 'pan_card_blob' }]),application.uploadDocuments);
+
+
+router.get('/fetchallapplication' ,authenticateToken, application.getUserApplicationsHandler)
+
+
+router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
+
+
+
+router.get('/applicationgetby/:id', application.getDocumentByFileId);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 module.exports =router;

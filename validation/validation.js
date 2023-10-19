@@ -80,10 +80,38 @@ const coursesValid = (req, res, next) => {
 
 
 
+const applicationSchema = Joi.object({
+  course_id: Joi.number().integer().required(),
+  university_id: Joi.number().integer().required(),
+  student_firstname: Joi.string().max(255).required(),
+  student_lastname: Joi.string().max(255).required(),
+  student_email: Joi.string().email().max(255).required(),
+  student_whatsapp_number: Joi.string().max(20).required(),
+  student_passport_no: Joi.string().max(20).required(),
+  marital_status: Joi.string().valid('married', 'unmarried').required(),
+  previous_visa_refusals: Joi.string().valid('yes', 'no').required(),
+  ielts_reading: Joi.number().precision(2).min(0).max(9.99).required(),
+  ielts_listening: Joi.number().precision(2).min(0).max(9.99).required(),
+  ielts_writing: Joi.number().precision(2).min(0).max(9.99).required(),
+  ielts_speaking: Joi.number().precision(2).min(0).max(9.99).required(),
+ 
+});
+
+const validateApplicationData = (req, res, next) => {
+  const { error } = applicationSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
+
+
 module.exports = {
   createUserSchema,
   validateRegistrationData,
   universityValid,
-  coursesValid,
+  coursesValid,validateApplicationData
  // forgetPasswordSchema
 };

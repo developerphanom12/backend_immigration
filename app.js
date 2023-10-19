@@ -36,7 +36,7 @@ app.use(cors({origin: true})) // -----> cors
       app.use('/api/application', application)
 
 const port = process.env.PORT 
-const ipAddress = '127.0.0.1'; // Bind to the loopback interface (localhost)
+const ipAddress = '127.0.0.1'; 
 
        //****dirname for image upload set in there ****//
 app.use('/application', express.static(path.join(__dirname, 'application')))

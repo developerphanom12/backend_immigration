@@ -1,4 +1,7 @@
+const { error } = require('winston');
 const applicationservice = require('../controller/applicationController')
+const ExcelJS = require('exceljs');
+const { upload1 } = require('./multerfileforapp');
 
 
 const addApplication = async (req, res) => {
@@ -97,30 +100,68 @@ function getImageName(imagePath) {
   return imageName;
 }
 
+const getUserApplicationsHandler = async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
 
-const getAllCofdsfsdfgursesHandler = async (req, res) => {
   try {
-    const courses = await applicationservice.getAllCoursesWithUserDaghfjgity();
-    const successMessage = 'Application data fetched successfully';
+    const applications = await applicationservice.getUserApplicationsByUserId(userId);
+    const successMessage = 'User applications data fetched successfully';
     res.status(200).json({
       message: successMessage,
-      data: courses,
+      data: applications,
     });
   } catch (error) {
-    console.error('Error in getAllCofdsfsdfgursesHandler:', error);
-    const errorMessage = 'Error fetching courses: ' + error.message;
+    console.error('Error in getUserApplicationsHandler:', error);
+    const errorMessage = 'Error fetching user applications: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
+
+
+const searchApplicationsHandler = async (req, res) => {
+  const userId = req.user.id;
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is required' });
+  }
+
+  const { studentName, applicationId } = req.query;
+
+  try {
+    const applications = await applicationservice.getUserApplications(userId, studentName, applicationId);
+
+    if (applications.length === 0) {
+      // No applications found, return a message
+      const noApplicationsMessage = 'No applications found for the given criteria.';
+      res.status(200).json({
+        message: noApplicationsMessage,
+      
+      });
+    } else {
+      // Applications were found
+      const successMessage = 'User applications data fetched successfully';
+      res.status(200).json({
+        message: successMessage,
+        data: applications,
+      });
+    }
+  } catch (error) {
+    console.error('Error in searchApplicationsHandler:', error);
+    const errorMessage = 'Error fetching user applications: ' + error.message;
     res.status(500).json({ error: errorMessage });
   }
 };
 
 
 
-
-
-
 // Export the new function
 module.exports = {
   getDocumentByFileId,
-  uploadDocuments, addApplication,
-  getAllCofdsfsdfgursesHandler
+  uploadDocuments, 
+  addApplication,
+  getUserApplicationsHandler,
+  searchApplicationsHandler,
+  
 };

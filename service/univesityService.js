@@ -219,57 +219,7 @@ const getById = async (req, res) => {
       });
     }
   };
-  
-
-//   const uploadDocuments = async(req, res)=> {
-//     const userId = req.params.userId;
-
-//     if (!req.files || !req.files['aadhar_card_blob'] || !req.files['pan_card_blob']) {
-//         return res.status(400).json({ error: 'Please provide Aadhar Card and PAN Card images.' });
-//     }
-
-//     // Get the image names without the folder path
-//     const aadharCardImageName = getImageName(req.files['aadhar_card_blob'][0].path);
-//     const panCardImageName = getImageName(req.files['pan_card_blob'][0].path);
-
-//     // Define the data for each document
-//     const aadharCardData = {
-//         fileType: 'aadhar_card',
-//         filePath: aadharCardImageName,
-//     };
-
-//     const panCardData = {
-//         fileType: 'pan_card',
-//         filePath: panCardImageName,
-//     };
-
-//     // Insert documents into the database
-//     userservice.insertUserDocuments(userId, aadharCardData, (aadharCardError) => {
-//         if (aadharCardError) {
-//             console.error('Database error for Aadhar Card:', aadharCardError);
-//             return res.status(500).json({ error: 'Document upload failed' });
-//         }
-
-//         // Insert the second document after the first one is inserted successfully
-//        userservice.insertUserDocuments(userId, panCardData, (panCardError) => {
-//             if (panCardError) {
-//                 console.error('Database error for PAN Card:', panCardError);
-//                 return res.status(500).json({ error: 'Document upload failed' });
-//             }
-
-//             // Both documents are inserted successfully
-//             res.status(201).json({ message: 'Documents uploaded successfully' });
-//         });
-//     });
-// }
-
-
-// function getImageName(imagePath) {
-//     const imageName = imagePath.replace(/\\/g, '/').split('/').pop(); // Normalize path and get the image name
-//     return imageName;
-// }
-
-
+ 
 
 
 const uploadImage1 = async (req, res) => {

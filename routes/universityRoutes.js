@@ -21,7 +21,10 @@ router.get('/getall/university', univeristy.getalluniversity)
 router.put('/updateUniversity/:id', univeristy.updateUniversity1);
  
 
-router.post('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
+router.put('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
+
+
+
 
 /******************************  Courses Api  ********************************************************** */
     
@@ -33,5 +36,7 @@ router.get('/get/allcourse', univeristy.getAllCoursesHandler);
 
 router.get('/get/:id', univeristy.getById)
 
+
+router.put
 
 module.exports = router;
