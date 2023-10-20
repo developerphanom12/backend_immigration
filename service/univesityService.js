@@ -193,6 +193,29 @@ const getalluniversity = async (req, res) => {
         const successMessage = universityStatusMessages.universityApi.universityFetchSuccess;
         res.status(successMessage.status).json({
             message: successMessage.message,
+            status:200,
+            data: allUsers,
+        });
+    } catch (error) {
+        console.error('Error retrieving all universities:', error);
+        res.status(500).json({
+            message: 'Error retrieving all universities',
+        });
+    }
+};
+
+
+
+// add role in this page  
+const getallcourses1 = async (req, res) => {
+    
+    try {
+        const allUsers = await userservice.getallcourses();
+
+        const successMessage = universityStatusMessages.universityApi.coursefetch;
+        res.status(successMessage.status).json({
+            message: successMessage.message,
+            status: 200,
             data: allUsers,
         });
     } catch (error) {
@@ -249,6 +272,10 @@ const uploadImage1 = async (req, res) => {
   };
 
   
+
+  const fetchonlyuniversity= async (req, res) => {
+
+  }
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -257,5 +284,7 @@ module.exports = {
     getAllCoursesHandler,
     getalluniversity,
     getById,
-    uploadImage1
+    uploadImage1,
+    fetchonlyuniversity,
+    getallcourses1
 }

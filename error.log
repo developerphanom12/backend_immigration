@@ -172,3 +172,7 @@
         c.course_id AS course_id,
         c.cou' at line 12
 2023-10-19T06:48:52.083Z [31merror[39m: Error getting user applications by user ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '// Add a filter condition to match the user's ID' at line 24
+2023-10-20T13:11:17.596Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.course_id AS course_id,
+          c.course_name,
+          c.course_level
+     ' at line 14

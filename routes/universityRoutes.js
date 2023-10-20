@@ -14,8 +14,7 @@ router.get('/:id' ,  univeristy.getUniversityByIdHandler)
 
 
 
-router.get('/getall/university', univeristy.getalluniversity)
-
+router.get('/getall/university', authenticateToken, univeristy.getalluniversity) //------------>>>>>s
 
   
 router.put('/updateUniversity/:id', univeristy.updateUniversity1);
@@ -32,6 +31,10 @@ router.post('/courses1' ,authenticateToken,coursesValid, authenticateToken, univ
 
 
 router.get('/get/allcourse', univeristy.getAllCoursesHandler);
+
+
+router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //----->>>>>>>>>>courses
+
 
 
 router.get('/get/:id', univeristy.getById)

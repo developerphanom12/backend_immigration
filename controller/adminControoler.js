@@ -14,23 +14,19 @@ const db = require('../config/configration')
 
 const registerAdmin = async (req, res) => {
 
-try {
-    // Extract the request data (e.g., username and plaintext password)
-    const { username, password } = req.body;
+    try {
+        const { username, password } = req.body;
 
-    // Hash the plaintext password using bcrypt
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    // Call the adminregister function with the hashed password
-    const adminId = await admin.adminregister({ username, password: hashedPassword });
+        const adminId = await admin.adminregister({ username, password: hashedPassword });
 
-    // Send a successful response
-    res.status(201).json({ message: 'Admin registration successful', adminId });
-} catch (error) {
-    // Handle errors
-    console.error('Error registering admin:', error);
-    res.status(500).json({ error: 'Failed to register admin' });
-}
+        res.status(201).json({ message: 'Admin registration successful', adminId });
+    } catch (error) {
+        // Handle errors
+        console.error('Error registering admin:', error);
+        res.status(500).json({ error: 'Failed to register admin' });
+    }
 
 }
 
@@ -65,10 +61,36 @@ const loginUser = async (req, res) => {
         });
     });
 };
+const getAllApplicationstoadmin = async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ 
+            status: 401,
+            error: 'Forbidden for regular users' });
+    }
+    console.log('User Role:', req.user.role);
 
+    try {
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ 
+                status: 403,
+                error: 'Forbidden for non-admin users' });
+        }
 
+        const applications = await admin.getallapplication();
+
+        if (applications.length === 0) {
+            res.status(404).json({ message: 'No applications found' });
+        } else {
+            res.status(200).json({status:201, applications });
+        }
+    } catch (error) {
+        console.error('Error fetching all applications:', error);
+        res.status(500).json({ error: 'Failed to fetch all applications' });
+    }
+};
 
 module.exports = {
     registerAdmin,
-    loginUser
+    loginUser,
+    getAllApplicationstoadmin
 }

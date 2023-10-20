@@ -64,7 +64,7 @@ const uploadDocuments = async (req, res) => {
         return res.status(500).json({ error: 'PAN Card upload failed' });
       }
 
-      res.status(201).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
+      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
     });
   });
 };

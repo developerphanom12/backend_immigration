@@ -108,7 +108,7 @@ function getalluniversity() {
                 logger.error('Error getting all users:', error); // Log the error
             } else {
                 const usersWithAddresses = results.map((row) => ({
-                    id: row.id,
+                    university_id: row.university_id,
                     university_name: row.university_name,
                     course_type: row.course_type,
                     person_name:row.person_name,
@@ -345,6 +345,37 @@ function addimageuniversity(userId, imagePath, callback) {
 //     db.query(sql, values, callback);
 // }
 
+
+
+
+
+function getallcourses() {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT  * FROM courses WHERE is_deleted = 0`
+
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all users:', error); // Log the error
+            } else {
+                const usersWithAddresses = results.map((row) => ({
+                    course_id	: row.course_id	,
+                    course_name: row.course_name,
+                    course_level: row.course_type,
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+
+                }));
+                resolve(usersWithAddresses);
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -354,5 +385,6 @@ module.exports = {
     getAllCoursesWithUserDataAndUniversity,
     getalluniversity,
     getCourseById,
-    addimageuniversity
+    addimageuniversity,
+    getallcourses
 }
