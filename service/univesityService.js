@@ -17,7 +17,7 @@ const registerUniversity = async (req, res) => {
 
     const { university_name, course_type, founded_year ,contact_number,person_name} = req.body;
 
-    try {
+    try {  
         const universityData = await userservice.UniversityRegister({
             university_name,
             course_type,

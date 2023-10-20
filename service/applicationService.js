@@ -3,7 +3,6 @@ const applicationservice = require('../controller/applicationController')
 const ExcelJS = require('exceljs');
 const { upload1 } = require('./multerfileforapp');
 
-
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
@@ -12,18 +11,17 @@ const addApplication = async (req, res) => {
     const applicationId = await applicationservice.addApplication(courseData, userId);
     console.log('Application added with ID:', applicationId);
 
-    
-    const insertedData = await applicationservice.getApplication(applicationId);
-
     res.status(200).json({
       message: 'Application added successfully',
-      data: insertedData,
+      status: 200,
+      data: {
+        id: applicationId // Include only the id of the application_id
+      }
     });
   } catch (error) {
     if (error) {
       res.status(401).json({ error: error.message });
     } else {
-    
       console.error('Error adding application:', error);
       res.status(500).json({ error: 'Failed to add application' });
     }
@@ -101,9 +99,13 @@ function getImageName(imagePath) {
 }
 
 const getUserApplicationsHandler = async (req, res) => {
+  if (req.user.role !== 'user') {
+    return res.status(403).json({ error: 'Forbidden for regular users' });
+  }
+  console.log('User Role:', req.user.role);
   const userId = req.user.id;
   if (!userId) {
-    return res.status(400).json({ error: 'User ID is required' });
+    return res.status(400).json({ error: 'invalid ID is required' });
   }
 
   try {
@@ -137,7 +139,7 @@ const searchApplicationsHandler = async (req, res) => {
       const noApplicationsMessage = 'No applications found for the given criteria.';
       res.status(200).json({
         message: noApplicationsMessage,
-      
+
       });
     } else {
       // Applications were found
@@ -159,9 +161,9 @@ const searchApplicationsHandler = async (req, res) => {
 // Export the new function
 module.exports = {
   getDocumentByFileId,
-  uploadDocuments, 
+  uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
   searchApplicationsHandler,
-  
+
 };

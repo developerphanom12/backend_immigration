@@ -95,7 +95,7 @@ const applicationSchema = Joi.object({
   ielts_writing: Joi.number().precision(2).min(0).max(9.99).required(),
   ielts_speaking: Joi.number().precision(2).min(0).max(9.99).required(),
  
-});
+});   
 
 const validateApplicationData = (req, res, next) => {
   const { error } = applicationSchema.validate(req.body);
@@ -113,5 +113,4 @@ module.exports = {
   validateRegistrationData,
   universityValid,
   coursesValid,validateApplicationData
- // forgetPasswordSchema
 };

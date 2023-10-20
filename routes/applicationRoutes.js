@@ -17,6 +17,8 @@ router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar_card_blob' },
 router.get('/fetchallapplication' ,authenticateToken, application.getUserApplicationsHandler)
 
 
+router.get('/getbyid/:id',authenticateToken,application.getUserApplicationsHandler)
+
 router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
 
 
