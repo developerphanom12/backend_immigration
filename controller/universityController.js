@@ -262,7 +262,8 @@ function getAllCoursesWithUserDataAndUniversity() {
                 au.university_id AS university_id,
                 au.university_name,
                 au.founded_year,
-                au.course_type
+                au.course_type,
+                au.university_image
                 
             FROM courses c
             INNER JOIN user01 u ON c.user_id = u.id
@@ -303,6 +304,7 @@ function getAllCoursesWithUserDataAndUniversity() {
                         university_name: row.university_name,
                         founded_year: row.founded_year,
                         course_type: row.course_type,
+                        university_image : row.university_image,
                         is_active: row.is_active,
                         is_deleted: row.is_deleted,
                         create_date: row.create_date,
