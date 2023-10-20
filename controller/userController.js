@@ -2,7 +2,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/configration'); // Import the database connection
-const {logger} =  require('../utils/logging')
+const {logger} =  require('../utils/logging');
+const { use } = require('../routes/adminRoutes');
 
 
 
@@ -189,8 +190,7 @@ function getProfileImageFilename(userId, callback) {
     return callback(null, results[0].profile_image);
   });
 }
-
-// function for login user generate token for auntetication
+// Modify the loginUser function to return user data in the desired structure
 function loginUser(username, password, callback) {
   const query = 'SELECT * FROM user01 WHERE username = ?';
   db.query(query, [username], async (err, results) => {
@@ -211,10 +211,22 @@ function loginUser(username, password, callback) {
     }
 
     const secretKey = 'secretkey';
-    const token = jwt.sign({ id: user.id, username: user.username }, secretKey);
-
-    return callback(null, { token: token });
-  })
+    const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
+   console.log('token', token)
+    // Include the user data and token in the callback with the desired structure
+    return callback(null, {
+      data: {
+        user: {
+          id: user.id,
+          username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,
+           role : user.role,
+          token: token,
+        }
+      }
+    });
+  });
 }
 
 

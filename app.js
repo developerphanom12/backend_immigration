@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const universityRoutes = require('./routes/universityRoutes')
 const application = require('./routes/applicationRoutes')
+const admin = require('./routes/adminRoutes')
 const path = require('path')
 const cors = require('cors')
 
@@ -34,6 +35,11 @@ app.use(cors({origin: true})) // -----> cors
 //*******************application routes********** //
 
       app.use('/api/application', application)
+
+
+//******************admin routes******************/
+
+app.use('/api/admin',admin)
 
 const port = process.env.PORT 
 const ipAddress = '127.0.0.1'; 

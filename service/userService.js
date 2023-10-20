@@ -56,6 +56,7 @@ const registerUser = async (req, res) => {
         state: address.state,
         postal_code: address.postal_code,
       },
+      
     };
 
     res.status(messages.USER_API.USER_CREATE.status).json({
@@ -95,6 +96,7 @@ const getByIdUser = async (req, res) => {
 //----->>> get all user data
 
 const getAllUsers = async (req, res) => {
+  
   try {
     const allUsers = await userservice.getalluser();
 
@@ -145,7 +147,7 @@ const loginUserController = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    userservice.loginUser(username, password, (err, result) => {
+   userservice.loginUser(username, password, (err, result) => {
       if (err) {
         console.error('Error:', err);
         return res.status(500).json({ error: 'An internal server error occurred' });

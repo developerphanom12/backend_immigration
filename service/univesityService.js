@@ -10,6 +10,11 @@ const handleServerError = (res, error) => {
 };
 
 const registerUniversity = async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+    console.log('User Role:', req.user.role);
+
     const { university_name, course_type, founded_year ,contact_number,person_name} = req.body;
 
     try {
@@ -179,24 +184,24 @@ const getAllCoursesHandler = async (req, res) => {
 };
 
 
+// add role in this page  
 const getalluniversity = async (req, res) => {
+    
     try {
-      const allUsers = await userservice.getalluniversity();
-  
-      const successMessage = universityStatusMessages.universityApi.universityFetchSuccess;
-      res.status(successMessage.status).json({
-          message: successMessage.message,
-          data: allUsers,
-      });
-    } catch (error) {
-      console.error('Error retrieving all users:', error);
-      res.status(500).json({
-        message: 'Error retrieving all users',
-      });
-    }
-  };
+        const allUsers = await userservice.getalluniversity();
 
-  
+        const successMessage = universityStatusMessages.universityApi.universityFetchSuccess;
+        res.status(successMessage.status).json({
+            message: successMessage.message,
+            data: allUsers,
+        });
+    } catch (error) {
+        console.error('Error retrieving all universities:', error);
+        res.status(500).json({
+            message: 'Error retrieving all universities',
+        });
+    }
+};
 
 // //GET USER BY ID
 const getById = async (req, res) => {
@@ -242,7 +247,7 @@ const uploadImage1 = async (req, res) => {
     });
   
   };
-  
+
   
 module.exports = {
     registerUniversity,
