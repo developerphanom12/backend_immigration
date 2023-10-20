@@ -36,17 +36,17 @@ const uploadDocuments = async (req, res) => {
     return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
   }
 
-  if (!files['aadhar_card_blob'] || !files['pan_card_blob']) {
+  if (!files['aadhar'] || !files['pan']) {
     return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
   }
 
-  const aadharCardImageName = getImageName(files['aadhar_card_blob'][0].path);
+  const aadharCardImageName = getImageName(files['aadhar'][0].path);
   const aadharCardData = {
     fileType: 'aadhar_card',
     filePath: aadharCardImageName,
   };
 
-  const panCardImageName = getImageName(files['pan_card_blob'][0].path);
+  const panCardImageName = getImageName(files['pan'][0].path);
   const panCardData = {
     fileType: 'pan_card',
     filePath: panCardImageName,
