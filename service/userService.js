@@ -3,9 +3,6 @@ const userservice = require('../controller/userController');
 const { createUserSchema } = require('../validation/validation')
 const messages = require('../constants/message')
 const saltRounds = 10;
-// const jwt = require('jsonwebtoken')
-// const path = require('path')
-// const { upload } = require('../service/multer')
 const db = require('../config/configration'); // Import the database connection
 const fs = require('fs')
 
@@ -156,7 +153,7 @@ const loginUserController = async (req, res) => {
       if (result.error) {
         return res.status(401).json({ error: result.error });
       }
-
+ 
     
       res.status(messages.USER_API.USER_LOGIN_SUCCESS.status).json({
         message: messages.USER_API.USER_LOGIN_SUCCESS.message,

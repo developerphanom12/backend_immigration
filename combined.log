@@ -1548,3 +1548,69 @@
 2023-10-21T11:05:22.304Z [32minfo[39m: Starting your application...
 2023-10-21T11:12:26.430Z [32minfo[39m: Starting your application...
 2023-10-21T11:15:31.538Z [32minfo[39m: Starting your application...
+2023-10-21T12:27:56.882Z [32minfo[39m: Starting your application...
+2023-10-21T12:28:15.941Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T12:28:15.946Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:28:18.533Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:28:20.634Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:30:30.117Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:30:31.303Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:30:32.066Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:30:32.818Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:30:32.825Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T12:30:33.679Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:30:35.910Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:33:01.694Z [32minfo[39m: Starting your application...
+2023-10-21T12:39:10.418Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:39:12.767Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:39:16.937Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:39:18.136Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T12:39:18.143Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:39:48.866Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:59:23.920Z [32minfo[39m: All users retrieved successfully
+2023-10-21T12:59:26.340Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T12:59:29.909Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:09.629Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:00:09.634Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:14.170Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:00:14.173Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:14.925Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:00:16.271Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:17.739Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:00:18.931Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:00:19.661Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:19.666Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:00:27.228Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:00:34.606Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:37.303Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:37.313Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:00:56.864Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:00:57.921Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:00:59.046Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:01:00.044Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:01:00.048Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:01:01.538Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:01:01.544Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:01:36.599Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:04:51.043Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:04:51.050Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:04:56.997Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:05:26.617Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:05:26.619Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:05:27.129Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:05:30.549Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:05:30.553Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:05:31.059Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:08:32.278Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:08:32.863Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:08:32.869Z [32minfo[39m: All courses retrieved successfully
+2023-10-21T13:08:33.556Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:08:44.271Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:13:56.107Z [32minfo[39m: Starting your application...
+2023-10-21T13:14:58.108Z [32minfo[39m: All applications retrieved successfully
+2023-10-21T13:16:03.075Z [32minfo[39m: Starting your application...
+2023-10-21T13:16:06.056Z [32minfo[39m: All applications retrieved successfully
+2023-10-21T13:17:19.536Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:17:20.980Z [32minfo[39m: All users retrieved successfully
+2023-10-21T13:17:23.974Z [32minfo[39m: All courses with user and university data retrieved successfully
+2023-10-21T13:27:50.015Z [32minfo[39m: All courses with user and university data retrieved successfully
