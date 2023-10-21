@@ -23,7 +23,7 @@ router.get('/search/with/',authenticateToken, application.searchApplicationsHand
 
 
 
-router.get('/applicationgetby/:id', application.getDocumentByFileId);
+router.get('/applicationgetby/:id', application.getDocumentByFileId); 
 
 
 

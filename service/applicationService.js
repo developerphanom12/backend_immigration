@@ -96,34 +96,52 @@ const getDocumentByFileId = async (req, res) => {
 function getImageName(imagePath) {
   const imageName = imagePath.replace(/\\/g, '/').split('/').pop(); // Normalize path and get the image name
   return imageName;
+
 }
 
-const getUserApplicationsHandler = async (req, res) => {
-  if (req.user.role !== 'user') {
-    return res.status(403).json({ error: 'Forbidden for regular users' });
-  }
-  console.log('User Role:', req.user.role);
+const searchApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
   if (!userId) {
-    return res.status(400).json({ error: 'invalid ID is required' });
+    return res.status(400).json({ error: 'User ID is required' });
   }
 
+  const { studentName, applicationId } = req.query;
+
   try {
-    const applications = await applicationservice.getUserApplicationsByUserId(userId);
-    const successMessage = 'User applications data fetched successfully';
-    res.status(200).json({
-      message: successMessage,
-      data: applications,
-    });
+    const applications = await applicationservice.getUserApplications(userId, studentName, applicationId);
+
+    if (applications.length === 0) {
+      // No applications found, return a message
+      const noApplicationsMessage = 'No applications found for the given criteria.';
+      res.status(200).json({
+        message: noApplicationsMessage,
+      });
+    } else {
+      const studentFound = applications.some(application => application.studentName === studentName);
+      if (studentFound) {
+        // Applications were found
+        const successMessage = 'User applications data fetched successfully';
+        res.status(200).json({
+          message: successMessage,
+          data: applications,
+        });
+      } else {
+        // No data found for the provided studentName
+        const noDataFoundMessage = 'No data found for this name.';
+        res.status(200).json({
+          message: noDataFoundMessage,
+        });
+      }
+    }
   } catch (error) {
-    console.error('Error in getUserApplicationsHandler:', error);
+    console.error('Error in searchApplicationsHandler:', error);
     const errorMessage = 'Error fetching user applications: ' + error.message;
     res.status(500).json({ error: errorMessage });
   }
 };
 
 
-const searchApplicationsHandler = async (req, res) => {
+const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
   if (!userId) {
     return res.status(400).json({ error: 'User ID is required' });

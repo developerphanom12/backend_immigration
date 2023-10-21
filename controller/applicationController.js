@@ -163,7 +163,7 @@ function getDocumentByFileId(userId, callback) {
 //       }
 //     });
 //   });
-async function getUserApplicationsByUserId(userId) {
+async function getUserApplicationsByUserId(userId, studentName, applicationId) {
   return new Promise((resolve, reject) => {
     const query = `
       SELECT
@@ -189,7 +189,9 @@ async function getUserApplicationsByUserId(userId) {
       LEFT JOIN university au ON a.university_id = au.university_id
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN courses c ON a.course_id = c.course_id
-      WHERE u.id = ?;  
+      WHERE u.id = ?
+        ${studentName ? `AND a.student_firstname LIKE '%${studentName}%'` : ''}
+        ${applicationId ? `AND a.application_id = ${applicationId}` : ''}
     `;
 
     db.query(query, [userId], (error, results) => {
@@ -209,7 +211,6 @@ async function getUserApplicationsByUserId(userId) {
           if (!mergedDataByUserId[user_id]) {
             // Initialize the user's data if not already present
             mergedDataByUserId[user_id] = {
-            
               applications: [],
             };
           }
@@ -232,12 +233,12 @@ async function getUserApplicationsByUserId(userId) {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              application_status:row.application_status,
-              created_at:row.created_at,
+              application_status: row.application_status,
+              created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name:row.person_name,
-                contact_number:row.contact_number
+                person_name: row.person_name,
+                contact_number: row.contact_number,
               },
               user_id: {
                 id: user_id,
@@ -265,7 +266,7 @@ async function getUserApplicationsByUserId(userId) {
           }
         });
 
-        // Convert the object values to an array to get the final result  //
+        // Convert the object values to an array to get the final result
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);

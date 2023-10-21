@@ -92,7 +92,7 @@ const getAllApplicationstoadmin = async (req, res) => {
 };
 
 const updateApplicationStatus = async (req, res) => {
-    const { newStatus, applicationId } = req.body;
+    const { newStatus, applicationId, } = req.body;
   
     console.log('Received request with newStatus:', newStatus, 'for application ID:', applicationId);
   

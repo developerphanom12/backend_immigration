@@ -14,5 +14,5 @@ router.get('/allApplication', authenticateToken,adminservice.getAllApplicationst
 
 
 
-router.post('/status',authenticateToken,adminservice.updateApplicationStatus)
+router.post('/statusupdate',authenticateToken,adminservice.updateApplicationStatus)   //---->>>>> statust update
 module.exports =router;
