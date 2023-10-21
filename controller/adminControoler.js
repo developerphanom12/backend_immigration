@@ -21,7 +21,9 @@ const registerAdmin = async (req, res) => {
 
         const adminId = await admin.adminregister({ username, password: hashedPassword });
 
-        res.status(201).json({ message: 'Admin registration successful', adminId });
+        res.status(201).json({ message: 'Admin registration successful', 
+        status:201,
+        data: adminId });
     } catch (error) {
         // Handle errors
         console.error('Error registering admin:', error);
@@ -49,9 +51,10 @@ const loginUser = async (req, res) => {
                 return res.status(500).json({ error: 'Failed to fetch admin data' });
             }
 
-            // Include the token as a string within the adminData object  //
             const responseData = {
-                adminData: {
+                message:"admin lgoin succesfully",
+                status : 200,
+                data    : {
                     ...adminData[0],
                     token: result.token
                 }
@@ -63,6 +66,36 @@ const loginUser = async (req, res) => {
 };
 
 
+const loginUserController = async (req, res) => {
+    try {
+      const { username, password } = req.body;
+  
+     userservice.loginUser(username, password, (err, result) => {
+        if (err) {
+          console.error('Error:', err);
+          return res.status(500).json({ error: 'An internal server error occurred' });
+        }
+  
+        if (result.error) {
+          return res.status(401).json({ error: result.error });
+        }
+  
+      
+        res.status(messages.USER_API.USER_LOGIN_SUCCESS.status).json({
+          message: messages.USER_API.USER_LOGIN_SUCCESS.message,
+          data: result.data,
+          token: result.token,
+        });
+        // Return a success message along with the token and user data
+       
+      });
+    } catch (error) {
+      console.error('Error logging in user:', error);
+      res.status(500).json({ error: 'An internal server error occurred' });
+    }
+  };
+
+  
 const getAllApplicationstoadmin = async (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ 

@@ -142,40 +142,71 @@ const searchApplicationsHandler = async (req, res) => {
 
 
 const getUserApplicationsHandler = async (req, res) => {
-  const userId = req.user.id;
-  if (!userId) {
-    return res.status(400).json({ error: 'User ID is required' });
-  }
+const userId = req.user.id;
+if (!userId) {
+  return res.status(400).json({ error: 'User ID is required' });
+}
 
-  const { studentName, applicationId } = req.query;
+const { searchKey } = req.query;
 
-  try {
-    const applications = await applicationservice.getUserApplications(userId, studentName, applicationId);
+try {
+  if (searchKey) {
+    const isNumeric = !isNaN(searchKey);
 
-    if (applications.length === 0) {
-      // No applications found, return a message
-      const noApplicationsMessage = 'No applications found for the given criteria.';
+///--->>>>>by no
+    if (isNumeric) {
+      const userApplication = await applicationservice.getUserApplicationByPhoneNumber(userId, searchKey);
+
+      if (userApplication) {
+        res.status(200).json({
+          message: 'User application data fetched successfully',
+          data: userApplication,
+        });
+      } else {
+        res.status(404).json({
+          message: 'No user application found for the provided phone number.',
+        });
+      }
+    }
+    ///--->>>>>by name
+
+    else {
+      const userApplications = await applicationservice.getUserApplicationsByName(userId, searchKey);
+
+      if (userApplications.length > 0) {
+        res.status(200).json({
+          message: 'User applications data fetched successfully',
+          data: userApplications,
+        });
+      } else {
+        // No user applications found for the provided name
+        res.status(404).json({
+          message: 'No user applications found for the provided name.',
+        });
+      }
+    }
+  } else {
+    // If no search key is provided, show all user applications for the given user ID
+    const allApplications = await applicationservice.getAllUserApplications(userId);
+
+    if (allApplications.length > 0) {
       res.status(200).json({
-        message: noApplicationsMessage,
-
+        message: 'All user applications data fetched successfully',
+        data: allApplications,
       });
     } else {
-      // Applications were found
-      const successMessage = 'User applications data fetched successfully';
-      res.status(200).json({
-        message: successMessage,
-        data: applications,
+      // No user applications found for the given user ID
+      res.status(404).json({
+        message: 'No user applications found for the provided user ID.',
       });
     }
-  } catch (error) {
-    console.error('Error in searchApplicationsHandler:', error);
-    const errorMessage = 'Error fetching user applications: ' + error.message;
-    res.status(500).json({ error: errorMessage });
   }
-};
-
-
-
+} catch (error) {
+  console.error('Error in searchApplicationsHandler:', error);
+  const errorMessage = 'Error fetching user applications: ' + error.message;
+  res.status(500).json({ error: errorMessage });
+}
+}
 // Export the new function
 module.exports = {
   getDocumentByFileId,
