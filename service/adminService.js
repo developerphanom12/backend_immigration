@@ -133,11 +133,32 @@ async function getallapplication() {
         });
     });
 };
+// Import your database connection or ORM here (e.g., const db = require('../db'));
 
-
+const updateApplicationStatus = (applicationId, newStatus, callback) => {
+    const updateQuery = 'UPDATE applications_table SET application_status = ? WHERE application_id = ?';
+  
+    db.query(updateQuery, [newStatus, applicationId], (error, result) => {
+      if (error) {
+        console.error('Error updating application status:', error);
+        return callback(error, null);
+      }
+  
+      if (result.affectedRows === 0) {
+        return callback(null, { error: 'Application not found' });
+      }
+  
+      return callback(null, { message: 'Application status updated successfully' });
+    });
+  };
+  
+  module.exports = { updateApplicationStatus };
+  
+  
 module.exports = {
     adminregister,
     loginadmin,
-    getallapplication
+    getallapplication,
+    updateApplicationStatus
 }
 

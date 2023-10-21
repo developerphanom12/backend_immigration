@@ -61,6 +61,8 @@ const loginUser = async (req, res) => {
         });
     });
 };
+
+
 const getAllApplicationstoadmin = async (req, res) => {
     if (req.user.role !== 'admin') {
         return res.status(403).json({ 
@@ -89,8 +91,44 @@ const getAllApplicationstoadmin = async (req, res) => {
     }
 };
 
+const updateApplicationStatus = async (req, res) => {
+    const { newStatus, applicationId } = req.body;
+  
+    console.log('Received request with newStatus:', newStatus, 'for application ID:', applicationId);
+  
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        status: 403,
+        error: 'Forbidden. Only admin can approve or reject applications.'
+      });
+    }
+  
+    if (newStatus !== 'approved' && newStatus !== 'rejected') {
+      return res.status(400).json({
+        status: 400,
+        error: 'Invalid newStatus. It must be either "approved" or "rejected".'
+      });
+    }
+  
+    admin.updateApplicationStatus(applicationId, newStatus, (error, result) => {
+      if (error) {
+        console.error('Error updating application status:', error);
+        return res.status(500).json({
+          status: 500,
+          error: 'Failed to update application status.'
+        });
+      }
+  
+      console.log('Application status updated successfully');
+      res.status(200).json({
+        status: 200,
+        message: 'Application status updated successfully'
+      });
+    });
+}
 module.exports = {
     registerAdmin,
     loginUser,
-    getAllApplicationstoadmin
+    getAllApplicationstoadmin,
+    updateApplicationStatus
 }

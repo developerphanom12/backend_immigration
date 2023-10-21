@@ -11,4 +11,8 @@ router.post('/register', adminservice.registerAdmin)
 router.post('/login', adminservice.loginUser)
 
 router.get('/allApplication', authenticateToken,adminservice.getAllApplicationstoadmin)
+
+
+
+router.post('/status',authenticateToken,adminservice.updateApplicationStatus)
 module.exports =router;
