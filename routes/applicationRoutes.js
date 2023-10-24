@@ -14,7 +14,7 @@ router.post('/addappplications', validateApplicationData,authenticateToken, appl
 router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' }]),application.uploadDocuments);
 
 
-router.get('/fetchallapplicationssssssssssssssss' ,authenticateToken, application.getUserApplicationsHandler)
+router.get('/fetchallapplications' ,authenticateToken, application.getUserApplicationsHandler)
 
 
 router.get('/getbyid/:id',authenticateToken,application.getUserApplicationsHandler)

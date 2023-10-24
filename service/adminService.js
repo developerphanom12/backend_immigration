@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 function adminregister(courseData) {
     return new Promise((resolve, reject) => {
-        const insertSql = `INSERT INTO admin (username, password, role) 
+        const insertSql = `INSERT INTO admintable(username, password, role) 
                            VALUES (?, ?, ?)`;
 
         const values = [
@@ -23,7 +23,7 @@ function adminregister(courseData) {
                 const adminId = result.insertId;
 
                 // Retrieve the inserted data
-                const selectSql = 'SELECT * FROM admin WHERE admin_id = ?';
+                const selectSql = 'SELECT * FROM admintable WHERE id = ?';
                 db.query(selectSql, [adminId], (selectError, selectResult) => {
                     if (selectError) {
                         console.error('Error retrieving admin data:', selectError);
@@ -43,7 +43,7 @@ function adminregister(courseData) {
 
 // function for login user generate token for auntetication
 function loginadmin(username, password, callback) {
-    const query = 'SELECT * FROM admin WHERE username = ?';
+    const query = 'SELECT * FROM admintable WHERE username = ?';
     db.query(query, [username], async (err, results) => {
         if (err) {
             return callback(err, null);

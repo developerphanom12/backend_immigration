@@ -748,7 +748,6 @@ async function getUserApplicationsByName(userId, studentName) {
 
 
 async function getUserApplicationByPhoneNumber11(userId, application) {
-  // Modify your database query to search for a specific user application by phone number
   const query = `
     SELECT
       a.application_id,
@@ -863,6 +862,71 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
     });
   });
 }
+
+
+async function getallapplication() {
+  return new Promise((resolve, reject) => {
+      const query = `
+      SELECT
+        a.application_id,
+        a.student_firstname,
+        a.student_passport_no,
+        a.application_status,
+        a.created_at,
+        u.id AS user_id,
+        u.username,
+        u.phone_number,
+        au.university_id AS university_id,
+        au.university_name,
+        au.person_name,
+        au.contact_number,
+        c.course_id AS course_id,
+        c.course_name,
+        c.course_level
+      FROM applications_table a
+      INNER JOIN user01 u ON a.user_id = u.id
+      LEFT JOIN university au ON a.university_id = au.university_id
+      LEFT JOIN courses c ON a.course_id = c.course_id
+    `;
+
+      db.query(query, (error, results) => {
+          if (error) {
+              console.error('Error executing query:', error);
+              reject(error);
+              logger.error('Error getting all applications:', error); // Log the error
+          } else {
+              const applications = results.map((row) => ({
+                  application_id: row.application_id,
+                  student_firstname: row.student_firstname,
+                  student_passport_no: row.student_passport_no,
+                  application_status: row.application_status,
+                  user_id: {
+                      user_id: row.user_id,
+                      username: row.username,
+                      phone_number: row.phone_number,
+                  },
+                  university_id: {
+                      university_id: row.university_id,
+                      university_name: row.university_name,
+                      person_name: row.person_name,
+                      contact_number: row.contact_number,
+                  },
+                  course_id:{
+                      course_id:row.course_id,
+                      course_name:row.course_name,
+                      course_level:row.course_level
+                  },
+                  is_active: row.is_active,
+                  create_date: row.create_date,
+                  update_date: row.update_date,
+                  is_deleted: row.is_deleted,
+              }));
+              resolve(applications);
+              logger.info('All applications retrieved successfully');
+          }
+      });
+  });
+};
 module.exports = {
     insertApplicationDocuments,
     getDocumentByFileId, 
@@ -873,7 +937,8 @@ module.exports = {
     getUserApplicationByPhoneNumber,
     getAllUserApplications,
     getUserApplicationsByName,
-    getUserApplicationByPhoneNumber11
+    getUserApplicationByPhoneNumber11,
+    getallapplication
 };
 
 
