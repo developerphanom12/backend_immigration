@@ -862,118 +862,123 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
     });
   });
 }
+async function getallapplication(userId, userRole) {
+  // Modify your database query to get all user applications or all applications for an admin
+  let query = `
+    SELECT
+      a.application_id,
+      a.student_firstname,
+      a.student_passport_no,
+      a.application_status,
+      a.student_whatsapp_number,
+      a.created_at,
+      u.id AS user_id,
+      u.username,
+      u.phone_number,
+      au.university_id AS university_id,
+      au.university_name,
+      au.person_name,
+      au.contact_number,
+      d.file_type,
+      d.file_path,
+      c.course_id AS course_id,
+      c.course_name,
+      c.course_level
+    FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN documnets d ON a.application_id = d.application_id
+    LEFT JOIN courses c ON a.course_id = c.course_id
+  `;
 
+  if (userRole === 'admin') {
+    // No need to filter by user ID for admins; retrieve all applications
+  } else {
+    // Filter by the user's ID for non-admin users
+    query += ' WHERE u.id = ?';
+  }
 
-async function getallapplication(userrole) {
+  const params = (userRole === 'admin') ? [] : [userId];
+
   return new Promise((resolve, reject) => {
-      const query = `
-      SELECT
-        a.application_id,
-        a.student_firstname,
-        a.student_passport_no,
-        a.application_status,
-        a.created_at,
-        u.id AS user_id,
-        u.username,
-        u.phone_number,
-        au.university_id AS university_id,
-        au.university_name,
-        au.person_name,
-        au.contact_number,
-        c.course_id AS course_id,
-        c.course_name,
-        c.course_level
-      FROM applications_table a
-      INNER JOIN user01 u ON a.user_id = u.id
-      LEFT JOIN university au ON a.university_id = au.university_id
-      LEFT JOIN courses c ON a.course_id = c.course_id
-    `;
-   const params = [userrole]
-    return new Promise((resolve, reject) => {
-      db.query(query, params, (error, results) => {
-        if (error) {
-          console.error('Error executing query:', error);
-          reject(error);
-          logger.error('Error getting all user applications:', error);
-        } else {
-          // Create an object to store merged data by user_id
-          const mergedDataByUserId = {};
-  
-          // Iterate through the database results
-          results.forEach((row) => {
-            const user_id = row.user_id;
-            const application_id = row.application_id;
-  
-            if (!mergedDataByUserId[user_id]) {
-              // Initialize the user's data if not already present
-              mergedDataByUserId[user_id] = {
-              
-                applications: [],
+    db.query(query, params, (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting user applications:', error);
+      } else {
+        // Format the retrieved data as needed (similar to your previous code)
+        const mergedDataByUserId = {};
+
+        results.forEach((row) => {
+          const user_id = row.user_id;
+          const application_id = row.application_id;
+
+          if (!mergedDataByUserId[user_id]) {
+            mergedDataByUserId[user_id] = {
+              applications: [],
+            };
+          }
+
+          const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
+
+          if (existingApplication) {
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
               };
+              existingApplication.documents.push(document);
             }
-  
-            // Check if the application with the same ID already exists
-            const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
-  
-            if (existingApplication) {
-              // If the application already exists, add the document if it exists
-              if (row.file_type !== null && row.file_path !== null) {
-                const document = {
-                  file_type: row.file_type,
-                  file_path: row.file_path,
-                };
-                existingApplication.documents.push(document);
-              }
-            } else {
-              // If the application doesn't exist, add it
-              const newApplication = {
-                application_id: application_id,
-                student_firstname: row.student_firstname,
-                student_passport_no: row.student_passport_no,
-                application_status:row.application_status,
-                student_whatsapp_number:row.student_whatsapp_number,
-                created_at:row.created_at,
-                university_id: {
-                  university_name: row.university_name,
-                  person_name:row.person_name,
-                  contact_number:row.contact_number
-                },
-                user_id: {
-                  id: user_id,
-                  username: row.username,
-                  phone_number: row.phone_number,
-                },
-                course_id: {
-                  course_id: row.course_id,
-                  course_name: row.course_name,
-                  course_level: row.course_level,
-                },
-                documents: [],
+          } else {
+            const newApplication = {
+              application_id: application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              application_status: row.application_status,
+              student_whatsapp_number: row.student_whatsapp_number,
+              created_at: row.created_at,
+              university_id: {
+                university_name: row.university_name,
+                person_name: row.person_name,
+                contact_number: row.contact_number,
+              },
+              user_id: {
+                id: user_id,
+                username: row.username,
+                phone_number: row.phone_number,
+              },
+              course_id: {
+                course_id: row.course_id,
+                course_name: row.course_name,
+                course_level: row.course_level,
+              },
+              documents: [],
+            };
+
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
               };
-  
-              // Add the document if it exists
-              if (row.file_type !== null && row.file_path !== null) {
-                const document = {
-                  file_type: row.file_type,
-                  file_path: row.file_path,
-                };
-                newApplication.documents.push(document);
-              }
-  
-              mergedDataByUserId[user_id].applications.push(newApplication);
+              newApplication.documents.push(document);
             }
-          });
-  
-          // Convert the object values to an array to get the final result  //
-          const mergedData = Object.values(mergedDataByUserId);
-  
-          resolve(mergedData);
-          logger.info('All courses with user and university data retrieved successfully');
-        }
-      });
+
+            mergedDataByUserId[user_id].applications.push(newApplication);
+          }
+        });
+
+        const mergedData = Object.values(mergedDataByUserId);
+
+        resolve(mergedData);
+        logger.info('User applications or all applications retrieved successfully');
+      }
     });
-  })
+  });
 }
+
+
+
 module.exports = {
     insertApplicationDocuments,
     getDocumentByFileId, 

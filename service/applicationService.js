@@ -140,19 +140,15 @@ const searchApplicationsHandler = async (req, res) => {
   }
 };
 
-
-
 const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role; // Assuming you have a "role" property in your user object
-console.log("fgjhb",userRole,userId)
 
   if (userRole === 'user') {
     const { searchKey, applicationStatus } = req.query;
 
     try {
       if (applicationStatus === 'rejected' || applicationStatus === 'approved' || applicationStatus === 'fake') {
-   
         const filteredApplications = await applicationservice.getUserApplicationByPhoneNumber11(userId, applicationStatus);
 
         if (filteredApplications.length > 0) {
@@ -197,8 +193,7 @@ console.log("fgjhb",userRole,userId)
           }
         }
       } else {
-      
-        const userApplications = await applicationservice.getAllUserApplications(userId);
+        const userApplications = await applicationservice.getallapplication(userId, userRole);
 
         if (userApplications.length > 0) {
           res.status(200).json({
@@ -216,9 +211,9 @@ console.log("fgjhb",userRole,userId)
       const errorMessage = 'Error fetching user applications: ' + error.message;
       res.status(500).json({ error: errorMessage });
     }
-  }  else if (userRole === 'admin') {
+  } else if (userRole === 'admin') {
     try {
-      const allApplications = await applicationservice.getallapplication(userRole);
+      const allApplications = await applicationservice.getallapplication(userId, userRole);
 
       if (allApplications.length > 0) {
         res.status(200).json({
@@ -236,8 +231,8 @@ console.log("fgjhb",userRole,userId)
       res.status(500).json({ error: errorMessage });
     }
   }
-
 }
+
 
 
 // Export the new function
