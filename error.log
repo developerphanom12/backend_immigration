@@ -176,3 +176,6 @@
           c.course_name,
           c.course_level
      ' at line 14
+2023-10-25T08:19:37.801Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'
+2023-10-25T08:20:28.759Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'
+2023-10-25T08:20:30.770Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'

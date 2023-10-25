@@ -892,9 +892,9 @@ async function getallapplication(userId, userRole) {
   `;
 
   if (userRole === 'admin') {
-    // No need to filter by user ID for admins; retrieve all applications
+    
   } else {
-    // Filter by the user's ID for non-admin users
+    
     query += ' WHERE u.id = ?';
   }
 
@@ -977,6 +977,74 @@ async function getallapplication(userId, userRole) {
   });
 }
 
+const getApplicationCountsByUserId = (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        application_status,
+        COUNT(*) AS count
+      FROM
+        applications_table
+      WHERE
+        user_id = ? 
+      GROUP BY
+        application_status;
+    `;  
+
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting application counts by user ID:', error);
+      } else {
+        const counts = {};
+
+        results.forEach((row) => {
+          const applicationStatus = row.application_status;
+          const count = row.count;
+          counts[applicationStatus] = count;
+        });
+
+        resolve(counts);
+        logger.info('Application counts retrieved successfully');
+      }
+    });
+  });
+};
+
+const getApplicationCountsByUserId1= (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        application_status,
+        COUNT(*) AS count
+      FROM
+        applications_table
+    
+      GROUP BY
+        application_status;
+    `;  
+
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting application counts by user ID:', error);
+      } else {
+        const counts = {};
+
+        results.forEach((row) => {
+          const applicationStatus = row.application_status;
+          const count = row.count;
+          counts[applicationStatus] = count;
+        });
+
+        resolve(counts);
+        logger.info('Application counts retrieved successfully');
+      }
+    });
+  });
+};
 
 
 module.exports = {
@@ -990,8 +1058,8 @@ module.exports = {
     getAllUserApplications,
     getUserApplicationsByName,
     getUserApplicationByPhoneNumber11,
-    getallapplication
+    getallapplication,
+    getApplicationCountsByUserId,getApplicationCountsByUserId1
 };
-
 
 

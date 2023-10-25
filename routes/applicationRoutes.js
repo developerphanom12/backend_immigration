@@ -11,16 +11,17 @@ router.post('/addappplications', validateApplicationData,authenticateToken, appl
 
 
 
-router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' }]),application.uploadDocuments);
+router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' }]),application.uploadDocuments);
 
 
 router.get('/fetchallapplications' ,authenticateToken, application.getUserApplicationsHandler)
 
-
+    
 router.get('/getbyid/:id',authenticateToken,application.getUserApplicationsHandler)
 
 router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
 
+router.get('/getbyidata',authenticateToken,application.getApplicationCountsController)
 
 
 router.get('/applicationgetby/:id', application.getDocumentByFileId); 

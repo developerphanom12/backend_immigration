@@ -36,7 +36,7 @@ const uploadDocuments = async (req, res) => {
     return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
   }
 
-  if (!files['aadhar'] || !files['pan']) {
+  if (!files['aadhar'] || !files['pan'] || !files['pass_front'] || !files['pass_back']) {
     return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
   }
 
@@ -52,13 +52,41 @@ const uploadDocuments = async (req, res) => {
     filePath: panCardImageName,
   };
 
-  applicationservice.insertApplicationDocuments(userId, aadharCardData, (aadharCardError) => {
+
+  const passCardImageName = getImageName(files['pass_front'][0].path);
+  const passCardData = {
+    fileType: 'pass_front',
+    filePath: passCardImageName,
+  };
+  const passCardImageName1= getImageName(files['pass_back'][0].path);
+  const passCardData1= {
+    fileType: 'pass_back',
+    filePath: passCardImageName1,
+  };
+
+  applicationservice.insertApplicationDocuments(userId, aadharCardData,(aadharCardError) => {
     if (aadharCardError) {
       console.error('Database error for Aadhar Card:', aadharCardError);
       return res.status(500).json({ error: 'Aadhar Card upload failed' });
     }
 
     applicationservice.insertApplicationDocuments(userId, panCardData, (panCardError) => {
+      if (panCardError) {
+        console.error('Database error for PAN Card:', panCardError);
+        return res.status(500).json({ error: 'PAN Card upload failed' });
+      }
+
+      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
+    });
+    applicationservice.insertApplicationDocuments(userId, passCardData, (panCardError) => {
+      if (panCardError) {
+        console.error('Database error for PAN Card:', panCardError);
+        return res.status(500).json({ error: 'PAN Card upload failed' });
+      }
+
+      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
+    });
+    applicationservice.insertApplicationDocuments(userId, passCardData1, (panCardError) => {
       if (panCardError) {
         console.error('Database error for PAN Card:', panCardError);
         return res.status(500).json({ error: 'PAN Card upload failed' });
@@ -193,7 +221,7 @@ const getUserApplicationsHandler = async (req, res) => {
           }
         }
       } else {
-        const userApplications = await applicationservice.getallapplication(userId, userRole);
+        const userApplications = await applicationservice.getAllUserApplications(userId, userRole);
 
         if (userApplications.length > 0) {
           res.status(200).json({
@@ -233,7 +261,59 @@ const getUserApplicationsHandler = async (req, res) => {
   }
 }
 
+// const getApplicationCountsController = async (req, res) => {
+//   const userId = req.user.id; 
 
+//   try {
+//     const counts = await applicationservice.getApplicationCountsByUserId(userId);
+
+//     const totalApplications = Object.values(counts).reduce((acc, count) => acc + count, 0);
+
+//     res.status(200).json({
+//       status: 201,
+//       message: 'Application counts retrieved successfully',
+//       data: {
+//         ...counts,
+//         totalApplications,
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Error in getApplicationCountsController:', error);
+//     const errorMessage = 'Error fetching application counts: ' + error.message;
+//     res.status(500).json({ error: errorMessage });
+//   }
+// };
+
+const getApplicationCountsController = async (req, res) => {
+  const userId = req.user.id; 
+  const userRole = req.user.role; 
+  try {
+    let counts;
+    
+    if (userRole === 'admin') {
+      
+      counts = await applicationservice.getApplicationCountsByUserId1();
+    } else {
+     
+      counts = await applicationservice.getApplicationCountsByUserId(userId);
+    }
+
+    const totalApplications = Object.values(counts).reduce((acc, count) => acc + count, 0);
+
+    res.status(200).json({
+      status: 201,
+      message: 'Application counts retrieved successfully',
+      data: {
+        ...counts,
+        totalApplications,
+      },
+    });
+  } catch (error) {
+    console.error('Error in getApplicationCountsController:', error);
+    const errorMessage = 'Error fetching application counts: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
 
 // Export the new function
 module.exports = {
@@ -241,6 +321,6 @@ module.exports = {
   uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
-  searchApplicationsHandler,
+  searchApplicationsHandler,getApplicationCountsController
 
 };
