@@ -284,6 +284,7 @@ const getUserApplicationsHandler = async (req, res) => {
 //   }
 // };
 
+
 const getApplicationCountsController = async (req, res) => {
   const userId = req.user.id; 
   const userRole = req.user.role; 
@@ -315,12 +316,40 @@ const getApplicationCountsController = async (req, res) => {
   }
 };
 
+
+const notifystatus = async (req, res) => {
+  const userId = req.user.id;
+
+  
+  try {
+    const userApplications = await applicationservice.notification(userId);
+
+    if (userApplications) {
+      const filteredApplications = userApplications.filter(application => application.comment !== null);
+
+      res.status(200).json({
+        message: 'User application information and comments (excluding null comments) retrieved successfully',
+        data: filteredApplications,
+      });
+    } else {
+      res.status(404).json({
+        message: 'No user applications found for the provided user ID.',
+      });
+    }
+  } catch (error) {
+    console.error('Error in getUserApplicationsWithComments:', error);
+    const errorMessage = 'Error fetching user application information: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
+
+
 // Export the new function
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
-  searchApplicationsHandler,getApplicationCountsController
+  searchApplicationsHandler,getApplicationCountsController,notifystatus
 
 };

@@ -1046,6 +1046,40 @@ const getApplicationCountsByUserId1= (userId) => {
   });
 };
 
+async function notification(userId) {
+  const query = `
+    SELECT
+      a.application_id,
+      a.comment,
+      u.id AS user_id,
+      u.username
+    FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    WHERE u.id = ?`;
+
+  const params = [userId];
+
+  return new Promise((resolve, reject) => {
+    db.query(query,params, (error, results) => {
+      if (error) {
+          console.error('Error executing query:', error);
+          reject(error);
+          logger.error('Error getting all applications:', error); 
+      } else {
+          const applications = results.map((row) => ({
+              application_id: row.application_id,
+              comment: row.comment,
+              user_id: row.user_id,
+              username:row.username
+              
+          }));
+          resolve(applications);
+          logger.info('All applications retrieved successfully');
+      }
+  });
+});
+};
+
 
 module.exports = {
     insertApplicationDocuments,
@@ -1059,7 +1093,7 @@ module.exports = {
     getUserApplicationsByName,
     getUserApplicationByPhoneNumber11,
     getallapplication,
-    getApplicationCountsByUserId,getApplicationCountsByUserId1
+    getApplicationCountsByUserId,getApplicationCountsByUserId1,notification
 };
 
 

@@ -179,3 +179,17 @@
 2023-10-25T08:19:37.801Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'
 2023-10-25T08:20:28.759Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'
 2023-10-25T08:20:30.770Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'statuses.count' in 'field list'
+2023-10-25T10:01:19.915Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    WHERE ' at line 6
+2023-10-25T10:02:24.387Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications_table a
+    left join user01 u ON a.user_id = u.id
+    WHERE u' at line 6
+2023-10-25T10:04:03.969Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications_table a
+    left join user01 u ON a.user_id = u.id
+    WHERE u' at line 6
+2023-10-25T10:04:16.114Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    WHERE ' at line 6
+2023-10-25T10:04:34.643Z [31merror[39m: Error getting all applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id' at line 6

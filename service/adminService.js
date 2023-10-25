@@ -138,10 +138,10 @@ async function getallapplication() {
 };
 // Import your database connection or ORM here (e.g., const db = require('../db'));
 
-const updateApplicationStatus = (applicationId, newStatus, callback) => {
-    const updateQuery = 'UPDATE applications_table SET application_status = ? WHERE application_id = ?';
+const updateApplicationStatus = (applicationId, newStatus, comment,callback) => {
+    const updateQuery = 'UPDATE applications_table SET application_status = ? ,comment = ?WHERE application_id = ?';
   
-    db.query(updateQuery, [newStatus, applicationId], (error, result) => {
+    db.query(updateQuery, [newStatus, comment,applicationId], (error, result) => {
       if (error) {
         console.error('Error updating application status:', error);
         return callback(error, null);
@@ -155,7 +155,6 @@ const updateApplicationStatus = (applicationId, newStatus, callback) => {
     });
   };
   
-  module.exports = { updateApplicationStatus };
   
   
 module.exports = {
