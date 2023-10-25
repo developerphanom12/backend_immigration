@@ -9,7 +9,7 @@ const { validateApplicationData } = require('../validation/validation');
 
 router.post('/addappplications', validateApplicationData,authenticateToken, application.addApplication) 
 
-router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' }]),application.uploadDocuments);
+router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' },{ name: '10th' },{ name: '12th' }]),application.uploadDocuments);
 
 router.get('/fetchallapplications' ,authenticateToken, application.getUserApplicationsHandler)
 

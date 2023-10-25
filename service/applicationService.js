@@ -27,17 +27,17 @@ const addApplication = async (req, res) => {
     }
   }
 };
-
 const uploadDocuments = async (req, res) => {
   const userId = req.params.id;
   const files = req.files;
 
-  if (!files) {
-    return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
+  if (!userId || !files) {
+    return res.status(400).json({ error: 'Missing user ID or files.' });
   }
 
-  if (!files['aadhar'] || !files['pan'] || !files['pass_front'] || !files['pass_back']) {
-    return res.status(400).json({ error: 'Please provide both Aadhar Card and PAN Card images.' });
+  const requiredFields = ['aadhar', 'pan', 'pass_front', 'pass_back', '10th','12th'];
+  if (!requiredFields.every(field => files[field])) {
+    return res.status(400).json({ error: 'Please provide all required files (aadhar, pan, pass_front, and pass_back).' });
   }
 
   const aadharCardImageName = getImageName(files['aadhar'][0].path);
@@ -52,50 +52,44 @@ const uploadDocuments = async (req, res) => {
     filePath: panCardImageName,
   };
 
-
   const passCardImageName = getImageName(files['pass_front'][0].path);
-  const passCardData = {
+  const passCardData11 = {
     fileType: 'pass_front',
     filePath: passCardImageName,
   };
-  const passCardImageName1= getImageName(files['pass_back'][0].path);
-  const passCardData1= {
+
+  const passcard = getImageName(files['pass_back'][0].path);
+  const passback = {
     fileType: 'pass_back',
-    filePath: passCardImageName1,
+    filePath: passcard,
   };
+  const data10th = getImageName(files['pass_back'][0].path);
+  const dataof10 = {
+    fileType: '10th',
+    filePath: data10th,
+  };
+  const data12th = getImageName(files['pass_back'][0].path);
+  const dataof12 = {
+    fileType: '12th',
+    filePath: data12th,
+  };
+  
+  try {
+    await applicationservice.insertApplicationDocuments(userId, aadharCardData);
+    await applicationservice.insertApplicationDocuments(userId, panCardData);
+    await applicationservice.insertApplicationDocuments(userId, passCardData11);
+    await applicationservice.insertApplicationDocuments(userId, passback);
+    await applicationservice.insertApplicationDocuments(userId, dataof10);
+    await applicationservice.insertApplicationDocuments(userId, dataof12);
 
-  applicationservice.insertApplicationDocuments(userId, aadharCardData,(aadharCardError) => {
-    if (aadharCardError) {
-      console.error('Database error for Aadhar Card:', aadharCardError);
-      return res.status(500).json({ error: 'Aadhar Card upload failed' });
-    }
 
-    applicationservice.insertApplicationDocuments(userId, panCardData, (panCardError) => {
-      if (panCardError) {
-        console.error('Database error for PAN Card:', panCardError);
-        return res.status(500).json({ error: 'PAN Card upload failed' });
-      }
-
-      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
-    });
-    applicationservice.insertApplicationDocuments(userId, passCardData, (panCardError) => {
-      if (panCardError) {
-        console.error('Database error for PAN Card:', panCardError);
-        return res.status(500).json({ error: 'PAN Card upload failed' });
-      }
-
-      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
-    });
-    applicationservice.insertApplicationDocuments(userId, passCardData1, (panCardError) => {
-      if (panCardError) {
-        console.error('Database error for PAN Card:', panCardError);
-        return res.status(500).json({ error: 'PAN Card upload failed' });
-      }
-
-      res.status(200).json({ message: 'Aadhar Card and PAN Card uploaded successfully' });
-    });
-  });
+    res.status(200).json({ message: 'Documents uploaded successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Document upload failed' });
+  }
 };
+
 
 
 const getDocumentByFileId = async (req, res) => {
@@ -327,8 +321,9 @@ const notifystatus = async (req, res) => {
     if (userApplications) {
       const filteredApplications = userApplications.filter(application => application.comment !== null);
 
-      res.status(200).json({
-        message: 'User application information and comments (excluding null comments) retrieved successfully',
+      res.status(201).json({
+        message: 'User application information and comments  retrieved successfully',
+        status:201,
         data: filteredApplications,
       });
     } else {

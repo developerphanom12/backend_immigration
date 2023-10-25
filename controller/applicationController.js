@@ -58,20 +58,21 @@ function getApplication(applicationId) {
       });
     });
   }
+// insertApplicationDocuments function
+function insertApplicationDocuments(userId, fileData) {
+  return new Promise((resolve, reject) => {
+    const query = 'INSERT INTO documnets (application_id, file_type, file_path) VALUES (?, ?, ?)';
+    const values = [userId, fileData.fileType, fileData.filePath];
 
-
-function insertApplicationDocuments(userId, fileData, callback) {
-  const query = 'INSERT INTO documnets (application_id, file_type, file_path) VALUES (?, ?, ?)';
-  const values = [userId, fileData.fileType, fileData.filePath];
-
-  db.query(query, values, (error, result) => {
+    db.query(query, values, (error, result) => {
       if (error) {
-          console.error('Database error:', error);
-          callback(error);
+        console.error('Database error:', error);
+        reject(error);
       } else {
-          const documentId = result.insertId;
-          callback(null, documentId);
+        const documentId = result.insertId;
+        resolve(documentId);
       }
+    });
   });
 }
 
