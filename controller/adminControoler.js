@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 const db = require('../config/configration')
+const messages = require('../constants/message')
 
 
 
@@ -35,36 +36,31 @@ const registerAdmin = async (req, res) => {
 
 const loginUser = async (req, res) => {
     const { username, password } = req.body;
-
+try{
     admin.loginadmin(username, password, (err, result) => {
-        if (err) {
-            return res.status(500).json({ error: 'Login failed' });
-        }
+      if (err) {
+        console.error('Error:', err);
+        return res.status(500).json({ error: 'An internal server error occurred' });
+      }
 
-        if (result.error) {
-            return res.status(401).json({ error: result.error });
-        }
+      if (result.error) {
+        return res.status(401).json({ error: result.error });
+      }
 
-        const fetchAllAdminsQuery = 'SELECT * FROM admin';
-        db.query(fetchAllAdminsQuery, (fetchErr, adminData) => {
-            if (fetchErr) {
-                return res.status(500).json({ error: 'Failed to fetch admin data' });
-            }
-
-            const responseData = {
-                message:"admin lgoin succesfully",
-                status : 200,
-                data    : {
-                    ...adminData[0],
-                    token: result.token
-                }
-            };
-
-            res.status(200).json(responseData);
-        });
+    
+      res.status(messages.USER_API.USER_LOGIN_SUCCESS.status).json({
+        message: messages.USER_API.USER_LOGIN_SUCCESS.message,
+        data: result.data,
+        token: result.token,
+      });
+      // Return a success message along with the token and user data
+     
     });
+  } catch (error) {
+    console.error('Error logging in user:', error);
+    res.status(500).json({ error: 'An internal server error occurred' });
+  }
 };
-
 
 const loginUserController = async (req, res) => {
     try {

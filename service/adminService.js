@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 
 function adminregister(courseData) {
     return new Promise((resolve, reject) => {
-        const insertSql = `INSERT INTO admin(username, password, role) 
+        const insertSql = `INSERT INTO admintable(username, password, role) 
                            VALUES (?, ?, ?)`;
 
         const values = [
@@ -23,7 +23,7 @@ function adminregister(courseData) {
                 const adminId = result.insertId;
 
                 // Retrieve the inserted data
-                const selectSql = 'SELECT * FROM admin WHERE id = ?';
+                const selectSql = 'SELECT * FROM admintable WHERE id = ?';
                 db.query(selectSql, [adminId], (selectError, selectResult) => {
                     if (selectError) {
                         console.error('Error retrieving admin data:', selectError);
@@ -41,36 +41,45 @@ function adminregister(courseData) {
 
 
 
-// function for login user generate token for auntetication
+// Modify the loginUser function to return user data in the desired structure
 function loginadmin(username, password, callback) {
-    const query = 'SELECT * FROM admin WHERE username = ?';
+    const query = 'SELECT * FROM admintable WHERE username = ?';
     db.query(query, [username], async (err, results) => {
-        if (err) {
-            return callback(err, null);
+      if (err) {
+        return callback(err, null);
+      }
+  
+      if (results.length === 0) {
+        return callback(null, { error: 'Invalid user' });
+      }
+  
+      const user = results[0];
+  
+      const passwordMatch = await bcrypt.compare(password, user.password);
+  
+      if (!passwordMatch) {
+        return callback(null, { error: 'Invalid password' });
+      }
+  
+      const secretKey = 'secretkey';
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
+     console.log('token', token)
+      // Include the user data and token in the callback with the desired structure
+      return callback(null, {
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            password:user.password,
+             role : user.role,
+            token: token,
+          }
         }
-
-        if (results.length === 0) {
-            return callback(null, { error: 'Invalid user' });
-        }
-
-        const user = results[0];
-
-        const passwordMatch = await bcrypt.compare(password, user.password);
-
-        if (!passwordMatch) {
-            return callback(null, { error: 'Invalid password' });
-        }
-
-        const secretKey = 'secretkey';
-        const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
-
-
-
-        return callback(null, { token: token });
-
-    })
-}
-
+      });
+    });
+  }
+  
+  
 
 
 async function getallapplication() {

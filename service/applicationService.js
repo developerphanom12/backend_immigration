@@ -165,7 +165,7 @@ const searchApplicationsHandler = async (req, res) => {
 const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role; // Assuming you have a "role" property in your user object
-
+console.log("fhsjdghjfgj",userId,userRole)
   if (userRole === 'user') {
     const { searchKey, applicationStatus } = req.query;
 
@@ -235,26 +235,32 @@ const getUserApplicationsHandler = async (req, res) => {
     }
   } else if (userRole === 'admin') {
     try {
-      const allApplications = await applicationservice.getallapplication(userId, userRole);
+      const allApplications = await applicationservice.getallapplication();
 
       if (allApplications.length > 0) {
-        res.status(200).json({
-          message: 'All user applications data fetched successfully',
-          data: allApplications,
-        });
+          const result = {
+              message: 'All user applications data fetched successfully',
+              data: [{
+                  applications: allApplications,
+              }],
+          };
+      
+          // Now you have the result object in the desired format
+          res.status(200).json(result);
       } else {
-        res.status(404).json({
-          message: 'No user applications found for the provided user ID.',
-        });
+          res.status(404).json({
+              message: 'No user applications found for the provided user ID.',
+          });
       }
+      
     } catch (error) {
-      console.error('Error in getUserApplicationsHandler:', error);
-      const errorMessage = 'Error fetching user applications: ' + error.message;
-      res.status(500).json({ error: errorMessage });
+        console.error('Error in getUserApplicationsHandler:', error);
+        const errorMessage = 'Error fetching user applications: ' + error.message;
+        res.status(500).json({ error: errorMessage });
     }
-  }
 }
 
+} 
 // const getApplicationCountsController = async (req, res) => {
 //   const userId = req.user.id; 
 

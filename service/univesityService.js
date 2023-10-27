@@ -114,7 +114,7 @@ const courseCreate = async (req, res) => {
     try {
         const courseData = req.body;
         const userId = req.user.id;
-
+        console.log("jhfjd",userId)
        
         const university = await userservice.getUniversityById(courseData.university_id);
 
