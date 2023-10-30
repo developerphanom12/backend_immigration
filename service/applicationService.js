@@ -2,7 +2,9 @@ const { error } = require('winston');
 const applicationservice = require('../controller/applicationController')
 const ExcelJS = require('exceljs');
 const { upload1 } = require('./multerfileforapp');
-
+const { application } = require('express');
+const path = require('path')
+const fs = require('fs')
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
@@ -344,6 +346,41 @@ const notifystatus = async (req, res) => {
   }
 };
 
+// function generateUniqueFileName() {
+//   const timestamp = new Date().getTime(); // Get current timestamp
+//   const random = Math.floor(Math.random() * 1000); // Generate a random number
+
+//   return `${timestamp}_${random}`;
+// }
+const getexcelshheetdata = async (req, res) => {
+  const userId = req.user.id; // Get the user's ID from the request
+  const userRole = req.user.role; // Get the user's role from the request
+
+  try {
+    let excelFilePath;
+
+    if (userRole === 'admin') {
+      // For admin users, get all applications
+      excelFilePath = await applicationservice.getExcelDataForAllApplications(userRole);
+    } else if (userRole === 'user') {
+      // For regular users, get their own applications
+      excelFilePath = await applicationservice.getExcelData(userId);
+    } else {
+      throw new Error('Unauthorized access'); // Handle other roles as needed
+    }
+
+    const excelFileName = `user_data_${new Date().getTime()}.xlsx`;
+
+    res.setHeader('Content-Disposition', `attachment; filename="${excelFileName}"`);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.sendFile(excelFilePath);
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).send('Error generating or serving Excel file');
+  }
+};
+
+
 
 // Export the new function
 module.exports = {
@@ -351,6 +388,6 @@ module.exports = {
   uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
-  searchApplicationsHandler,getApplicationCountsController,notifystatus
+  searchApplicationsHandler,getApplicationCountsController,notifystatus,getexcelshheetdata
 
 };
