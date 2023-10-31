@@ -23,7 +23,7 @@ const registerUser = async (req, res) => {
       username,
       hashedPassword,
       firstname,
-      lastname,
+      lastname,    
       email,
       phone_number,
       null // Pass null as //,
@@ -31,10 +31,10 @@ const registerUser = async (req, res) => {
 
     const addressId = await userservice.insertAddress(
       address.street_address,
-      address.city,
+      address.city,  
       address.state,
       address.postal_code,
-      userId,
+      userId, 
     );
 
     await userservice.updateUserAddress(userId, addressId);
@@ -215,7 +215,20 @@ async function updateUser(req, res) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
+async function forgetpasswordbyemail(req, res) {
+  const { email } = req.body;
 
+  try {
+    const otp =  userservice.sendOTPAndStoreInDatabase(email);
+    if (otp) {
+      res.status(200).json({ status: 200,message: 'OTP sent successfully' });
+    } else {
+      res.status(500).json({ error: 'Failed to send OTP' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+}
 
 
 module.exports = {
@@ -226,4 +239,5 @@ module.exports = {
   loginUserController,
   forgetpass,
   updateUser,
+  forgetpasswordbyemail
 };

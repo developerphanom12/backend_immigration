@@ -4,7 +4,10 @@ const jwt = require('jsonwebtoken');
 const db = require('../config/configration'); // Import the database connection
 const {logger} =  require('../utils/logging');
 const { use } = require('../routes/adminRoutes');
-
+const nodemailer = require('nodemailer');
+const randomstring = require('randomstring');
+const fs = require('fs'); // Require the 'fs' module to read the HTML file
+const emailTemplate = fs.readFileSync('controller/template.html', 'utf8');
 
 
 //**********register a new user************ //
@@ -263,7 +266,7 @@ function forgetPassword(userId, currentPassword, newPassword) {
         if (hashError) {
           reject(hashError);
           return;
-        }
+        } 
 
         db.query(updateQuery, [hashedPassword, userId], (updateError, updateResults) => {
           if (updateError) {
@@ -525,6 +528,70 @@ const getUserByEmail = async (email) => {
 
 
 
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', 
+  auth: {
+    user: 'ashimavineet2729@gmail.com',
+    pass: 'xoxe zsvs rwec pjwe',   ////---->>>>>app password  from google
+  },
+});
+
+function generateOTP() {
+  return randomstring.generate({
+    length: 6, 
+    charset: 'numeric',
+  });
+}
+function sendOTPAndStoreInDatabase(email) {
+  return new Promise((resolve, reject) => {
+    const emailQuery = 'SELECT email FROM user01 WHERE email = ?';
+
+    db.query(emailQuery, [email], (emailError, emailResults) => {
+      if (emailError) {
+        console.error('Error retrieving user email:', emailError);
+        reject(emailError);
+        return;
+      }
+
+      if (emailResults.length === 0) {
+        reject('User not found');
+        return;
+      }
+
+      const otp = generateOTP();
+      const mailOptions = {
+        from: 'ashimavineet2729@gmail.com',
+        to: email,
+        subject: 'Your OTP for Password Reset',
+        html: emailTemplate.replace('${otp}', otp),
+      }
+
+      // Send the OTP via email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+          reject(error);
+        } else {
+          console.log('Email sent:');
+
+          // Store the OTP in the 'otp_table' along with the user's email
+          const query = 'INSERT INTO otp_table (email, otp) VALUES (?, ?)';
+          db.query(query, [email, otp], (dbError) => {
+            if (dbError) {
+              console.error('Error storing OTP in the database:', dbError);
+              reject(dbError);
+            } else {
+              console.log('OTP stored in the database.',otp);
+              resolve(otp);
+            }
+          });
+        }
+      });
+    });
+  });
+}
+
+
 
 module.exports = {
   registerUser,
@@ -540,5 +607,6 @@ module.exports = {
   insertUser,
   getUserByEmail,
   updateUserAddress,
-  getProfileImageFilename
+  getProfileImageFilename,sendOTPAndStoreInDatabase
 }
+// create apipost method first otp send on email and there store in table then scond post api fetch user id from req.user.id and fetch otp from table where user id there then create api ost method new password and confrim password
