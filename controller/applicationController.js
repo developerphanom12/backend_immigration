@@ -395,10 +395,7 @@ async function getUserApplications(userId, studentName, applicationId) {
     });
   });
 }
-
-
-async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
-  // Modify your database query to search for a specific user application by phone number
+async function getbyid(applicationId) {
   const query = `
     SELECT
       a.application_id,
@@ -418,23 +415,24 @@ async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
       d.file_path,
       c.course_id AS course_id,
       c.course_name,
-      c.course_level
+      c.course_level,
+      c.update_date
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
     LEFT JOIN university au ON a.university_id = au.university_id
     LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses c ON a.course_id = c.course_id
-    WHERE u.id = ? 
-      AND a.student_whatsapp_number = ?;`;
+    WHERE a.application_id = ?`;
 
-  const params = [userId, phoneNumber];
+  const params = [applicationId];
 
+ 
   return new Promise((resolve, reject) => {
     db.query(query, params, (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
-        logger.error('Error getting user application by phone number:', error);
+        logger.error('Error getting user applications:', error);
       } else {
         // Create an object to store merged data by user_id
         const mergedDataByUserId = {};
@@ -470,8 +468,8 @@ async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              student_whatsapp_number:row.student_whatsapp_number,
               application_status:row.application_status,
+              student_whatsapp_number:row.student_whatsapp_number,
               created_at:row.created_at,
               university_id: {
                 university_name: row.university_name,
@@ -487,6 +485,7 @@ async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
                 course_id: row.course_id,
                 course_name: row.course_name,
                 course_level: row.course_level,
+                update_date:row.update_date
               },
               documents: [],
             };
@@ -505,6 +504,98 @@ async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
         });
 
         // Convert the object values to an array to get the final result  //
+        const mergedData = Object.values(mergedDataByUserId);
+
+        resolve(mergedData);
+        logger.info('All courses with user and university data retrieved successfully');
+      }
+    });
+  });
+}
+
+
+
+async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
+  // Modify your database query to search for a specific user application by phone number
+  const query = `
+    SELECT
+      a.application_id,
+      a.student_firstname,
+      a.student_passport_no,
+      a.application_status,
+      a.student_whatsapp_number,
+      a.created_at,
+      u.id AS user_id,
+      u.username,
+      u.phone_number,
+      au.university_id AS university_id,
+      au.university_name,
+      au.person_name,
+      au.contact_number,
+      c.course_id AS course_id,
+      c.course_name,
+      c.course_level
+    FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN courses c ON a.course_id = c.course_id
+    WHERE u.id = ? 
+      AND a.student_whatsapp_number = ?;`;
+
+  const params = [userId, phoneNumber];
+
+  return new Promise((resolve, reject) => {
+    db.query(query, params, (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting user application by phone number:', error);
+      } else {
+        const mergedDataByUserId = {};
+
+        results.forEach((row) => {
+          const user_id = row.user_id;
+          const application_id = row.application_id;
+
+          if (!mergedDataByUserId[user_id]) {
+            mergedDataByUserId[user_id] = {
+              applications: [],
+            };
+          }
+
+          const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
+
+          if (existingApplication) {
+          } else {
+            const newApplication = {
+              application_id: application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              student_whatsapp_number: row.student_whatsapp_number,
+              application_status: row.application_status,
+              created_at: row.created_at,
+              university_id: {
+                university_name: row.university_name,
+                person_name: row.person_name,
+                contact_number: row.contact_number
+              },
+              user_id: {
+                id: user_id,
+                username: row.username,
+                phone_number: row.phone_number,
+              },
+              course_id: {
+                course_id: row.course_id,
+                course_name: row.course_name,
+                course_level: row.course_level,
+              },
+            };
+
+            mergedDataByUserId[user_id].applications.push(newApplication);
+          }
+        });
+
+        // Convert the object values to an array to get the final result
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -550,49 +641,35 @@ async function getAllUserApplications(userId) {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
-        logger.error('Error getting all user applications:', error);
+        logger.error('Error getting user application by phone number:', error);
       } else {
-        // Create an object to store merged data by user_id
         const mergedDataByUserId = {};
 
-        // Iterate through the database results
         results.forEach((row) => {
           const user_id = row.user_id;
           const application_id = row.application_id;
 
           if (!mergedDataByUserId[user_id]) {
-            // Initialize the user's data if not already present
             mergedDataByUserId[user_id] = {
-            
               applications: [],
             };
           }
 
-          // Check if the application with the same ID already exists
           const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
 
           if (existingApplication) {
-            // If the application already exists, add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              existingApplication.documents.push(document);
-            }
           } else {
-            // If the application doesn't exist, add it
             const newApplication = {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              application_status:row.application_status,
-              student_whatsapp_number:row.student_whatsapp_number,
-              created_at:row.created_at,
+              student_whatsapp_number: row.student_whatsapp_number,
+              application_status: row.application_status,
+              created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name:row.person_name,
-                contact_number:row.contact_number
+                person_name: row.person_name,
+                contact_number: row.contact_number
               },
               user_id: {
                 id: user_id,
@@ -604,23 +681,13 @@ async function getAllUserApplications(userId) {
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              documents: [],
             };
-
-            // Add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              newApplication.documents.push(document);
-            }
 
             mergedDataByUserId[user_id].applications.push(newApplication);
           }
         });
 
-        // Convert the object values to an array to get the final result  //
+        // Convert the object values to an array to get the final result
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -629,6 +696,7 @@ async function getAllUserApplications(userId) {
     });
   });
 }
+
 
 
 async function getUserApplicationsByName(userId, studentName) {
@@ -663,54 +731,41 @@ async function getUserApplicationsByName(userId, studentName) {
 
   const params = [userId, studentName];
 
+ 
   return new Promise((resolve, reject) => {
     db.query(query, params, (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
-        logger.error('Error getting all user applications:', error);
+        logger.error('Error getting user application by phone number:', error);
       } else {
-        // Create an object to store merged data by user_id
         const mergedDataByUserId = {};
 
-        // Iterate through the database results
         results.forEach((row) => {
           const user_id = row.user_id;
           const application_id = row.application_id;
 
           if (!mergedDataByUserId[user_id]) {
-            // Initialize the user's data if not already present
             mergedDataByUserId[user_id] = {
-            
               applications: [],
             };
           }
 
-          // Check if the application with the same ID already exists
           const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
 
           if (existingApplication) {
-            // If the application already exists, add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              existingApplication.documents.push(document);
-            }
           } else {
-            // If the application doesn't exist, add it
             const newApplication = {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              application_status:row.application_status,
               student_whatsapp_number: row.student_whatsapp_number,
-              created_at:row.created_at,
+              application_status: row.application_status,
+              created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name:row.person_name,
-                contact_number:row.contact_number
+                person_name: row.person_name,
+                contact_number: row.contact_number
               },
               user_id: {
                 id: user_id,
@@ -722,23 +777,13 @@ async function getUserApplicationsByName(userId, studentName) {
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              documents: [],
             };
-
-            // Add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              newApplication.documents.push(document);
-            }
 
             mergedDataByUserId[user_id].applications.push(newApplication);
           }
         });
 
-        // Convert the object values to an array to get the final result  //
+        // Convert the object values to an array to get the final result
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -765,15 +810,12 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
       au.university_name,
       au.person_name,
       au.contact_number,
-      d.file_type,
-      d.file_path,
       c.course_id AS course_id,
       c.course_name,
       c.course_level
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
     LEFT JOIN university au ON a.university_id = au.university_id
-    LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses c ON a.course_id = c.course_id
     WHERE u.id = ? 
       AND a.application_status = ?;`;
@@ -798,7 +840,6 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
           if (!mergedDataByUserId[user_id]) {
             // Initialize the user's data if not already present
             mergedDataByUserId[user_id] = {
-            
               applications: [],
             };
           }
@@ -807,27 +848,20 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
           const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
 
           if (existingApplication) {
-            // If the application already exists, add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              existingApplication.documents.push(document);
-            }
+            // If the application already exists, do nothing (no document handling)
           } else {
-            // If the application doesn't exist, add it
+            // If the application doesn't exist, add it without documents
             const newApplication = {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              student_whatsapp_number:row.student_whatsapp_number,
-              application_status:row.application_status,
-              created_at:row.created_at,
+              student_whatsapp_number: row.student_whatsapp_number,
+              application_status: row.application_status,
+              created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name:row.person_name,
-                contact_number:row.contact_number
+                person_name: row.person_name,
+                contact_number: row.contact_number
               },
               user_id: {
                 id: user_id,
@@ -839,23 +873,13 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              documents: [],
             };
-
-            // Add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              newApplication.documents.push(document);
-            }
 
             mergedDataByUserId[user_id].applications.push(newApplication);
           }
         });
 
-        // Convert the object values to an array to get the final result  //
+        // Convert the object values to an array to get the final result
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -864,6 +888,7 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
     });
   });
 }
+
 async function getallapplication() {
   return new Promise((resolve, reject) => {
     const query = `
@@ -1234,7 +1259,8 @@ module.exports = {
     getApplicationCountsByUserId,getApplicationCountsByUserId1,
     notification,
     getExcelData,
-    getExcelDataForAllApplications
+    getExcelDataForAllApplications,
+    getbyid
 };
 
 

@@ -229,3 +229,8 @@
       a.student_passport_no,
       a.application_status,
     ' at line 4
+2023-11-01T10:32:43.687Z [31merror[39m: Error getting user applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.created_at,
+      u.id AS user_id,
+      u.username,
+      u.phone_number,
+    ' at line 7

@@ -13,7 +13,7 @@ router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: '
 
 router.get('/fetchallapplications' ,authenticateToken, application.getUserApplicationsHandler)
 
-router.get('/getbyid/:id',authenticateToken,application.getUserApplicationsHandler)
+router.get('/getbyid/:applicationId',authenticateToken,application.getbyid)
 
 router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
 

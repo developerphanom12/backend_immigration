@@ -10,7 +10,7 @@ const fs = require('fs'); // Require the 'fs' module to read the HTML file
 const emailTemplate = fs.readFileSync('controller/template.html', 'utf8');
 
 
-//**********register a new user************ //
+//**********register a new user************//
 
 function registerUser(user) {
   return new Promise((resolve, reject) => {

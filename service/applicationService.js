@@ -4,7 +4,8 @@ const ExcelJS = require('exceljs');
 const { upload1 } = require('./multerfileforapp');
 const { application } = require('express');
 const path = require('path')
-const fs = require('fs')
+const fs = require('fs');
+const { use } = require('../routes/adminRoutes');
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
@@ -380,14 +381,36 @@ const getexcelshheetdata = async (req, res) => {
   }
 };
 
+const getbyid = async (req, res) => {
 
+try {
+  const { applicationId } = req.params;
 
+  if (!applicationId) {
+    return res.status(400).json({ error: 'application id provide please.' });
+  }
+  const userApplications = await applicationservice.getbyid(applicationId);
+
+  if (userApplications.length === 0) {
+    return res.status(404).json({ status : 404 ,message: 'Application not found' });
+  }
+
+  res.status(201).json({
+    message: 'data feth succesffully with application id ',
+    status:201,
+    data: userApplications,
+  });
+} catch (error) {
+  console.error('Error:', error);
+  res.status(500).json({ error: 'Internal Server Error' });
+}
+};
 // Export the new function
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
-  searchApplicationsHandler,getApplicationCountsController,notifystatus,getexcelshheetdata
+  getbyid, searchApplicationsHandler,getApplicationCountsController,notifystatus,getexcelshheetdata
 
 };
