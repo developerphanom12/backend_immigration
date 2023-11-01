@@ -22,14 +22,12 @@ function adminregister(courseData) {
             } else {
                 const adminId = result.insertId;
 
-                // Retrieve the inserted data
                 const selectSql = 'SELECT * FROM admintable WHERE id = ?';
                 db.query(selectSql, [adminId], (selectError, selectResult) => {
                     if (selectError) {
                         console.error('Error retrieving admin data:', selectError);
                         reject(selectError);
                     } else {
-                        // Return the inserted admin data in the resolution
                         const adminData = selectResult[0];
                         resolve(adminData);
                     }
@@ -41,7 +39,6 @@ function adminregister(courseData) {
 
 
 
-// Modify the loginUser function to return user data in the desired structure
 function loginadmin(username, password, callback) {
     const query = 'SELECT * FROM admintable WHERE username = ?';
     db.query(query, [username], async (err, results) => {
@@ -64,7 +61,6 @@ function loginadmin(username, password, callback) {
       const secretKey = 'secretkey';
       const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
      console.log('token', token)
-      // Include the user data and token in the callback with the desired structure
       return callback(null, {
         data: {
           user: {
@@ -145,7 +141,6 @@ async function getallapplication() {
         });
     });
 };
-// Import your database connection or ORM here (e.g., const db = require('../db'));
 
 const updateApplicationStatus = (applicationId, newStatus, comment,callback) => {
     const updateQuery = 'UPDATE applications_table SET application_status = ? ,comment = ?WHERE application_id = ?';

@@ -3,15 +3,14 @@ const userservice = require('../controller/userController');
 const { createUserSchema } = require('../validation/validation')
 const messages = require('../constants/message')
 const saltRounds = 10;
-const db = require('../config/configration'); // Import the database connection
+const db = require('../config/configration'); 
 const fs = require('fs')
 
-
+ 
 const registerUser = async (req, res) => {
   const { username, password, firstname, lastname, email, phone_number, address } = req.body;
 
   try {
-    // Check if the username is already taken
     const existingUser = await userservice.getUserByUsername(username);
     if (existingUser) {
       return res.status(400).json({ error: 'Username is already register.' });
@@ -116,7 +115,6 @@ const uploadImage = async (req, res) => {
   const imagePath = req.file.path;
   const imageName = imagePath.replace(/\\/g, '/').split('/').pop();
 
-  // Get the user's previous profile image filename
   userservice.getProfileImageFilename(userId, (prevImageName) => {
     if (prevImageName) {
       const prevImagePath = `uploads/${prevImageName}`;
@@ -127,7 +125,6 @@ const uploadImage = async (req, res) => {
       });
     }
 
-    // Update the user's profile image with the new image
     userservice.updateProfileImage(userId, imageName, (err, result) => {
       if (err) {
         return res.status(500).json({ error: 'Profile image update failed' });
@@ -160,7 +157,6 @@ const loginUserController = async (req, res) => {
         data: result.data,
         token: result.token,
       });
-      // Return a success message along with the token and user data
      
     });
   } catch (error) {
@@ -194,13 +190,11 @@ async function updateUser(req, res) {
     const userId = req.params.id;
     const { field, value } = req.body;
 
-    // Check if the user exists
     const user = await userservice.getUserById1(userId);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    //sql query for update data filed 
     await userservice.updateUserField(userId, field, value);
 
     const updatedUser = await userservice.getUserById1(userId);

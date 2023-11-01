@@ -27,6 +27,7 @@ router.get('/notification',authenticateToken,application.notifystatus) //--->>>>
 
 router.get('/generate-exc111el',authenticateToken,application.getexcelshheetdata)
 
+router.post('/comments', authenticateToken,application.getcooment)
 
 
 

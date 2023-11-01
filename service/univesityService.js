@@ -84,7 +84,6 @@ const updateUniversity1 = async (req, res) => {
             course_type,
             founded_year,
         }).catch((error) => {
-            // Handle the promise rejection here
             return res.status(400).json({ error: error.message });
         });
 
@@ -92,7 +91,6 @@ const updateUniversity1 = async (req, res) => {
             const notFoundMessage = universityStatusMessages.common.universityNotFound;
             return res.status(notFoundMessage.status).json({ error: notFoundMessage.message });
         }
-        // const uni = await userservice.getUniversityById(updatedUniversity)
         const successMessage = universityStatusMessages.universityApi.universityUpdateSuccess;
         res.status(successMessage.status).json({
             message: successMessage.message,
@@ -148,16 +146,13 @@ const courseCreate = async (req, res) => {
 
        
         const successMessage = 'Course created successfully';
-        // Send the response
         res.status(201).json({
             message: successMessage,
             data: responseData,
         });
     } catch (error) {
-        // Handle errors and send an error response
         console.error('Error creating course:', error);
 
-        // Define the error message
         const errorMessage = 'Error creating course';
 
         res.status(500).json({

@@ -40,6 +40,5 @@ router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //
 router.get('/get/:id', univeristy.getById)
 
 
-router.put
 
 module.exports = router;

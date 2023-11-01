@@ -38,7 +38,7 @@ const uploadDocuments = async (req, res) => {
     return res.status(400).json({ error: 'Missing user ID or files.' });
   }
 
-  const requiredFields = ['aadhar', 'pan', 'pass_front', 'pass_back', '10th','12th'];
+  const requiredFields = ['aadhar', 'pan', 'pass_front', 'pass_back', '10th', '12th'];
   if (!requiredFields.every(field => files[field])) {
     return res.status(400).json({ error: 'Please provide all required files (aadhar, pan, pass_front, and pass_back).' });
   }
@@ -76,7 +76,7 @@ const uploadDocuments = async (req, res) => {
     fileType: '12th',
     filePath: data12th,
   };
-  
+
   try {
     await applicationservice.insertApplicationDocuments(userId, aadharCardData);
     await applicationservice.insertApplicationDocuments(userId, panCardData);
@@ -102,7 +102,6 @@ const getDocumentByFileId = async (req, res) => {
     return res.status(400).json({ error: 'File ID is required' });
   }
 
-  // Query the database to retrieve the document by `file_id`
   applicationservice.getDocumentByFileId(userId, (error, document) => {
     if (error) {
       console.error('Database error:', error);
@@ -113,7 +112,6 @@ const getDocumentByFileId = async (req, res) => {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    // Return the retrieved document as a JSON response
     res.status(200).json({ document });
   });
 };
@@ -136,7 +134,6 @@ const searchApplicationsHandler = async (req, res) => {
     const applications = await applicationservice.getUserApplications(userId, studentName, applicationId);
 
     if (applications.length === 0) {
-      // No applications found, return a message
       const noApplicationsMessage = 'No applications found for the given criteria.';
       res.status(200).json({
         message: noApplicationsMessage,
@@ -144,14 +141,12 @@ const searchApplicationsHandler = async (req, res) => {
     } else {
       const studentFound = applications.some(application => application.studentName === studentName);
       if (studentFound) {
-        // Applications were found
         const successMessage = 'User applications data fetched successfully';
         res.status(200).json({
           message: successMessage,
           data: applications,
         });
       } else {
-        // No data found for the provided studentName
         const noDataFoundMessage = 'No data found for this name.';
         res.status(200).json({
           message: noDataFoundMessage,
@@ -167,8 +162,8 @@ const searchApplicationsHandler = async (req, res) => {
 
 const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
-  const userRole = req.user.role; // Assuming you have a "role" property in your user object
-console.log("fhsjdghjfgj",userId,userRole)
+  const userRole = req.user.role; 
+  console.log("fhsjdghjfgj", userId, userRole)
   if (userRole === 'user') {
     const { searchKey, applicationStatus } = req.query;
 
@@ -187,7 +182,6 @@ console.log("fhsjdghjfgj",userId,userRole)
           });
         }
       } else if (searchKey) {
-        // Handle the case where you are searching by name or phone number
         const isNumeric = !isNaN(searchKey);
 
         if (isNumeric) {
@@ -241,64 +235,41 @@ console.log("fhsjdghjfgj",userId,userRole)
       const allApplications = await applicationservice.getallapplication();
 
       if (allApplications.length > 0) {
-          const result = {
-              message: 'All user applications data fetched successfully',
-              data: [{
-                  applications: allApplications,
-              }],
-          };
-      
-          // Now you have the result object in the desired format
-          res.status(200).json(result);
+        const result = {
+          message: 'All user applications data fetched successfully',
+          data: [{
+            applications: allApplications,
+          }],
+        };
+
+        res.status(200).json(result);
       } else {
-          res.status(404).json({
-              message: 'No user applications found for the provided user ID.',
-          });
+        res.status(404).json({
+          message: 'No user applications found for the provided user ID.',
+        });
       }
-      
+
     } catch (error) {
-        console.error('Error in getUserApplicationsHandler:', error);
-        const errorMessage = 'Error fetching user applications: ' + error.message;
-        res.status(500).json({ error: errorMessage });
+      console.error('Error in getUserApplicationsHandler:', error);
+      const errorMessage = 'Error fetching user applications: ' + error.message;
+      res.status(500).json({ error: errorMessage });
     }
+  }
+
 }
-
-} 
-// const getApplicationCountsController = async (req, res) => {
-//   const userId = req.user.id; 
-
-//   try {
-//     const counts = await applicationservice.getApplicationCountsByUserId(userId);
-
-//     const totalApplications = Object.values(counts).reduce((acc, count) => acc + count, 0);
-
-//     res.status(200).json({
-//       status: 201,
-//       message: 'Application counts retrieved successfully',
-//       data: {
-//         ...counts,
-//         totalApplications,
-//       },
-//     });
-//   } catch (error) {
-//     console.error('Error in getApplicationCountsController:', error);
-//     const errorMessage = 'Error fetching application counts: ' + error.message;
-//     res.status(500).json({ error: errorMessage });
-//   }
-// };
 
 
 const getApplicationCountsController = async (req, res) => {
-  const userId = req.user.id; 
-  const userRole = req.user.role; 
+  const userId = req.user.id;
+  const userRole = req.user.role;
   try {
     let counts;
-    
+
     if (userRole === 'admin') {
-      
+
       counts = await applicationservice.getApplicationCountsByUserId1();
     } else {
-     
+
       counts = await applicationservice.getApplicationCountsByUserId(userId);
     }
 
@@ -323,19 +294,19 @@ const getApplicationCountsController = async (req, res) => {
 const notifystatus = async (req, res) => {
   const userId = req.user.id;
 
-  
-  try {
-    const userApplications = await applicationservice.notification(userId);
 
-    if (userApplications) {
-      const filteredApplications = userApplications.filter(application => application.comment !== null);
+  try {
+    if (userId) {
+      const userApplications = await applicationservice.notification(userId);
+
 
       res.status(201).json({
         message: 'User application information and comments  retrieved successfully',
-        status:201,
-        data: filteredApplications,
+        status: 201,
+        data: userApplications,
       });
-    } else {
+    }
+    else {
       res.status(404).json({
         message: 'No user applications found for the provided user ID.',
       });
@@ -347,24 +318,16 @@ const notifystatus = async (req, res) => {
   }
 };
 
-// function generateUniqueFileName() {
-//   const timestamp = new Date().getTime(); // Get current timestamp
-//   const random = Math.floor(Math.random() * 1000); // Generate a random number
-
-//   return `${timestamp}_${random}`;
-// }
 const getexcelshheetdata = async (req, res) => {
-  const userId = req.user.id; // Get the user's ID from the request
-  const userRole = req.user.role; // Get the user's role from the request
+  const userId = req.user.id; 
+  const userRole = req.user.role; 
 
   try {
     let excelFilePath;
 
     if (userRole === 'admin') {
-      // For admin users, get all applications
       excelFilePath = await applicationservice.getExcelDataForAllApplications(userRole);
     } else if (userRole === 'user') {
-      // For regular users, get their own applications
       excelFilePath = await applicationservice.getExcelData(userId);
     } else {
       throw new Error('Unauthorized access'); // Handle other roles as needed
@@ -383,34 +346,65 @@ const getexcelshheetdata = async (req, res) => {
 
 const getbyid = async (req, res) => {
 
-try {
-  const { applicationId } = req.params;
+  try {
+    const { applicationId } = req.params;
 
-  if (!applicationId) {
-    return res.status(400).json({ error: 'application id provide please.' });
+    if (!applicationId) {
+      return res.status(400).json({ error: 'application id provide please.' });
+    }
+    const userApplications = await applicationservice.getbyid(applicationId);
+
+    if (userApplications.length === 0) {
+      return res.status(404).json({ status: 404, message: 'Application not found' });
+    }
+
+    res.status(201).json({
+      message: 'data feth succesffully with application id ',
+      status: 201,
+      data: userApplications,
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-  const userApplications = await applicationservice.getbyid(applicationId);
-
-  if (userApplications.length === 0) {
-    return res.status(404).json({ status : 404 ,message: 'Application not found' });
-  }
-
-  res.status(201).json({
-    message: 'data feth succesffully with application id ',
-    status:201,
-    data: userApplications,
-  });
-} catch (error) {
-  console.error('Error:', error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
 };
-// Export the new function
+
+ const getcooment = (req, res) => {
+  const { application_id, comment_text } = req.body;
+  const userId = req.user.id;
+  const userRole = req.user.role; 
+  applicationservice.getcomment(userId, application_id, comment_text, userRole)
+    .then((insertResult) => {
+      if (insertResult.affectedRows === 1) {
+        res.status(201).json({
+          message: 'Comment created successfully',
+          status: 201,
+          data: {
+            insertId: insertResult.insertId,
+          },
+        });
+      } else {
+        res.status(500).json({
+          error: 'Could not create comment',
+          status: 500,
+        });
+      }
+    })
+    .catch((error) => {
+      console.error('Error creating comment: ' + error);
+      res.status(500).json({ error: 'Could not create comment', status: 500 });
+    });
+};
+
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
   addApplication,
   getUserApplicationsHandler,
-  getbyid, searchApplicationsHandler,getApplicationCountsController,notifystatus,getexcelshheetdata
+  getbyid, searchApplicationsHandler,
+  getApplicationCountsController,
+  notifystatus,
+  getexcelshheetdata,
+  getcooment
 
 };

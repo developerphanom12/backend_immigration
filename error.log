@@ -234,3 +234,4 @@
       u.username,
       u.phone_number,
     ' at line 7
+2023-11-01T12:50:01.275Z [31merror[39m: Error getting user applications: ER_BAD_FIELD_ERROR: Unknown column 'cc.comment_id' in 'field list'
