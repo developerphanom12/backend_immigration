@@ -542,7 +542,7 @@ function generateOTP() {
     charset: 'numeric',
   });
 }
-function sendOTPAndStoreInDatabase(email) {
+function  sendOTPAndStoreInDatabase(email) {
   return new Promise((resolve, reject) => {
     const emailQuery = 'SELECT email FROM user01 WHERE email = ?';
 
@@ -566,7 +566,7 @@ function sendOTPAndStoreInDatabase(email) {
         html: emailTemplate.replace('${otp}', otp),
       }
 
-      // Send the OTP via email
+      // Send the OTP via email  //
       transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
           console.error('Error sending email:', error);
@@ -575,7 +575,7 @@ function sendOTPAndStoreInDatabase(email) {
           console.log('Email sent:');
 
           // Store the OTP in the 'otp_table' along with the user's email
-          const query = 'INSERT INTO otp_table (email, otp) VALUES (?, ?)';
+          const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
           db.query(query, [email, otp], (dbError) => {
             if (dbError) {
               console.error('Error storing OTP in the database:', dbError);
@@ -591,7 +591,56 @@ function sendOTPAndStoreInDatabase(email) {
   });
 }
 
+function verifyOTP (otp, callback){
+  const otpQuery = 'SELECT email, is_verified FROM otp_table_verify WHERE otp = ?';
 
+  db.query(otpQuery, [otp], (otpError, otpResults) => {
+    if (otpError) {
+      console.error('Error verifying OTP:', otpError);
+      return callback(otpError, null);
+    }
+
+    if (otpResults.length === 0) {
+      return callback(null, 'invalid');
+    }
+
+    const isVerified = otpResults[0].is_verified;
+    if (isVerified === 1) {
+      return callback(null, 'used');
+    }
+
+    const email = otpResults[0].email;
+    const markVerifiedQuery = 'UPDATE otp_table_verify SET is_verified = 1 WHERE email = ? AND otp = ?';
+    db.query(markVerifiedQuery, [email, otp], (markVerifiedError) => {
+      if (markVerifiedError) {
+        console.error('Error marking OTP as verified:', markVerifiedError);
+        return callback(markVerifiedError, null);
+      }
+
+      callback(null, 'verified');
+    });
+  });
+};
+
+const setNewPassword = (email, newPassword, callback) => {
+  bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
+    if (hashError) {
+      console.error('Error hashing the password:', hashError);
+      return callback(hashError);
+    }
+
+    const updatePasswordQuery = 'UPDATE user01 SET password = ? WHERE email = ?';
+
+    db.query(updatePasswordQuery, [hashedPassword, email], (updateError) => {
+      if (updateError) {
+        console.error('Error updating password:', updateError);
+        return callback(updateError);
+      }
+
+      callback(null);
+    });  
+  });
+};
 
 module.exports = {
   registerUser,
@@ -607,6 +656,6 @@ module.exports = {
   insertUser,
   getUserByEmail,
   updateUserAddress,
-  getProfileImageFilename,sendOTPAndStoreInDatabase
+  getProfileImageFilename,sendOTPAndStoreInDatabase,verifyOTP,setNewPassword
 }
 // create apipost method first otp send on email and there store in table then scond post api fetch user id from req.user.id and fetch otp from table where user id there then create api ost method new password and confrim password

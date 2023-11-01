@@ -230,6 +230,39 @@ async function forgetpasswordbyemail(req, res) {
   }
 }
 
+const verifyOTP1 = (req, res) => {
+  const { otp } = req.body;
+
+  userservice.verifyOTP(otp, (error, result) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error verifying OTP' });
+    }
+
+    if (result === 'invalid') {
+      return res.status(401).json({ status: 404, error: 'Invalid OTP' });
+    }
+
+    if (result === 'used') {
+      return res.status(401).json({status:400, error: 'OTP has already been used' });
+    }
+
+    res.status(200).json({ status : 201,message: 'OTP verified successfully' });
+  });
+};
+
+
+
+const setNewPassword = (req, res) => {
+  const { email, newPassword } = req.body;
+
+  userservice.setNewPassword(email, newPassword, (error) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error setting a new password' });
+    }
+
+    res.status(200).json({ status : 200,message: 'New password set successfully' });
+  });
+};
 
 module.exports = {
   registerUser,
@@ -239,5 +272,6 @@ module.exports = {
   loginUserController,
   forgetpass,
   updateUser,
-  forgetpasswordbyemail
+  forgetpasswordbyemail,
+  verifyOTP1,setNewPassword
 };
