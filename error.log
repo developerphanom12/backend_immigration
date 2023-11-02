@@ -235,3 +235,15 @@
       u.phone_number,
     ' at line 7
 2023-11-01T12:50:01.275Z [31merror[39m: Error getting user applications: ER_BAD_FIELD_ERROR: Unknown column 'cc.comment_id' in 'field list'
+2023-11-02T09:11:47.517Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'u.id' in 'field list'
+2023-11-02T09:13:53.629Z [31merror[39m: Error getting application counts by user ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'INNER JOIN user01 u ON a.user_id = u.id
+
+      GROUP BY
+        application_stat' at line 11
+2023-11-02T09:14:20.849Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'a.user_id' in 'on clause'
+2023-11-02T09:14:51.828Z [31merror[39m: Error getting application counts by user ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.id AS user_id,
+    u.username,
+    IFNULL(COUNT(CASE WHEN applications_table.ap' at line 3
+2023-11-02T09:17:03.201Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'a.user_id' in 'on clause'
+2023-11-02T09:18:02.518Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'a.application_status' in 'field list'
+2023-11-02T09:18:24.994Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'a.application_status' in 'field list'

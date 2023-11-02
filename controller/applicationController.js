@@ -1011,75 +1011,108 @@ async function getallapplication() {
     });
   });
 }
-
 const getApplicationCountsByUserId = (userId) => {
   return new Promise((resolve, reject) => {
     const query = `
       SELECT
-        application_status,
-        COUNT(*) AS count
+        u.id AS user_id,
+        u.username,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
       FROM
-        applications_table
+        user01 u
+        LEFT JOIN applications_table a ON u.id = a.user_id
       WHERE
-        user_id = ? 
+        u.id = ?
       GROUP BY
-        application_status;
-    `;  
+        u.id, u.username;
+    `;
 
     db.query(query, [userId], (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
         logger.error('Error getting application counts by user ID:', error);
-      } else {
-        const counts = {};
-
-        results.forEach((row) => {
-          const applicationStatus = row.application_status;
-          const count = row.count;
-          counts[applicationStatus] = count;
-        });
-
-        resolve(counts);
-        logger.info('Application counts retrieved successfully');
+        return;
       }
+
+      if (results.length === 0) {
+        // Handle the case when the user does not exist
+        resolve([]);
+      } else {
+        const userCounts = results.map((row) => ({
+          userId: row.user_id,
+          username: row.username,
+          rejectedCount: row.rejectedCount,
+          pendingCount: row.pendingCount,
+          approvedCount: row.approvedCount,
+        }));
+        resolve(userCounts);
+      }
+      logger.info('Application counts retrieved successfully');
     });
   });
 };
 
-const getApplicationCountsByUserId1= (userId) => {
+const getApplicationCountsByUserId1 = () => {
   return new Promise((resolve, reject) => {
     const query = `
       SELECT
-        application_status,
-        COUNT(*) AS count
+        u.id AS user_id,
+        u.username,
+        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
+        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
+        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
       FROM
         applications_table
-    
+      RIGHT JOIN
+        user01 u ON u.id = applications_table.user_id
       GROUP BY
-        application_status;
-    `;  
+        u.id, u.username;
+    `;
 
-    db.query(query, [userId], (error, results) => {
+    db.query(query, (error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
-        logger.error('Error getting application counts by user ID:', error);
-      } else {
-        const counts = {};
-
-        results.forEach((row) => {
-          const applicationStatus = row.application_status;
-          const count = row.count;
-          counts[applicationStatus] = count;
-        });
-
-        resolve(counts);
-        logger.info('Application counts retrieved successfully');
+        logger.error('Error getting user application counts:', error);
+        return;
       }
+
+      const userCounts = results.map((row) => ({
+        // userId: row.user_id,
+        username: row.username,
+        rejectedCount: row.rejectedCount,
+        pendingCount: row.pendingCount,
+        approvedCount: row.approvedCount,
+      }));
+
+      if (userCounts.length === 0) {
+        resolve([
+          {
+            username: 'username',
+            rejectedCount: 0,
+            pendingCount: 0,
+            approvedCount: 0,
+          },
+        ]);
+      } else {
+        resolve(userCounts);
+      }
+      logger.info('User application counts retrieved successfully');
     });
   });
 };
+
+// // Example usage:
+// getApplicationCountsByUserId1()
+//   .then((result) => {
+//     console.log(result);
+//   })
+//   .catch((error) => {
+//     console.error(error);
+//   });
 
 async function notification(userId) {
   const query = `
@@ -1324,6 +1357,77 @@ async function getcomment(application_id, comment_text, userId, userRole) {
   });
 }
 
+const countadmin= (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        application_status,
+        COUNT(*) AS count
+      FROM
+        applications_table
+    
+      GROUP BY
+        application_status;
+    `;  
+
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting application counts by user ID:', error);
+      } else {
+        const counts = {};
+
+        results.forEach((row) => {
+          const applicationStatus = row.application_status;
+          const count = row.count;
+          counts[applicationStatus] = count;
+        });
+
+        resolve(counts);
+        logger.info('Application counts retrieved successfully');
+      }
+    });
+  });
+};
+
+
+
+const countuser = (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        application_status,
+        COUNT(*) AS count
+      FROM
+        applications_table
+      WHERE
+        user_id = ? 
+      GROUP BY
+        application_status;
+    `;  
+
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting application counts by user ID:', error);
+      } else {
+        const counts = {};
+
+        results.forEach((row) => {
+          const applicationStatus = row.application_status;
+          const count = row.count;
+          counts[applicationStatus] = count;
+        });
+
+        resolve(counts);
+        logger.info('Application counts retrieved successfully');
+      }
+    });
+  });
+};
+
 module.exports = {
     insertApplicationDocuments,
     getDocumentByFileId, 
@@ -1341,7 +1445,9 @@ module.exports = {
     getExcelData,
     getExcelDataForAllApplications,
     getbyid,
-    getcomment
+    getcomment,
+    countadmin,
+    countuser
 };
 
 

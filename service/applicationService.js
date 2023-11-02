@@ -257,8 +257,6 @@ const getUserApplicationsHandler = async (req, res) => {
   }
 
 }
-
-
 const getApplicationCountsController = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;
@@ -266,22 +264,26 @@ const getApplicationCountsController = async (req, res) => {
     let counts;
 
     if (userRole === 'admin') {
-
       counts = await applicationservice.getApplicationCountsByUserId1();
     } else {
-
       counts = await applicationservice.getApplicationCountsByUserId(userId);
     }
 
-    const totalApplications = Object.values(counts).reduce((acc, count) => acc + count, 0);
+    // Calculate totalApplications for each user
+    counts.forEach((userCounts) => {
+      userCounts.userTotalApplications =
+        userCounts.rejectedCount + userCounts.pendingCount + userCounts.approvedCount;
+    });
 
-    res.status(200).json({
+    // // Calculate totalApplications for all users
+    // const totalApplications = counts.reduce((acc, userCounts) => {
+    //   return acc + userCounts.userTotalApplications;
+    // }, 0);
+
+    res.status(201).json({
       status: 201,
       message: 'Application counts retrieved successfully',
-      data: {
-        ...counts,
-        totalApplications,
-      },
+      data:  counts,      
     });
   } catch (error) {
     console.error('Error in getApplicationCountsController:', error);
@@ -289,6 +291,8 @@ const getApplicationCountsController = async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 };
+
+
 
 
 const notifystatus = async (req, res) => {
@@ -396,6 +400,39 @@ const getbyid = async (req, res) => {
     });
 };
 
+
+
+
+const countby = async (req, res) => {
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  try {
+    let counts;
+
+    if (userRole === 'admin') {
+
+      counts = await applicationservice.countadmin();
+    } else {
+
+      counts = await applicationservice.countuser(userId);
+    }
+
+    const totalApplications = Object.values(counts).reduce((acc, count) => acc + count, 0);
+
+    res.status(200).json({
+      status: 201,
+      message: 'Application counts retrieved successfully',
+      data: {
+        ...counts,
+        totalApplications,
+      },
+    });
+  } catch (error) {
+    console.error('Error in getApplicationCountsController:', error);
+    const errorMessage = 'Error fetching application counts: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
@@ -405,6 +442,6 @@ module.exports = {
   getApplicationCountsController,
   notifystatus,
   getexcelshheetdata,
-  getcooment
+  getcooment,countby
 
 };

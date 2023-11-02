@@ -19,6 +19,9 @@ router.get('/search/with/',authenticateToken, application.searchApplicationsHand
 
 router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>count data
 
+
+router.get('/count',authenticateToken,application.countby) //-->>count data
+
 router.get('/applicationgetby/:id', application.getDocumentByFileId); 
 
 
