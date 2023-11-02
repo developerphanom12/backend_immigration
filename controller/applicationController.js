@@ -421,6 +421,7 @@ async function getbyid(applicationId) {
       cc.id,
       cc.comment_text,
       cc.role,
+      cc.select_type,
       cc.created_at 
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
@@ -473,6 +474,7 @@ async function getbyid(applicationId) {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
                 role: row.role,
+                select_type:row.select_type,
                 created_at: row.comment_created_at,
               };
               existingApplication.comments.push(comment);
@@ -1340,11 +1342,11 @@ async function getExcelDataForAllApplications(userRole) {
 //     }
 //   });
 // }
-async function getcomment(application_id, comment_text, userId, userRole) {
+async function getcomment(application_id, comment_text, userId, userRole,select_type) {
   return new Promise((resolve, reject) => {
     const insertSql =
-      'INSERT INTO comment_table (user_id, application_id, comment_text, role) VALUES (?, ?, ?, ?)';
-    const params = [application_id, comment_text, userId, userRole];
+      'INSERT INTO comment_table (user_id, application_id, comment_text, role,select_type) VALUES (?, ?, ?, ?,?)';
+    const params = [application_id, comment_text, userId, userRole,select_type];
 
     db.query(insertSql, params, (error, results) => {
       if (error) {

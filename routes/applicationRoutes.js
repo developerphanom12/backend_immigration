@@ -17,10 +17,10 @@ router.get('/getbyid/:applicationId',authenticateToken,application.getbyid)
 
 router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
 
-router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>count data
+router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>//coutnall data with user
 
 
-router.get('/count',authenticateToken,application.countby) //-->>count data
+router.get('/count',authenticateToken,application.countby) //-->>count data --->>>///
 
 router.get('/applicationgetby/:id', application.getDocumentByFileId); 
 

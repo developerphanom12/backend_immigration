@@ -374,10 +374,10 @@ const getbyid = async (req, res) => {
 };
 
  const getcooment = (req, res) => {
-  const { application_id, comment_text } = req.body;
+  const { application_id, comment_text ,select_type} = req.body;
   const userId = req.user.id;
   const userRole = req.user.role; 
-  applicationservice.getcomment(userId, application_id, comment_text, userRole)
+  applicationservice.getcomment(userId, application_id, comment_text, userRole,select_type)
     .then((insertResult) => {
       if (insertResult.affectedRows === 1) {
         res.status(201).json({
