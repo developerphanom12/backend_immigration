@@ -438,6 +438,7 @@ async function getbyid(applicationId) {
       cc.id AS comment_id,
       cc.comment_text,
       cc.role AS comment_role,
+      cc.select_type,
       cc.created_at AS comment_created_at
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
@@ -475,7 +476,9 @@ async function getbyid(applicationId) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
+                username: row.username, // Include the username from user01 table
                 role: row.comment_role,
+                select_type: row.select_type,
                 created_at: row.comment_created_at,
               };
               application.comments.push(comment);
@@ -520,7 +523,9 @@ async function getbyid(applicationId) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
+                username: row.username, // Include the username from user01 table
                 role: row.comment_role,
+                select_type: row.select_type,
                 created_at: row.comment_created_at,
               };
               newApplication.comments.push(comment);
@@ -535,6 +540,7 @@ async function getbyid(applicationId) {
     });
   });
 }
+
 
 
 async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
