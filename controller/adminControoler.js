@@ -53,7 +53,6 @@ try{
         data: result.data,
         token: result.token,
       });
-      // Return a success message along with the token and user data
      
     });
   } catch (error) {

@@ -5,9 +5,11 @@ const {upload1} =  require('../service/multerfileforapp');
 const authenticateToken = require('../service/token');
 const { validateApplicationData } = require('../validation/validation');
 
+const jwt = require('jsonwebtoken');
+const secretKey = 'secretkey';
 
 
-router.post('/addappplications', validateApplicationData,authenticateToken, application.addApplication) 
+router.post('/addappplications',authenticateToken, application.addApplication) 
 
 router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' },{ name: '10th' },{ name: '12th' }]),application.uploadDocuments);
 
@@ -37,6 +39,32 @@ router.post('/comments', authenticateToken,application.getcooment)
 
 
 
+// const authenticateToken111 = (req, res, next) => {
+//     const token = req.headers.authorization.split(' ')[1];
+  
+//     if (!token) {
+//       return res.status(401).json({ error: 'Unauthorized user, please provide a token' });
+//     }
+  
+//     jwt.verify(token, secretKey, (err, decodedToken) => {
+//       if (err) {
+//         return res.status(401).json({ error: 'Invalid token' });
+//       }
+  
+//       // Assuming the country_id is stored in the decoded token
+//       const { country_id, ...user } = decodedToken;
+  
+//       req.user = {
+//         ...user,
+//         country_id, // Add the country_id to the user object
+//       };
+  
+//       next();
+//     });
+//   };
+  
+
+// router.get('/fetchalla' ,authenticateToken, application.getApplicationsByAdminCountryController)
 
 
 

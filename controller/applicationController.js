@@ -9,8 +9,8 @@ function addApplication(courseData,userId) {
 
         const insertSql = `INSERT INTO applications_table (user_id,course_id,university_id,student_firstname, student_lastname,
           student_email,student_whatsapp_number,student_passport_no,marital_status,previous_visa_refusals,ielts_reading,
-          ielts_listening,ielts_writing,ielts_speaking) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+          ielts_listening,ielts_writing,ielts_speaking,country_id) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`;
 
 
         const values = [
@@ -28,6 +28,7 @@ function addApplication(courseData,userId) {
             courseData.ielts_listening,
             courseData.ielts_writing,
             courseData.ielts_speaking,
+            courseData.country_id
          ];
         db.query(insertSql, values, (error, result) => {
             if (error) {
@@ -1339,11 +1340,11 @@ async function getExcelDataForAllApplications(userRole) {
 //     }
 //   });
 // }
-async function getcomment(application_id, comment_text, userId, userRole,select_type) {
+async function getcomment(applicationId, comment_text, userId, userRole,select_type) {
   return new Promise((resolve, reject) => {
     const insertSql =
       'INSERT INTO comment_table (user_id, application_id, comment_text, role,select_type) VALUES (?, ?, ?, ?,?)';
-    const params = [application_id, comment_text, userId, userRole,select_type];
+    const params = [applicationId, comment_text, userId, userRole,select_type];
 
     db.query(insertSql, params, (error, results) => {
       if (error) {
@@ -1426,6 +1427,101 @@ const countuser = (userId) => {
     });
   });
 };
+async function getApplicationsByAdminCountry(adminCountryId) {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        a.application_id,
+        a.student_firstname,
+        a.student_passport_no,
+        a.application_status,
+        a.created_at,
+        u.id AS user_id,
+        u.username,
+        u.phone_number,
+        au.university_id AS university_id,
+        au.university_name,
+        au.person_name,
+        au.contact_number,
+        c.course_id AS course_id,
+        c.course_name,
+        c.course_level,
+        d.file_type,
+        d.file_path
+      FROM applications_table a
+      INNER JOIN user01 u ON a.user_id = u.id
+      LEFT JOIN documnets d ON a.application_id = d.application_id
+      LEFT JOIN university au ON a.university_id = au.university_id
+      LEFT JOIN courses c ON a.course_id = c.course_id
+      WHERE a.country_id = ?; 
+    `;
+
+    db.query(query, [adminCountryId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting applications by admin\'s country:', error); // Log the error
+      } else {
+        const allApplications = [];
+
+        results.forEach((row) => {
+          // Check if the application already exists in the array
+          const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
+
+          if (existingApplication) {
+            // If the application already exists, add the document if it exists
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              existingApplication.documents.push(document);
+            }
+          } else {
+            // If the application doesn't exist, add it
+            const application = {
+              application_id: row.application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              application_status: row.application_status,
+              created_at: row.created_at,
+              university_id: {
+                university_name: row.university_name,
+                person_name: row.person_name,
+                contact_number: row.contact_number,
+              },
+              user_id: {
+                id: row.user_id,
+                username: row.username,
+                phone_number: row.phone_number,
+              },
+              course_id: {
+                course_id: row.course_id,
+                course_name: row.course_name,
+                course_level: row.course_level,
+              },
+              documents: [],
+            };
+
+            // Add the document if it exists
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              application.documents.push(document);
+            }
+
+            allApplications.push(application);
+          }
+        });
+
+        resolve(allApplications);
+        logger.info('Applications by admin\'s country retrieved successfully');
+      }
+    });
+  });
+}
 
 module.exports = {
     insertApplicationDocuments,
@@ -1447,7 +1543,8 @@ module.exports = {
     getcomment,
     countadmin,
     countuser,
-    updateApplicationDocument
+    updateApplicationDocument,
+    getApplicationsByAdminCountry
 };
 
 

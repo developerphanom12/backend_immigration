@@ -163,6 +163,8 @@ const searchApplicationsHandler = async (req, res) => {
 const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role; 
+  const adminCountryId = req.user.country_id; // Assuming you have the admin's country_id in the user object
+
   console.log("fhsjdghjfgj", userId, userRole)
   if (userRole === 'user') {
     const { searchKey, applicationStatus } = req.query;
@@ -232,11 +234,36 @@ const getUserApplicationsHandler = async (req, res) => {
     }
   } else if (userRole === 'admin') {
     try {
-      const allApplications = await applicationservice.getallapplication();
+      const allApplications = await applicationservice.getallapplication(adminCountryId);
 
       if (allApplications.length > 0) {
         const result = {
           message: 'All user applications data fetched successfully',
+          data: [{
+            applications: allApplications,
+          }],
+        };
+
+        res.status(200).json(result);
+      } else {
+        res.status(404).json({
+          message: 'No user applications found for the provided user ID.',
+        });
+      }
+
+    } catch (error) {
+      console.error('Error in getUserApplicationsHandler:', error);
+      const errorMessage = 'Error fetching user applications: ' + error.message;
+      res.status(500).json({ error: errorMessage });
+    }
+  }
+   if (adminCountryId) {
+    try {
+      const allApplications = await applicationservice.getApplicationsByAdminCountry(adminCountryId);
+
+      if (allApplications.length > 0) {
+        const result = {
+          message: 'All staff applications fetch by Country',
           data: [{
             applications: allApplications,
           }],
@@ -374,10 +401,10 @@ const getbyid = async (req, res) => {
 };
 
  const getcooment = (req, res) => {
-  const { application_id, comment_text ,select_type} = req.body;
+  const { applicationId, comment_text ,select_type} = req.body;
   const userId = req.user.id;
   const userRole = req.user.role; 
-  applicationservice.getcomment(userId, application_id, comment_text, userRole,select_type)
+  applicationservice.getcomment(userId, applicationId, comment_text, userRole,select_type)
     .then((insertResult) => {
       if (insertResult.affectedRows === 1) {
         res.status(201).json({
@@ -502,7 +529,30 @@ const updateDocuments = async (req, res) => {
   }
 };
 
+// const getApplicationsByAdminCountryController = async (req, res) => {
+//   const adminCountryId = req.user.country_id; // Assuming you have the admin's country_id in the user object
+// console.log("bhfbvghdfbvh",adminCountryId)
+//   try {
+//     const applications = await applicationservice.getApplicationsByAdminCountry(adminCountryId);
 
+//     if (applications.length > 0) {
+//       const result = {
+//         message: 'Applications from the admin\'s country fetched successfully',
+//         data: applications,
+//       };
+
+//       res.status(200).json(result);
+//     } else {
+//       res.status(404).json({
+//         message: 'No applications found for the admin\'s country.',
+//       });
+//     }
+//   } catch (error) {
+//     console.error('Error in getApplicationsByAdminCountryController:', error);
+//     const errorMessage = 'Error fetching applications by admin\'s country: ' + error.message;
+//     res.status(500).json({ error: errorMessage });
+//   }
+// };
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
@@ -512,6 +562,7 @@ module.exports = {
   getApplicationCountsController,
   notifystatus,
   getexcelshheetdata,
-  getcooment,countby,updateDocuments
+  getcooment,countby,updateDocuments,
+  // getApplicationsByAdminCountryController
 
 };

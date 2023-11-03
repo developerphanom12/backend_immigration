@@ -250,3 +250,9 @@
 2023-11-02T10:47:58.051Z [31merror[39m: Error getting user applications: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.created_at 
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id ' at line 25
+2023-11-03T11:01:43.666Z [31merror[39m: Error registering staff: ER_NO_DEFAULT_FOR_FIELD: Field 'password' doesn't have a default value
+2023-11-03T11:03:11.890Z [31merror[39m: Error registering staff: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-11-03T11:03:57.752Z [31merror[39m: Error registering staff: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-11-03T11:06:09.467Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'ankitasharma0217@gmail.com' for key 'staff.staff_email'
+2023-11-03T11:20:17.920Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'developer.phanomprofessionals@gmail.com' for key 'staff.staff_email'
+2023-11-03T11:45:38.153Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'ashimavineet2729@gmail.com' for key 'staff.staff_email'

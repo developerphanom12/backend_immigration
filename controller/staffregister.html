@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
+    }
+    .container {
+      background-color: #ffffff;
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+    }
+    .title {
+      color: #007BFF;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .credentials {
+      font-size: 20px;
+      margin: 20px 0;
+    }
+    .message {
+      font-size: 16px;
+      margin: 20px 0;
+    }
+    .footer {
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="https://as1.ftcdn.net/v2/jpg/00/47/46/46/1000_F_47464643_cKi9qmk29JWSRXpgVqyObaIDDRs5rf4J.jpg" alt="Your Logo" class="logo">
+    <h2 class="title">Staff Registration Details</h2>
+    <p class="message">Hello,</p>
+    <p class="message">Your registration details are as follows:</p>
+    <p class="credentials"><strong>Username:</strong> ${staff_name}</p>
+    <p class="credentials"><strong>Password:</strong> ${password}</p>
+    <p class="message">Please use these credentials to access your account.</p>
+    <p class="message">Security: Please keep your username and password confidential and do not share them with anyone.</p>
+    <p class="message">If you have any questions or concerns, please contact our support team.</p>
+    <p class="footer">Copyright © 2023 Your Company Name. All rights reserved.</p>
+  </div>
+</body>
+</html>
