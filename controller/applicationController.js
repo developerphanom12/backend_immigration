@@ -395,7 +395,6 @@ async function getUserApplications(userId, studentName, applicationId) {
     });
   });
 }
-
 async function getbyid(applicationId) {
   const query = `
     SELECT
@@ -418,11 +417,10 @@ async function getbyid(applicationId) {
       c.course_name,
       c.course_level,
       c.update_date,
-      cc.id,
+      cc.id AS comment_id,
       cc.comment_text,
-      cc.role,
-      cc.select_type,
-      cc.created_at 
+      cc.role AS comment_role,
+      cc.created_at AS comment_created_at
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
     LEFT JOIN university au ON a.university_id = au.university_id
@@ -436,53 +434,37 @@ async function getbyid(applicationId) {
   return new Promise((resolve, reject) => {
     db.query(query, params, (error, results) => {
       if (error) {
-        console.error('Error executing query:', error);
+        // Handle the error
         reject(error);
-        logger.error('Error getting user applications:', error);
       } else {
-        // Create an object to store merged data by user_id
-        const mergedDataByUserId = {};
+        const applications = [];
 
-        // Iterate through the database results
         results.forEach((row) => {
-          const user_id = row.user_id;
-          const application_id = row.application_id;
+          const application = applications.find(
+            (app) => app.application_id === row.application_id
+          );
 
-          if (!mergedDataByUserId[user_id]) {
-            // Initialize the user's data if not already present
-            mergedDataByUserId[user_id] = {
-              applications: [],
-            };
-          }
-
-          // Check if the application with the same ID already exists
-          const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
-
-          if (existingApplication) {
-            // If the application already exists, add the document if it exists
+          if (application) {
             if (row.file_type !== null && row.file_path !== null) {
               const document = {
                 file_type: row.file_type,
                 file_path: row.file_path,
               };
-              existingApplication.documents.push(document);
+              application.documents.push(document);
             }
 
-            // Add the comment if it exists
-            if (row.comment_id !== null) {
+            if (row.comment_id !== null && row.comment_text !== null) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
-                role: row.role,
-                select_type:row.select_type,
+                role: row.comment_role,
                 created_at: row.comment_created_at,
               };
-              existingApplication.comments.push(comment);
+              application.comments.push(comment);
             }
           } else {
-            // If the application doesn't exist, add it
             const newApplication = {
-              application_id: application_id,
+              application_id: row.application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
               application_status: row.application_status,
@@ -494,7 +476,7 @@ async function getbyid(applicationId) {
                 contact_number: row.contact_number,
               },
               user_id: {
-                id: user_id,
+                id: row.user_id,
                 username: row.username,
                 phone_number: row.phone_number,
               },
@@ -508,7 +490,6 @@ async function getbyid(applicationId) {
               comments: [],
             };
 
-            // Add the document if it exists
             if (row.file_type !== null && row.file_path !== null) {
               const document = {
                 file_type: row.file_type,
@@ -517,36 +498,28 @@ async function getbyid(applicationId) {
               newApplication.documents.push(document);
             }
 
-            // Add the comment if it exists
-            if (row.comment_id !== null) {
+            if (row.comment_id !== null && row.comment_text !== null) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
-                role: row.role,
-                created_at: row.created_at,
+                role: row.comment_role,
+                created_at: row.comment_created_at,
               };
               newApplication.comments.push(comment);
             }
 
-            mergedDataByUserId[user_id].applications.push(newApplication);
+            applications.push(newApplication);
           }
         });
 
-        // Convert the object values to an array to get the final result
-        const mergedData = Object.values(mergedDataByUserId);
-
-        resolve(mergedData);
-        logger.info('All courses with user and university data retrieved successfully');
+        resolve(applications);
       }
     });
   });
 }
 
-// Now, you have comments included in the result, and you can access them in your API response.
-
 
 async function getUserApplicationByPhoneNumber(userId, phoneNumber) {
-  // Modify your database query to search for a specific user application by phone number
   const query = `
     SELECT
       a.application_id,
