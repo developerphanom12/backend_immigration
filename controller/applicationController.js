@@ -77,6 +77,24 @@ function insertApplicationDocuments(userId, fileData) {
   });
 }
 
+
+
+function updateApplicationDocument(userId, fileType, filePath) {
+  return new Promise((resolve, reject) => {
+    const query = 'UPDATE documnets SET file_path = ? WHERE application_id = ? AND file_type = ?';
+    const values = [filePath, userId, fileType];
+
+    db.query(query, values, (error, result) => {
+      if (error) {
+        console.error('Database error:', error);
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
 function getDocumentByFileId(userId, callback) {
   // Assuming you have a 'user_documents_files' table with a 'file_id' column
   const query = 'SELECT * FROM user_documents_files WHERE user_id = ?';
@@ -89,7 +107,7 @@ function getDocumentByFileId(userId, callback) {
     }
 
     if (results.length === 0) {
-      // No documents found for the given user
+      // No documents found for the give  n user
       return callback(null, null);
     }
 
@@ -1422,7 +1440,8 @@ module.exports = {
     getbyid,
     getcomment,
     countadmin,
-    countuser
+    countuser,
+    updateApplicationDocument
 };
 
 

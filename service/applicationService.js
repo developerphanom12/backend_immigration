@@ -433,6 +433,76 @@ const countby = async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 };
+const updateDocuments = async (req, res) => {
+  const userId = req.params.id;
+  const files = req.files;
+
+  if (!userId || !files) {
+    return res.status(400).json({ error: 'Missing user ID or files.' });
+  }
+
+  const updates = [];
+
+  if (files['aadhar']) {
+    const aadharFileName = getImageName(files['aadhar'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, 'aadhar_card', aadharFileName));
+    res.status(200).json({status:201, message: 'aadhar document updated successfully' });
+    return;
+  }
+
+  if (files['pan']) {
+    const panFileName = getImageName(files['pan'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, 'pan_card', panFileName));
+
+    // Check if it's a 'pan_card' update and provide a specific message
+    res.status(200).json({ status:201, message: 'Pan card updated successfully' });
+    return;
+  }
+
+  if (files['pass_front']) {
+    const passFrontFileName = getImageName(files['pass_front'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, 'pass_front', passFrontFileName));
+    res.status(200).json({status:201, message: 'Passport front document updated successfully' });
+    return;
+  }
+
+  if (files['pass_back']) {
+    const passBackFileName = getImageName(files['pass_back'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, 'pass_back', passBackFileName));
+    res.status(200).json({status:201, message: 'Passport Back document updated successfully' });
+    return;
+  }
+
+  if (files['10th']) {
+    const tenthFileName = getImageName(files['10th'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, '10th', tenthFileName));
+
+    // Check if it's a '10th' document update and provide a specific message
+    res.status(200).json({status:201, message: '10th document updated successfully' });
+    return;
+  }
+
+  if (files['12th']) {
+    const twelfthFileName = getImageName(files['12th'][0].path);
+    updates.push(applicationservice.updateApplicationDocument(userId, '12th', twelfthFileName));
+    res.status(200).json({status:201, message: '10th document updated successfully' });
+    return;
+  }
+
+  if (updates.length === 0) {
+    return res.status(400).json({ error: 'No updates provided.' });
+  }
+
+  try {
+    await Promise.all(updates);
+    res.status(200).json({ message: 'Documents updated successfully' });
+  } catch (error) {
+    console.error('Database error:', error);
+    res.status(500).json({ error: 'Document update failed' });
+  }
+};
+
+
 module.exports = {
   getDocumentByFileId,
   uploadDocuments,
@@ -442,6 +512,6 @@ module.exports = {
   getApplicationCountsController,
   notifystatus,
   getexcelshheetdata,
-  getcooment,countby
+  getcooment,countby,updateDocuments
 
 };

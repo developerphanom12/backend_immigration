@@ -11,6 +11,9 @@ router.post('/addappplications', validateApplicationData,authenticateToken, appl
 
 router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' },{ name: '10th' },{ name: '12th' }]),application.uploadDocuments);
 
+router.put('/update/documents/:id', upload1.fields([{ name: 'aadhar' }, { name: 'pan' }, { name: 'pass_front' }, { name: 'pass_back' }, { name: '10th' }, { name: '12th' }]), application.updateDocuments);
+
+
 router.get('/fetchallapplications' ,authenticateToken, application.getUserApplicationsHandler)
 
 router.get('/getbyid/:applicationId',authenticateToken,application.getbyid)
