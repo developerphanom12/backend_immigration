@@ -581,7 +581,7 @@ function sendOTPAndStoreInDatabase(email) {
             console.error('Error sending email:', error);
             reject(error);
           } else {
-            console.log('Email sent:');
+            console.log('Email sent:' ,email);
 
             // Store the new OTP in the 'otp_table' along with the user's email
             const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
