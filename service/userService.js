@@ -215,7 +215,7 @@ async function forgetpasswordbyemail(req, res) {
   try {
     const otp =  userservice.sendOTPAndStoreInDatabase(email);
     if (otp) {
-      res.status(200).json({ status: 200,message: 'OTP sent successfully' ,data:{
+      res.status(200).json({message: 'OTP sent successfully' ,data:{
         email:email
     }});
     } else {

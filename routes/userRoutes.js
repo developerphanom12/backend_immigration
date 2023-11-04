@@ -40,11 +40,11 @@ router.get('/usersgetall/api', authenticateToken,userService.getAllUsers);
 
 //              /**---7---**/
 router.post('/change-password/:id', authenticateToken, userService.forgetpass)
-router.post('/reset',authenticateToken, userService.forgetpasswordbyemail)
+router.post('/reset', userService.forgetpasswordbyemail)
 
-router.post('/verify-otp', authenticateToken,userService.verifyOTP1)
+router.post('/verify-otp',userService.verifyOTP1)
 
-router.post('/set-new-password',authenticateToken, userService.setNewPassword)
+router.post('/set-new-password', userService.setNewPassword)
 
 
   // router.post('/comments', authenticateToken, (req, res) => {
