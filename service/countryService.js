@@ -85,10 +85,19 @@ try{
   }
 };
 
+const fetchallcountry = async (req, res) => {
 
+try {
+  const countries = await countryservice.getAllCountries(); 
 
+  res.status(200).json({ status:200 ,message: 'fetch all country ', data:countries });
+} catch (error) {
+  res.status(500).json({ error: 'An error occurred while fetching countries' });
+}
+};
   module.exports = {
     addcountry,
     addstaff,
-    stafflogin
+    stafflogin,
+    fetchallcountry
   }

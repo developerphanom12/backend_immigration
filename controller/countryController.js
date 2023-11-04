@@ -71,6 +71,8 @@ async function addstaff(staff) {
         });
     });
 }
+
+
 // Function to send a registration email
 function sendRegistrationEmail(email, username, password) {
     const transporter = nodemailer.createTransport({
@@ -145,11 +147,24 @@ function stafflogin(staff_name, password, callback) {
     });
   }
   
-  
+  async function getAllCountries() {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM country'; // Replace 'countries' with your actual table name
+
+        db.query(query, (error, results) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        });
+    });
+}
   
 module.exports ={
     addcountry,
     addstaff,
-    stafflogin
+    stafflogin,
+    getAllCountries
 }
 
