@@ -542,7 +542,7 @@ function generateOTP() {
     charset: 'numeric',
   });
 }
-function  sendOTPAndStoreInDatabase(email) {
+function sendOTPAndStoreInDatabase(email) {
   return new Promise((resolve, reject) => {
     const emailQuery = 'SELECT email FROM user01 WHERE email = ?';
 
@@ -558,39 +558,48 @@ function  sendOTPAndStoreInDatabase(email) {
         return;
       }
 
-      const otp = generateOTP();
-      const mailOptions = {
-        from: 'ashimavineet2729@gmail.com',
-        to: email,
-        subject: 'Your OTP for Password Reset',
-        html: emailTemplate.replace('${otp}', otp),
-      }
-
-      // Send the OTP via email  //
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-          reject(error);
-        } else {
-          console.log('Email sent:');
-
-          // Store the OTP in the 'otp_table' along with the user's email
-          const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
-          db.query(query, [email, otp], (dbError) => {
-            if (dbError) {
-              console.error('Error storing OTP in the database:', dbError);
-              reject(dbError);
-            } else {
-              console.log('OTP stored in the database.',otp);
-              resolve(otp);
-            }
-          });
+      // First, delete the previous OTP records associated with the user's email
+      const deletePreviousQuery = 'DELETE FROM otp_table_verify WHERE email = ?';
+      db.query(deletePreviousQuery, [email], (deletePreviousError) => {
+        if (deletePreviousError) {
+          console.error('Error deleting previous OTP records:', deletePreviousError);
+          reject(deletePreviousError);
+          return;
         }
+
+        const otp = generateOTP();
+        const mailOptions = {
+          from: 'ashimavineet2729@gmail.com',
+          to: email,
+          subject: 'Your OTP for Password Reset',
+          html: emailTemplate.replace('${otp}', otp),
+        }
+
+        // Send the OTP via email
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+            reject(error);
+          } else {
+            console.log('Email sent:');
+
+            // Store the new OTP in the 'otp_table' along with the user's email
+            const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
+            db.query(query, [email, otp], (dbError) => {
+              if (dbError) {
+                console.error('Error storing OTP in the database:', dbError);
+                reject(dbError);
+              } else {
+                console.log('New OTP stored in the database.', otp);
+                resolve(otp);
+              }
+            });
+          }
+        });
       });
     });
   });
 }
-
 function verifyOTP (otp, callback){
   const otpQuery = 'SELECT email, is_verified FROM otp_table_verify WHERE otp = ?';
 
