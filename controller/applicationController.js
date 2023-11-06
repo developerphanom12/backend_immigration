@@ -1153,25 +1153,22 @@ const excelFileDirectory = path.join(__dirname, 'applications'); // Replace with
 
 async function getExcelData(userId) {
   try {
-    // Define the SQL query to fetch data from the databa se
     const query = `
-      SELECT
-        a.application_id,
-        a.student_firstname,
-        a.student_lastname,
-        a.student_passport_no,
-        a.application_status,
-        u.username,
-        c.course_name
-      FROM applications_table a
-      INNER JOIN user01 u ON a.user_id = u.id
-      LEFT JOIN university au ON a.university_id = au.university_id
-      LEFT JOIN documnets d ON a.application_id = d.application_id
-      LEFT JOIN courses c ON a.course_id = c.course_id
-      where u.id =?
-      ;`;
-
-    // Create a Promise for the database query
+    SELECT DISTINCT
+      a.application_id,
+      a.student_firstname,
+      a.student_lastname,
+      a.student_passport_no,
+      a.application_status,
+      u.username,
+      c.course_name
+    FROM applications_table a
+    INNER JOIN user01 u ON a.user_id = u.id
+    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN documnets d ON a.application_id = d.application_id
+    LEFT JOIN courses c ON a.course_id = c.course_id
+    WHERE u.id = ?;
+  `;
     const queryPromise = new Promise((resolve, reject) => {
       db.query(query, userId,(error, results) => {
         if (error) {
