@@ -169,11 +169,11 @@ const loginUserController = async (req, res) => {
 
 
 const forgetpass = async (req, res) => {
-  const { id } = req.params;
+  const userId = req.user.id;
   const { currentPassword, newPassword } = req.body;
 
   try {
-    await userservice.forgetPassword(id, currentPassword, newPassword);
+    await userservice.forgetPassword(userId, currentPassword, newPassword);
 
     res.status(messages.USER_API.USER_PASSWORD_CHANGE.status).json({
       message: messages.USER_API.USER_PASSWORD_CHANGE.message,

@@ -39,7 +39,7 @@ router.get('/usersgetall/api', authenticateToken,userService.getAllUsers);
 
 
 //              /**---7---**/
-router.post('/change-password/:id', authenticateToken, userService.forgetpass)
+router.post('/change-password', authenticateToken, userService.forgetpass)
 router.post('/reset', userService.forgetpasswordbyemail)
 
 router.post('/verify-otp',userService.verifyOTP1)
