@@ -1448,8 +1448,8 @@ async function getApplicationsByAdminCountry(adminCountryId) {
         a.application_status,
         a.created_at,
         u.id AS user_id,
-        u.staff_name,
-        u.staff_phone_number,
+        u.username,
+        u.phone_number,
         au.university_id AS university_id,
         au.university_name,
         au.person_name,
@@ -1458,7 +1458,7 @@ async function getApplicationsByAdminCountry(adminCountryId) {
         c.course_name,
         c.course_level
       FROM applications_table a
-      INNER JOIN staff u ON a.user_id = u.id
+      INNER JOIN user01 u ON a.user_id = u.id
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN university au ON a.university_id = au.university_id
       LEFT JOIN courses c ON a.course_id = c.course_id
@@ -1488,8 +1488,8 @@ async function getApplicationsByAdminCountry(adminCountryId) {
               },
               user_id: {
                 id: row.user_id,
-                staff_phone_number: row.staff_phone_number,
-                staff_name: row.staff_name,
+                phone_number: row.phone_number,
+                username: row.username,
               },
               course_id: {
                 course_id: row.course_id,

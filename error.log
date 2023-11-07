@@ -256,3 +256,4 @@
 2023-11-03T11:06:09.467Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'ankitasharma0217@gmail.com' for key 'staff.staff_email'
 2023-11-03T11:20:17.920Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'developer.phanomprofessionals@gmail.com' for key 'staff.staff_email'
 2023-11-03T11:45:38.153Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'ashimavineet2729@gmail.com' for key 'staff.staff_email'
+2023-11-07T13:18:00.011Z [31merror[39m: Error getting applications by admin's country: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'field list'
