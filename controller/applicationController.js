@@ -925,6 +925,7 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
   });
 }
 
+
 async function getallapplication() {
   return new Promise((resolve, reject) => {
     const query = `
@@ -932,7 +933,6 @@ async function getallapplication() {
         a.application_id,
         a.student_firstname,
         a.student_passport_no,
-        a.student_email,
         a.application_status,
         a.created_at,
         u.id AS user_id,
@@ -964,25 +964,23 @@ async function getallapplication() {
 
         results.forEach((row) => {
           // Check if the application already exists in the array
-          // const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
+          const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
 
-          // if (existingApplication) {
-          //   // If the application already exists, add the document if it exists
-          //   if (row.file_type !== null && row.file_path !== null) {
-          //     const document = {
-          //       file_type: row.file_type,
-          //       file_path: row.file_path,
-          //     };
-          //     existingApplication.documents.push(document);
-          //   }
-          // } 
-         
+          if (existingApplication) {
+            // If the application already exists, add the document if it exists
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              existingApplication.documents.push(document);
+            }
+          } else {
             // If the application doesn't exist, add it
             const application = {
               application_id: row.application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
-              student_email:row.	student_email,
               application_status: row.application_status,
               created_at: row.created_at,
               university_id: {
@@ -1000,20 +998,20 @@ async function getallapplication() {
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              // documents: [],
+              documents: [],
             };
 
             // Add the document if it exists
-            // if (row.file_type !== null && row.file_path !== null) {
-            //   const document = {
-            //     file_type: row.file_type,
-            //     file_path: row.file_path,
-            //   };
-            //   application.documents.push(document);
-            // }
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              application.documents.push(document);
+            }
 
             allApplications.push(application);
-          
+          }
         });
 
         resolve(allApplications);
