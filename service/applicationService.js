@@ -9,6 +9,8 @@ const { use } = require('../routes/adminRoutes');
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
+  const userrole = req.user.role
+  console.log(userrole)
 
   try {
     const applicationId = await applicationservice.addApplication(courseData, userId);
