@@ -162,128 +162,100 @@ const searchApplicationsHandler = async (req, res) => {
 
 const getUserApplicationsHandler = async (req, res) => {
   const userId = req.user.id;
-  const userRole = req.user.role; 
-  const adminCountryId = req.user.country_id; // Assuming you have the admin's country_id in the user object
+  const userRole = req.user.role;
+  const adminCountryId = req.user.country_id;
 
-  console.log("fhsjdghjfgj", userId, userRole)
-  if (userRole === 'user') {
-    const { searchKey, applicationStatus } = req.query;
+  console.log("fhsjdghjfgj", userId, userRole);
 
-    try {
-      if (applicationStatus === 'rejected' || applicationStatus === 'approved' || applicationStatus === 'fake') {
-        const filteredApplications = await applicationservice.getUserApplicationByPhoneNumber11(userId, applicationStatus);
+  try {
+    let responseMessage;
+    let responseData;
 
-        if (filteredApplications.length > 0) {
-          res.status(200).json({
-            message: `${applicationStatus} user applications fetched successfully`,
-            data: filteredApplications,
-          });
-        } else {
-          res.status(404).json({
-            message: `No ${applicationStatus} user applications found for the provided user ID.`,
-          });
-        }
-      } else if (searchKey) {
-        const isNumeric = !isNaN(searchKey);
+    switch (userRole) {
+      case 'user':
+        const { searchKey, applicationStatus } = req.query;
 
-        if (isNumeric) {
-          const userApplication = await applicationservice.getUserApplicationByPhoneNumber(userId, searchKey);
+        if (applicationStatus) {
+          const filteredApplications = await applicationservice.getUserApplicationByPhoneNumber11(userId, applicationStatus);
 
-          if (userApplication) {
-            res.status(200).json({
-              message: 'User application data fetched successfully',
-              data: userApplication,
-            });
+          if (filteredApplications.length > 0) {
+            responseMessage = `${applicationStatus} user applications fetched successfully`;
+            responseData = filteredApplications;
           } else {
-            res.status(404).json({
-              message: 'No user application found for the provided phone number.',
-            });
+            responseMessage = `No ${applicationStatus} user applications found for the provided user ID.`;
+          }
+        } else if (searchKey) {
+          const isNumeric = !isNaN(searchKey);
+
+          if (isNumeric) {
+            const userApplication = await applicationservice.getUserApplicationByPhoneNumber(userId, searchKey);
+
+            if (userApplication) {
+              responseMessage = 'User application data fetched successfully';
+              responseData = userApplication;
+            } else {
+              responseMessage = 'No user application found for the provided phone number.';
+            }
+          } else {
+            const userApplications = await applicationservice.getUserApplicationsByName(userId, searchKey);
+
+            if (userApplications.length > 0) {
+              responseMessage = 'User applications data fetched successfully';
+              responseData = userApplications;
+            } else {
+              responseMessage = 'No user applications found for the provided name.';
+            }
           }
         } else {
-          const userApplications = await applicationservice.getUserApplicationsByName(userId, searchKey);
+          const userApplications = await applicationservice.getAllUserApplications(userId, userRole);
 
           if (userApplications.length > 0) {
-            res.status(200).json({
-              message: 'User applications data fetched successfully',
-              data: userApplications,
-            });
+            responseMessage = 'All user applications data fetched successfully';
+            responseData = userApplications;
           } else {
-            res.status(404).json({
-              message: 'No user applications found for the provided name.',
-            });
+            responseMessage = 'No user applications found for the provided user ID.';
           }
         }
-      } else {
-        const userApplications = await applicationservice.getAllUserApplications(userId, userRole);
+        break;
 
-        if (userApplications.length > 0) {
-          res.status(200).json({
-            message: 'All user applications data fetched successfully',
-            data: userApplications,
-          });
+      case 'admin':
+        const allApplications = await applicationservice.getallapplication();
+
+        if (allApplications.length > 0) {
+          responseMessage = 'All user applications data fetched successfully';
+          responseData = [{ applications: allApplications }];
         } else {
-          res.status(404).json({
-            message: 'No user applications found for the provided user ID.',
-          });
+          responseMessage = 'No user applications found for the provided user ID.';
         }
-      }
-    } catch (error) {
-      console.error('Error in getUserApplicationsHandler:', error);
-      const errorMessage = 'Error fetching user applications: ' + error.message;
-      res.status(500).json({ error: errorMessage });
+        break;
     }
-  } else if (userRole === 'admin') {
-    try {
-      const allApplications = await applicationservice.getallapplication(adminCountryId);
 
-      if (allApplications.length > 0) {
-        const result = {
-          message: 'All user applications data fetched successfully',
-          data: [{
-            applications: allApplications,
-          }],
-        };
+    if (adminCountryId) {
+      const allApplicationsByCountry = await applicationservice.getApplicationsByAdminCountry(adminCountryId);
 
-        res.status(200).json(result);
+      if (allApplicationsByCountry.length > 0) {
+        responseMessage = 'All staff applications fetched by Country';
+        responseData = [{ applications: allApplicationsByCountry }];
       } else {
-        res.status(404).json({
-          message: 'No user applications found for the provided user ID.',
-        });
+        responseMessage = 'No user applications found for the provided user ID.';
       }
-
-    } catch (error) {
-      console.error('Error in getUserApplicationsHandler:', error);
-      const errorMessage = 'Error fetching user applications: ' + error.message;
-      res.status(500).json({ error: errorMessage });
     }
-  }
-   if (adminCountryId) {
-    try {
-      const allApplications = await applicationservice.getApplicationsByAdminCountry(adminCountryId);
 
-      if (allApplications.length > 0) {
-        const result = {
-          message: 'All staff applications fetch by Country',
-          data: [{
-            applications: allApplications,
-          }],
-        };
-
-        res.status(200).json(result);
-      } else {
-        res.status(404).json({
-          message: 'No user applications found for the provided user ID.',
-        });
-      }
-
-    } catch (error) {
-      console.error('Error in getUserApplicationsHandler:', error);
-      const errorMessage = 'Error fetching user applications: ' + error.message;
-      res.status(500).json({ error: errorMessage });
+    if (responseData) {
+      res.status(200).json({
+        message: responseMessage,
+        data: responseData,
+      });
+    } else {
+      res.status(404).json({ message: responseMessage });
     }
+  } catch (error) {
+    console.error('Error in getUserApplicationsHandler:', error);
+    const errorMessage = 'Error fetching user applications: ' + error.message;
+    res.status(500).json({ error: errorMessage });
   }
+};
 
-}
 const getApplicationCountsController = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;

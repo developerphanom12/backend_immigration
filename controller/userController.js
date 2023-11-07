@@ -91,7 +91,7 @@ const getUserById1 = (userId) => {
         if (results.length === 0) {
           resolve(null);
         } else {
-          // Extract user and address details
+          // Extract user and address details//
           const userWithAddress = {
             user_id: results[0].user_id,
             username: results[0].username,
@@ -193,8 +193,9 @@ function getProfileImageFilename(userId, callback) {
     return callback(null, results[0].profile_image);
   });
 }
-// Modify the loginUser function to return user data in the desired structure
+
 function loginUser(username, password, callback) {
+
   const query = 'SELECT * FROM user01 WHERE username = ?';
 
   db.query(query, [username], async (err, results) => {

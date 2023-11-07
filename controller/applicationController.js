@@ -414,6 +414,7 @@ async function getUserApplications(userId, studentName, applicationId) {
     });
   });
 }
+
 async function getbyid(applicationId) {
   const query = `
     SELECT
@@ -424,8 +425,8 @@ async function getbyid(applicationId) {
       a.student_whatsapp_number,
       a.created_at,
       u.id AS user_id,
-      u.username,
-      u.phone_number,
+      u.username AS user_username,
+      u.phone_number AS user_phone_number,
       au.university_id AS university_id,
       au.university_name,
       au.person_name,
@@ -438,15 +439,20 @@ async function getbyid(applicationId) {
       c.update_date,
       cc.id AS comment_id,
       cc.comment_text,
-      cc.role AS comment_role,
+      cc.role,
       cc.select_type,
-      cc.created_at AS comment_created_at
+      cc.created_at AS comment_created_at,
+      CASE
+        WHEN cc.role = 'staff' THEN s.staff_name
+        WHEN cc.role = 'user' THEN u.username
+      END AS comment_username
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
     LEFT JOIN university au ON a.university_id = au.university_id
     LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses c ON a.course_id = c.course_id 
     LEFT JOIN comment_table cc ON cc.application_id = a.application_id
+    LEFT JOIN staff s ON cc.role = 'staff' AND s.id = cc.user_id
     WHERE a.application_id = ?`;
 
   const params = [applicationId];
@@ -477,8 +483,8 @@ async function getbyid(applicationId) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
-                username: row.username, // Include the username from user01 table
-                role: row.comment_role,
+                username: row.comment_username, // Use the computed column
+                role: row.role,
                 select_type: row.select_type,
                 created_at: row.comment_created_at,
               };
@@ -499,8 +505,8 @@ async function getbyid(applicationId) {
               },
               user_id: {
                 id: row.user_id,
-                username: row.username,
-                phone_number: row.phone_number,
+                username: row.user_username, // Use the computed column
+                phone_number: row.user_phone_number,
               },
               course_id: {
                 course_id: row.course_id,
@@ -524,8 +530,8 @@ async function getbyid(applicationId) {
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
-                username: row.username, // Include the username from user01 table
-                role: row.comment_role,
+                username: row.comment_username, // Use the computed column
+                role: row.role,
                 select_type: row.select_type,
                 created_at: row.comment_created_at,
               };
@@ -541,6 +547,7 @@ async function getbyid(applicationId) {
     });
   });
 }
+
 
 
 
@@ -924,6 +931,7 @@ async function getallapplication() {
         a.application_id,
         a.student_firstname,
         a.student_passport_no,
+        a.student_email,
         a.application_status,
         a.created_at,
         u.id AS user_id,
@@ -955,23 +963,25 @@ async function getallapplication() {
 
         results.forEach((row) => {
           // Check if the application already exists in the array
-          const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
+          // const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
 
-          if (existingApplication) {
-            // If the application already exists, add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              existingApplication.documents.push(document);
-            }
-          } else {
+          // if (existingApplication) {
+          //   // If the application already exists, add the document if it exists
+          //   if (row.file_type !== null && row.file_path !== null) {
+          //     const document = {
+          //       file_type: row.file_type,
+          //       file_path: row.file_path,
+          //     };
+          //     existingApplication.documents.push(document);
+          //   }
+          // } 
+         
             // If the application doesn't exist, add it
             const application = {
               application_id: row.application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
+              student_email:row.	student_email,
               application_status: row.application_status,
               created_at: row.created_at,
               university_id: {
@@ -989,20 +999,20 @@ async function getallapplication() {
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              documents: [],
+              // documents: [],
             };
 
             // Add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              application.documents.push(document);
-            }
+            // if (row.file_type !== null && row.file_path !== null) {
+            //   const document = {
+            //     file_type: row.file_type,
+            //     file_path: row.file_path,
+            //   };
+            //   application.documents.push(document);
+            // }
 
             allApplications.push(application);
-          }
+          
         });
 
         resolve(allApplications);
@@ -1427,6 +1437,7 @@ const countuser = (userId) => {
     });
   });
 };
+
 async function getApplicationsByAdminCountry(adminCountryId) {
   return new Promise((resolve, reject) => {
     const query = `
@@ -1437,19 +1448,17 @@ async function getApplicationsByAdminCountry(adminCountryId) {
         a.application_status,
         a.created_at,
         u.id AS user_id,
-        u.username,
-        u.phone_number,
+        u.staff_name,
+        u.staff_phone_number,
         au.university_id AS university_id,
         au.university_name,
         au.person_name,
         au.contact_number,
         c.course_id AS course_id,
         c.course_name,
-        c.course_level,
-        d.file_type,
-        d.file_path
+        c.course_level
       FROM applications_table a
-      INNER JOIN user01 u ON a.user_id = u.id
+      INNER JOIN staff u ON a.user_id = u.id
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN university au ON a.university_id = au.university_id
       LEFT JOIN courses c ON a.course_id = c.course_id
@@ -1465,20 +1474,7 @@ async function getApplicationsByAdminCountry(adminCountryId) {
         const allApplications = [];
 
         results.forEach((row) => {
-          // Check if the application already exists in the array
-          const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
-
-          if (existingApplication) {
-            // If the application already exists, add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              existingApplication.documents.push(document);
-            }
-          } else {
-            // If the application doesn't exist, add it
+        
             const application = {
               application_id: row.application_id,
               student_firstname: row.student_firstname,
@@ -1492,32 +1488,21 @@ async function getApplicationsByAdminCountry(adminCountryId) {
               },
               user_id: {
                 id: row.user_id,
-                username: row.username,
-                phone_number: row.phone_number,
+                staff_phone_number: row.staff_phone_number,
+                staff_name: row.staff_name,
               },
               course_id: {
                 course_id: row.course_id,
                 course_name: row.course_name,
                 course_level: row.course_level,
               },
-              documents: [],
             };
-
-            // Add the document if it exists
-            if (row.file_type !== null && row.file_path !== null) {
-              const document = {
-                file_type: row.file_type,
-                file_path: row.file_path,
-              };
-              application.documents.push(document);
-            }
-
             allApplications.push(application);
-          }
+          
         });
 
         resolve(allApplications);
-        logger.info('Applications by admin\'s country retrieved successfully');
+        logger.info('Applications by fetch by staff with country retrieved successfully');
       }
     });
   });
