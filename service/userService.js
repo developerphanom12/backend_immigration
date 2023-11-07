@@ -25,7 +25,7 @@ const registerUser = async (req, res) => {
       lastname,    
       email,
       phone_number,
-      null // Pass null as //,
+      null 
     );
 
     const addressId = await userservice.insertAddress(

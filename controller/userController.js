@@ -196,16 +196,21 @@ function getProfileImageFilename(userId, callback) {
 // Modify the loginUser function to return user data in the desired structure
 function loginUser(username, password, callback) {
   const query = 'SELECT * FROM user01 WHERE username = ?';
+
   db.query(query, [username], async (err, results) => {
     if (err) {
       return callback(err, null);
     }
 
     if (results.length === 0) {
-      return callback(null, { error: 'Invalid user' });
+      return callback(null, { error: 'User not found' });
     }
 
     const user = results[0];
+
+    if (user.is_deleted === 1) {
+      return callback(null, { error: 'User not found' });
+    }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
@@ -215,8 +220,7 @@ function loginUser(username, password, callback) {
 
     const secretKey = 'secretkey';
     const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
-   console.log('token', token)
-    // Include the user data and token in the callback with the desired structure
+
     return callback(null, {
       data: {
         user: {
@@ -224,14 +228,13 @@ function loginUser(username, password, callback) {
           username: user.username,
           firstname: user.firstname,
           lastname: user.lastname,
-           role : user.role,
+          role: user.role,
           token: token,
         }
       }
     });
   });
 }
-
 
 // function for forgot password
 function forgetPassword(userId, currentPassword, newPassword) {

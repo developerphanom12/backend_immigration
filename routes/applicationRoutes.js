@@ -3,10 +3,10 @@ const router = express.Router()
 const application = require ('../service/applicationService')
 const {upload1} =  require('../service/multerfileforapp');
 const authenticateToken = require('../service/token');
-const { validateApplicationData } = require('../validation/validation');
+// const { validateApplicationData } = require('../validation/validation');
 
-const jwt = require('jsonwebtoken');
-const secretKey = 'secretkey';
+// const jwt = require('jsonwebtoken');
+// const secretKey = 'secretkey';
 
 
 router.post('/addappplications',authenticateToken, application.addApplication) 

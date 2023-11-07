@@ -1058,18 +1058,21 @@ const getApplicationCountsByUserId = (userId) => {
 const getApplicationCountsByUserId1 = () => {
   return new Promise((resolve, reject) => {
     const query = `
-      SELECT
-        u.id AS user_id,
-        u.username,
-        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
-        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
-        IFNULL(COUNT(CASE WHEN applications_table.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
-      FROM
-        applications_table
-      RIGHT JOIN
-        user01 u ON u.id = applications_table.user_id
-      GROUP BY
-        u.id, u.username;
+    SELECT
+    u.id AS user_id,
+    u.username,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
+  FROM
+    applications_table
+  RIGHT JOIN
+    user01 u ON u.id = applications_table.user_id
+  WHERE
+    u.is_deleted = 0  
+  GROUP BY
+    u.id, u.username;
+  
     `;
 
     db.query(query, (error, results) => {
