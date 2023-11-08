@@ -9,11 +9,11 @@ const { use } = require('../routes/adminRoutes');
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
-  const userrole = req.user.role
-  console.log(userrole)
+  const userRole = req.user.role
+  console.log(userRole)
 
   try {
-    const applicationId = await applicationservice.addApplication(courseData, userId);
+    const applicationId = await applicationservice.addApplication(courseData, userId,userRole);
     console.log('Application added with ID:', applicationId);
 
     res.status(200).json({
@@ -335,7 +335,7 @@ const getexcelshheetdata = async (req, res) => {
     } else if (userRole === 'user') {
       excelFilePath = await applicationservice.getExcelData(userId);
     } else {
-      throw new Error('Unauthorized access'); // Handle other roles as needed
+      throw new Error('Unauthorized access'); //
     }
 
     const excelFileName = `user_data_${new Date().getTime()}.xlsx`;

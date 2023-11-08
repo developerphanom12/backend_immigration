@@ -137,6 +137,7 @@ const uploadImage = async (req, res) => {
   });
 };
 
+
 const loginUserController = async (req, res) => {
   try {
     const { username, password } = req.body;

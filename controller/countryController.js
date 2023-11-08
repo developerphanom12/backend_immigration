@@ -87,13 +87,15 @@ function sendRegistrationEmail(email, username, password) {
         to: email,
         subject: 'Registration Successful',
         html: `
-            <p class="message">Hello, ${username},staff</p>
+            <p class="message">Hello, ${username}, staff</p>
             <p class="message">Your registration details are as follows:</p>
             <p class="credentials"><strong>Username:</strong> ${username}</p>
             <p class="credentials"><strong>Password:</strong> ${password}</p>
+            <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/stafflogin"> click here</a>.</p>
             <p class="message">Please use these credentials to access your account.</p>
         `,
     };
+    
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {

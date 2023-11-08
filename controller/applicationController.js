@@ -4,13 +4,13 @@ const ExcelJS = require('exceljs');
 const path =require('path')
 
 // Define a function to add a new application //
-function addApplication(courseData,userId) {
+function addApplication(courseData,userId,userRole) {
     return new Promise((resolve, reject) => {
 
         const insertSql = `INSERT INTO applications_table (user_id,course_id,university_id,student_firstname, student_lastname,
           student_email,student_whatsapp_number,student_passport_no,marital_status,previous_visa_refusals,ielts_reading,
-          ielts_listening,ielts_writing,ielts_speaking,country_id,gender) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)`;
+          ielts_listening,ielts_writing,ielts_speaking,country_id,gender,role) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`;
 
 
         const values = [
@@ -29,7 +29,8 @@ function addApplication(courseData,userId) {
             courseData.ielts_writing,
             courseData.ielts_speaking,
             courseData.country_id,
-            courseData.gender
+            courseData.gender,
+            userRole
          ];
         db.query(insertSql, values, (error, result) => {
             if (error) {
@@ -650,6 +651,7 @@ async function getAllUserApplications(userId) {
       a.student_passport_no,
       a.application_status,
       a.student_whatsapp_number,
+      a.student_email,
       a.created_at,
       u.id AS user_id,
       u.username,
@@ -699,6 +701,7 @@ async function getAllUserApplications(userId) {
               application_id: application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
+              student_email:row.student_email,
               student_whatsapp_number: row.student_whatsapp_number,
               application_status: row.application_status,
               created_at: row.created_at,
@@ -934,6 +937,7 @@ async function getallapplication() {
         a.student_firstname,
         a.student_passport_no,
         a.application_status,
+        a.student_email,
         a.created_at,
         u.id AS user_id,
         u.username,
@@ -982,6 +986,7 @@ async function getallapplication() {
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
               application_status: row.application_status,
+              student_email:row.student_email,
               created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
@@ -1020,6 +1025,7 @@ async function getallapplication() {
     });
   });
 }
+
 const getApplicationCountsByUserId = (userId) => {
   return new Promise((resolve, reject) => {
     const query = `
@@ -1446,6 +1452,7 @@ async function getApplicationsByAdminCountry(adminCountryId) {
         a.student_firstname,
         a.student_passport_no,
         a.application_status,
+        a.student_email,
         a.created_at,
         u.id AS user_id,
         u.username,
@@ -1479,6 +1486,7 @@ async function getApplicationsByAdminCountry(adminCountryId) {
               application_id: row.application_id,
               student_firstname: row.student_firstname,
               student_passport_no: row.student_passport_no,
+              student_email:row.student_email,
               application_status: row.application_status,
               created_at: row.created_at,
               university_id: {

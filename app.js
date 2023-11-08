@@ -7,6 +7,7 @@ const userRoutes = require('./routes/userRoutes');
 const universityRoutes = require('./routes/universityRoutes')
 const application = require('./routes/applicationRoutes')
 const admin = require('./routes/adminRoutes')
+const student = require('./routes/studentRoutes')
 const path = require('path')
 const cors = require('cors')
 
@@ -39,7 +40,12 @@ app.use(cors({origin: true})) // -----> cors
 
 //******************admin routes******************/
 
-app.use('/api/admin',admin)
+      app.use('/api/admin',admin)
+
+//******************student routes******************/
+ 
+       app.use('/api/student',student)
+
 
 const port = process.env.PORT 
 const ipAddress = '127.0.0.1'; 

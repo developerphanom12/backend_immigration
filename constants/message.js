@@ -11,6 +11,10 @@ module.exports = {
             message: "USER CREATE SUCCESSFULLY",
             status: 201
         },
+        student: {
+            message: "STUDENT CREATE SUCCESSFULLY",
+            status: 201
+        },
 
         USER_NOT_CREATE: {
             message: "USER CREATE SUCCESSFULLY",
@@ -19,6 +23,11 @@ module.exports = {
 
         USER_LOGIN_SUCCESS: {
             message: " USER LOGIN SUCCESSFULLY",
+            status: 200
+        },
+
+        USER_LOGIN_Student: {
+            message: " STUDENT LOGIN SUCCESSFULLY",
             status: 200
         },
 

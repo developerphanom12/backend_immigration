@@ -120,7 +120,7 @@ const getAllApplicationstoadmin = async (req, res) => {
 };
 
 const updateApplicationStatus = async (req, res) => {
-    const { newStatus, applicationId, comment} = req.body;
+    const { newStatus, applicationId} = req.body;
   
     console.log('Received request with newStatus:', newStatus, 'for application ID:', applicationId);
   
@@ -138,7 +138,7 @@ const updateApplicationStatus = async (req, res) => {
       });
     }
   
-    admin.updateApplicationStatus(applicationId, newStatus, comment,(error, result) => {
+    admin.updateApplicationStatus(applicationId, newStatus,(error, result) => {
       if (error) {
         console.error('Error updating application status:', error);
         return res.status(500).json({

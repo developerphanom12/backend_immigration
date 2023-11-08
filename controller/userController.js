@@ -330,6 +330,7 @@ function insertAddress(street_address, city, state, postal_code, user_id) {
     });
   });
 }
+
 function insertUser(username, password, firstname, lastname, email, phone_number, addressId) {
     return new Promise((resolve, reject) => {
         const query = 'INSERT INTO user01 (username, password, firstname, lastname, email, phone_number, address_id) VALUES (?, ?, ?, ?, ?, ?, ?)';
