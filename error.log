@@ -257,3 +257,6 @@
 2023-11-03T11:20:17.920Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'developer.phanomprofessionals@gmail.com' for key 'staff.staff_email'
 2023-11-03T11:45:38.153Z [31merror[39m: Error registering staff: ER_DUP_ENTRY: Duplicate entry 'ashimavineet2729@gmail.com' for key 'staff.staff_email'
 2023-11-07T13:18:00.011Z [31merror[39m: Error getting applications by admin's country: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'field list'
+2023-11-09T07:25:13.179Z [31merror[39m: Error getting application counts by user ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(COUNT(CASE WHEN a.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS ' at line 5
+2023-11-09T07:32:46.258Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'u.id' in 'field list'
+2023-11-09T07:33:51.441Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'u.id' in 'field list'

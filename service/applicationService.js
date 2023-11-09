@@ -13,7 +13,7 @@ const addApplication = async (req, res) => {
   console.log(userRole)
 
   try {
-    const applicationId = await applicationservice.addApplication(courseData, userId,userRole);
+    const applicationId = await applicationservice.addApplication(courseData, userId, userRole);
     console.log('Application added with ID:', applicationId);
 
     res.status(200).json({
@@ -230,6 +230,17 @@ const getUserApplicationsHandler = async (req, res) => {
           responseMessage = 'No user applications found for the provided user ID.';
         }
         break;
+
+      case 'student':
+        const allstu = await applicationservice.getallstudent(userId);
+
+        if (allstu.length > 0) {
+          responseMessage = 'All student applications data fetched successfully';
+          responseData = allstu;
+        } else {
+          responseMessage = 'No user applications found for the provided user ID.';
+        }
+        break;
     }
 
     if (adminCountryId) {
@@ -266,9 +277,15 @@ const getApplicationCountsController = async (req, res) => {
 
     if (userRole === 'admin') {
       counts = await applicationservice.getApplicationCountsByUserId1();
-    } else {
+    }
+
+    if (userRole === 'user') {
+      counts = await applicationservice.getusercount(userId);
+    }
+    if (userRole === 'student') {
       counts = await applicationservice.getApplicationCountsByUserId(userId);
     }
+
 
     // Calculate totalApplications for each user
     counts.forEach((userCounts) => {
@@ -276,15 +293,10 @@ const getApplicationCountsController = async (req, res) => {
         userCounts.rejectedCount + userCounts.pendingCount + userCounts.approvedCount;
     });
 
-    // // Calculate totalApplications for all users
-    // const totalApplications = counts.reduce((acc, userCounts) => {
-    //   return acc + userCounts.userTotalApplications;
-    // }, 0);
-
     res.status(201).json({
       status: 201,
       message: 'Application counts retrieved successfully',
-      data:  counts,      
+      data: counts,
     });
   } catch (error) {
     console.error('Error in getApplicationCountsController:', error);
@@ -324,8 +336,8 @@ const notifystatus = async (req, res) => {
 };
 
 const getexcelshheetdata = async (req, res) => {
-  const userId = req.user.id; 
-  const userRole = req.user.role; 
+  const userId = req.user.id;
+  const userRole = req.user.role;
 
   try {
     let excelFilePath;
@@ -350,35 +362,60 @@ const getexcelshheetdata = async (req, res) => {
 };
 
 const getbyid = async (req, res) => {
-
+const userRole = req.user.role;
+const userId = req.user.id
+console.log("fbhjbfhdf", userRole,userId)
   try {
     const { applicationId } = req.params;
 
     if (!applicationId) {
       return res.status(400).json({ error: 'application id provide please.' });
     }
-    const userApplications = await applicationservice.getbyid(applicationId);
+    try {
+      if (userRole === 'user') {
+        const userApplications = await applicationservice.getbyid(applicationId);
 
-    if (userApplications.length === 0) {
-      return res.status(404).json({ status: 404, message: 'Application not found' });
+        if (userApplications.length === 0) {
+          return res.status(404).json({ status: 404, message: 'Application not found' });
+        }
+        res.status(201).json({
+          message: 'data feth succesffully with application id ',
+          status: 201,
+          data: userApplications,
+        });
+      }
+
+
+      if (userRole === 'student') {
+        const userApplications = await applicationservice.getbyidstudent(applicationId);
+console.log("dfsdfsdf",userApplications)
+        if (userApplications.length === 0) {
+          return res.status(404).json({ status: 404, message: 'Application not found' });
+        }
+        res.status(201).json({
+          message: 'data feth succesffully with application id ',
+          status: 201,
+          data: userApplications,
+        });
+      }
+
+
+      
+
+    } catch {
+
     }
-
-    res.status(201).json({
-      message: 'data feth succesffully with application id ',
-      status: 201,
-      data: userApplications,
-    });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 
- const getcooment = (req, res) => {
-  const { applicationId, comment_text ,select_type} = req.body;
+const getcooment = (req, res) => {
+  const { applicationId, comment_text, select_type } = req.body;
   const userId = req.user.id;
-  const userRole = req.user.role; 
-  applicationservice.getcomment(userId, applicationId, comment_text, userRole,select_type)
+  const userRole = req.user.role;
+  applicationservice.getcomment(userId, applicationId, comment_text, userRole, select_type)
     .then((insertResult) => {
       if (insertResult.affectedRows === 1) {
         res.status(201).json({
@@ -447,7 +484,7 @@ const updateDocuments = async (req, res) => {
   if (files['aadhar']) {
     const aadharFileName = getImageName(files['aadhar'][0].path);
     updates.push(applicationservice.updateApplicationDocument(userId, 'aadhar_card', aadharFileName));
-    res.status(200).json({status:201, message: 'aadhar document updated successfully' });
+    res.status(200).json({ status: 201, message: 'aadhar document updated successfully' });
     return;
   }
 
@@ -456,21 +493,21 @@ const updateDocuments = async (req, res) => {
     updates.push(applicationservice.updateApplicationDocument(userId, 'pan_card', panFileName));
 
     // Check if it's a 'pan_card' update and provide a specific message
-    res.status(200).json({ status:201, message: 'Pan card updated successfully' });
+    res.status(200).json({ status: 201, message: 'Pan card updated successfully' });
     return;
   }
 
   if (files['pass_front']) {
     const passFrontFileName = getImageName(files['pass_front'][0].path);
     updates.push(applicationservice.updateApplicationDocument(userId, 'pass_front', passFrontFileName));
-    res.status(200).json({status:201, message: 'Passport front document updated successfully' });
+    res.status(200).json({ status: 201, message: 'Passport front document updated successfully' });
     return;
   }
 
   if (files['pass_back']) {
     const passBackFileName = getImageName(files['pass_back'][0].path);
     updates.push(applicationservice.updateApplicationDocument(userId, 'pass_back', passBackFileName));
-    res.status(200).json({status:201, message: 'Passport Back document updated successfully' });
+    res.status(200).json({ status: 201, message: 'Passport Back document updated successfully' });
     return;
   }
 
@@ -479,14 +516,14 @@ const updateDocuments = async (req, res) => {
     updates.push(applicationservice.updateApplicationDocument(userId, '10th', tenthFileName));
 
     // Check if it's a '10th' document update and provide a specific message
-    res.status(200).json({status:201, message: '10th document updated successfully' });
+    res.status(200).json({ status: 201, message: '10th document updated successfully' });
     return;
   }
 
   if (files['12th']) {
     const twelfthFileName = getImageName(files['12th'][0].path);
     updates.push(applicationservice.updateApplicationDocument(userId, '12th', twelfthFileName));
-    res.status(200).json({status:201, message: '10th document updated successfully' });
+    res.status(200).json({ status: 201, message: '10th document updated successfully' });
     return;
   }
 
@@ -536,7 +573,7 @@ module.exports = {
   getApplicationCountsController,
   notifystatus,
   getexcelshheetdata,
-  getcooment,countby,updateDocuments,
+  getcooment, countby, updateDocuments,
   // getApplicationsByAdminCountryController
 
 };

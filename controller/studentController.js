@@ -23,9 +23,6 @@ function insertStudent(username, first_name, last_name,password,gender,dob, emai
 
 
 
-
-
-
 function getstudentname(username) {
     return new Promise((resolve, reject) => {
       const query = 'SELECT * FROM students WHERE username = ?';
@@ -57,6 +54,7 @@ function insertAddress(street_address, city, state, postal_code, student_id) {
       });
     });
   }
+
 
 
 // updateUserAddress function remains the same
@@ -119,6 +117,10 @@ function loginStudent(username, password, callback) {
     });
   });
 }
+
+
+
+
 
   module.exports = {
     getstudentname,

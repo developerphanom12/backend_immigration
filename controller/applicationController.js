@@ -426,6 +426,8 @@ async function getbyid(applicationId) {
       a.application_status,
       a.student_whatsapp_number,
       a.created_at,
+      a.updated_at,
+      a.role,
       u.id AS user_id,
       u.username AS user_username,
       u.phone_number AS user_phone_number,
@@ -499,6 +501,144 @@ async function getbyid(applicationId) {
               student_passport_no: row.student_passport_no,
               application_status: row.application_status,
               student_whatsapp_number: row.student_whatsapp_number,
+              created_at: row.created_at,
+              updated_at: row.updated_at,
+              role:row.role,
+              university_id: {
+                university_name: row.university_name,
+                person_name: row.person_name,
+                contact_number: row.contact_number,
+              },
+              user_id: {
+                id: row.user_id,
+                username: row.user_username, // Use the computed column
+                phone_number: row.user_phone_number,
+              },
+              course_id: {
+                course_id: row.course_id,
+                course_name: row.course_name,
+                course_level: row.course_level,
+                update_date: row.update_date,
+              },
+              documents: [],
+              comments: [],
+            };
+            console.log("fsdgdg",newApplication)
+
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              newApplication.documents.push(document);
+            }
+
+            if (row.comment_id !== null && row.comment_text !== null) {
+              const comment = {
+                comment_id: row.comment_id,
+                comment_text: row.comment_text,
+                username: row.comment_username, // Use the computed column
+                role: row.role,
+                select_type: row.select_type,
+                created_at: row.comment_created_at,
+              };
+              newApplication.comments.push(comment);
+            }
+
+            applications.push(newApplication);
+          }
+        });
+        resolve(applications);
+      }
+    });
+  });
+}
+
+
+async function getbyidstudent(applicationId) {
+  const query = `
+    SELECT
+      a.application_id,
+      a.student_firstname,
+      a.student_passport_no,
+      a.application_status,
+      a.student_whatsapp_number,
+      a.role,
+      a.created_at,
+      u.id AS user_id,
+      u.username AS user_username,
+      u.phone_number AS user_phone_number,
+      au.university_id AS university_id,
+      au.university_name,
+      au.person_name,
+      au.contact_number,
+      d.file_type,
+      d.file_path,
+      c.course_id AS course_id,
+      c.course_name,
+      c.course_level,
+      c.update_date,
+      cc.id AS comment_id,
+      cc.comment_text,
+      cc.role,
+      cc.select_type,
+      cc.created_at AS comment_created_at,
+      CASE
+        WHEN cc.role = 'staff' THEN s.staff_name
+        WHEN cc.role = 'student' THEN u.username
+      END AS comment_username
+    FROM applications_table a
+    INNER JOIN students u ON a.user_id = u.id
+    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN documnets d ON a.application_id = d.application_id
+    LEFT JOIN courses c ON a.course_id = c.course_id 
+    LEFT JOIN comment_table cc ON cc.application_id = a.application_id
+    LEFT JOIN staff s ON cc.role = 'staff' AND s.id = cc.user_id
+    WHERE a.application_id = ?`;
+
+  const params = [applicationId];
+
+  return new Promise((resolve, reject) => {
+    db.query(query, params, (error, results) => {
+      if (error) {
+        // Handle the error
+        reject(error);
+      } else {
+        const applications = [];
+
+        results.forEach((row) => {
+          const application = applications.find(
+            (app) => app.application_id === row.application_id
+          );
+
+          if (application) {
+            if (row.file_type !== null && row.file_path !== null) {
+              const document = {
+                file_type: row.file_type,
+                file_path: row.file_path,
+              };
+              application.documents.push(document);
+            }
+
+            if (row.comment_id !== null && row.comment_text !== null) {
+              const comment = {
+                comment_id: row.comment_id,
+                comment_text: row.comment_text,
+                username: row.comment_username, // Use the computed column
+                role: row.role,
+                select_type: row.select_type,
+                created_at: row.comment_created_at,
+              };
+              application.comments.push(comment);
+            }
+          } else {
+            const newApplication = {
+              application_id: row.application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              application_status: row.application_status,
+              student_whatsapp_number: row.student_whatsapp_number,
+              role:row.role,
               created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
@@ -1032,6 +1172,54 @@ const getApplicationCountsByUserId = (userId) => {
       SELECT
         u.id AS user_id,
         u.username,
+        u.role,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
+        IFNULL(COUNT(CASE WHEN a.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
+      FROM
+        students u
+        LEFT JOIN applications_table a ON u.id = a.user_id
+      WHERE
+        u.id = ?
+      GROUP BY
+        u.id, u.username;
+    `;
+
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting application counts by user ID:', error);
+        return;
+      }
+
+      if (results.length === 0) {
+        // Handle the case when the user does not exist
+        resolve([]);
+      } else {
+        const userCounts = results.map((row) => ({
+          userId: row.user_id,
+          username: row.username,
+          role:row.role,
+          rejectedCount: row.rejectedCount,
+          pendingCount: row.pendingCount,
+          approvedCount: row.approvedCount,
+        }));
+        resolve(userCounts);
+      }
+      logger.info('Application counts retrieved successfully');
+    });
+  });
+};
+
+
+const getusercount = (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+      SELECT
+        u.id AS user_id,
+        u.username,
+        u.role,
         IFNULL(COUNT(CASE WHEN a.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
         IFNULL(COUNT(CASE WHEN a.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
         IFNULL(COUNT(CASE WHEN a.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
@@ -1059,6 +1247,7 @@ const getApplicationCountsByUserId = (userId) => {
         const userCounts = results.map((row) => ({
           userId: row.user_id,
           username: row.username,
+          role:row.role,
           rejectedCount: row.rejectedCount,
           pendingCount: row.pendingCount,
           approvedCount: row.approvedCount,
@@ -1516,6 +1705,103 @@ async function getApplicationsByAdminCountry(adminCountryId) {
   });
 }
 
+
+
+async function getallstudent(userId) {
+  // Modify your database query to get all user applications for a specific user
+  const query = `
+    SELECT
+      a.application_id,
+      a.student_firstname,
+      a.student_passport_no,
+      a.application_status,
+      a.student_whatsapp_number,
+      a.student_email,
+      a.created_at,
+      u.id AS user_id,
+      u.username,
+      u.phone_number,
+      au.university_id AS university_id,
+      au.university_name,
+      au.person_name,
+      au.contact_number,
+      d.file_type,
+      d.file_path,
+      c.course_id AS course_id,
+      c.course_name,
+      c.course_level
+    FROM applications_table a
+    INNER JOIN students u ON a.user_id = u.id
+    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN documnets d ON a.application_id = d.application_id
+    LEFT JOIN courses c ON a.course_id = c.course_id
+    WHERE u.id = ?;`;
+
+  const params = [userId];
+
+  return new Promise((resolve, reject) => {
+    db.query(query, params, (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting user application by phone number:', error);
+      } else {
+        const mergedDataByUserId = {};
+
+        results.forEach((row) => {
+          const user_id = row.user_id;
+          const application_id = row.application_id;
+
+          if (!mergedDataByUserId[user_id]) {
+            mergedDataByUserId[user_id] = {
+              applications: [],
+            };
+          }
+
+          const existingApplication = mergedDataByUserId[user_id].applications.find(app => app.application_id === application_id);
+
+          if (existingApplication) {
+          } else {
+            const newApplication = {
+              application_id: application_id,
+              student_firstname: row.student_firstname,
+              student_passport_no: row.student_passport_no,
+              student_email:row.student_email,
+              student_whatsapp_number: row.student_whatsapp_number,
+              application_status: row.application_status,
+              created_at: row.created_at,
+              university_id: {
+                university_name: row.university_name,
+                person_name: row.person_name,
+                contact_number: row.contact_number
+              },
+              user_id: {
+                id: user_id,
+                username: row.username,
+                phone_number: row.phone_number,
+              },
+              course_id: {
+                course_id: row.course_id,
+                course_name: row.course_name,
+                course_level: row.course_level,
+              },
+            };
+
+            mergedDataByUserId[user_id].applications.push(newApplication);
+          }
+        });
+
+        // Convert the object values to an array to get the final result
+        const mergedData = Object.values(mergedDataByUserId);
+
+        resolve(mergedData);
+        logger.info('All courses with user and university data retrieved successfully');
+      }
+    });
+  });
+}
+
+
 module.exports = {
     insertApplicationDocuments,
     getDocumentByFileId, 
@@ -1537,7 +1823,10 @@ module.exports = {
     countadmin,
     countuser,
     updateApplicationDocument,
-    getApplicationsByAdminCountry
+    getApplicationsByAdminCountry,
+    getallstudent,
+    getusercount,
+    getbyidstudent
 };
 
 
