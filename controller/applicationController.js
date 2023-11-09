@@ -419,45 +419,58 @@ async function getUserApplications(userId, studentName, applicationId) {
 
 async function getbyid(applicationId) {
   const query = `
-    SELECT
-      a.application_id,
-      a.student_firstname,
-      a.student_passport_no,
-      a.application_status,
-      a.student_whatsapp_number,
-      a.created_at,
-      a.updated_at,
-      a.role,
-      u.id AS user_id,
-      u.username AS user_username,
-      u.phone_number AS user_phone_number,
-      au.university_id AS university_id,
-      au.university_name,
-      au.person_name,
-      au.contact_number,
-      d.file_type,
-      d.file_path,
-      c.course_id AS course_id,
-      c.course_name,
-      c.course_level,
-      c.update_date,
-      cc.id AS comment_id,
-      cc.comment_text,
-      cc.role,
-      cc.select_type,
-      cc.created_at AS comment_created_at,
-      CASE
-        WHEN cc.role = 'staff' THEN s.staff_name
-        WHEN cc.role = 'user' THEN u.username
-      END AS comment_username
-    FROM applications_table a
-    INNER JOIN user01 u ON a.user_id = u.id
-    LEFT JOIN university au ON a.university_id = au.university_id
-    LEFT JOIN documnets d ON a.application_id = d.application_id
-    LEFT JOIN courses c ON a.course_id = c.course_id 
-    LEFT JOIN comment_table cc ON cc.application_id = a.application_id
-    LEFT JOIN staff s ON cc.role = 'staff' AND s.id = cc.user_id
-    WHERE a.application_id = ?`;
+  SELECT
+  a.application_id,
+  a.student_firstname,
+  a.student_passport_no,
+  a.application_status,
+  a.student_whatsapp_number,
+  a.created_at,
+  a.updated_at,
+  a.role,
+  CASE
+    WHEN a.role = 'user' THEN u.id
+    WHEN a.role = 'student' THEN s.id
+  END AS user_id,
+  CASE
+    WHEN a.role = 'user' THEN u.username
+    WHEN a.role = 'student' THEN s.username
+  END AS user_username,
+  CASE
+    WHEN a.role = 'user' THEN u.phone_number
+    WHEN a.role = 'student' THEN s.phone_number
+  END AS user_phone_number,
+  au.university_id AS university_id,
+  au.university_name,
+  au.person_name,
+  au.contact_number,
+  d.file_type,
+  d.file_path,
+  c.course_id AS course_id,
+  c.course_name,
+  c.course_level,
+  c.update_date,
+  cc.id AS comment_id,
+  cc.comment_text,
+  cc.role AS comment_role,
+  cc.select_type,
+  cc.created_at AS comment_created_at,
+  CASE
+    WHEN cc.role = 'staff' THEN staff.staff_name
+    WHEN cc.role = 'user' THEN u.username
+    WHEN cc.role = 'student' THEN student.username
+  END AS comment_username
+FROM applications_table a
+LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
+LEFT JOIN students s ON a.user_id = s.id AND a.role = 'student'
+LEFT JOIN university au ON a.university_id = au.university_id
+LEFT JOIN documnets d ON a.application_id = d.application_id
+LEFT JOIN courses c ON a.course_id = c.course_id 
+LEFT JOIN comment_table cc ON cc.application_id = a.application_id
+LEFT JOIN staff staff ON cc.role = 'staff' AND staff.id = cc.user_id
+LEFT JOIN students student ON cc.role = 'student' AND student.id = cc.user_id
+WHERE a.application_id = ?`;
+
 
   const params = [applicationId];
 

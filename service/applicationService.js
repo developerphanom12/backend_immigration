@@ -362,49 +362,24 @@ const getexcelshheetdata = async (req, res) => {
 };
 
 const getbyid = async (req, res) => {
-const userRole = req.user.role;
-const userId = req.user.id
-console.log("fbhjbfhdf", userRole,userId)
+
   try {
     const { applicationId } = req.params;
 
     if (!applicationId) {
       return res.status(400).json({ error: 'application id provide please.' });
     }
-    try {
-      if (userRole === 'user') {
-        const userApplications = await applicationservice.getbyid(applicationId);
+    const userApplications = await applicationservice.getbyid(applicationId);
 
-        if (userApplications.length === 0) {
-          return res.status(404).json({ status: 404, message: 'Application not found' });
-        }
-        res.status(201).json({
-          message: 'data feth succesffully with application id ',
-          status: 201,
-          data: userApplications,
-        });
-      }
-
-
-      if (userRole === 'student') {
-        const userApplications = await applicationservice.getbyidstudent(applicationId);
-console.log("dfsdfsdf",userApplications)
-        if (userApplications.length === 0) {
-          return res.status(404).json({ status: 404, message: 'Application not found' });
-        }
-        res.status(201).json({
-          message: 'data feth succesffully with application id ',
-          status: 201,
-          data: userApplications,
-        });
-      }
-
-
-      
-
-    } catch {
-
+    if (userApplications.length === 0) {
+      return res.status(404).json({ status: 404, message: 'Application not found' });
     }
+
+    res.status(201).json({
+      message: 'data feth succesffully with application id ',
+      status: 201,
+      data: userApplications,
+    });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
