@@ -143,7 +143,7 @@ async function getallapplication() {
 };
 
 const updateApplicationStatus = (applicationId, newStatus,callback) => {
-    const updateQuery = 'UPDATE applications_table SET application_status = ? ,WHERE application_id = ?';
+    const updateQuery = 'UPDATE applications_table SET application_status = ? WHERE application_id = ?';
   
     db.query(updateQuery, [newStatus,applicationId], (error, result) => {
       if (error) {

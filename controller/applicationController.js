@@ -460,7 +460,6 @@ async function getbyid(applicationId) {
     WHEN cc.role = 'admin' THEN ad.username
     WHEN cc.role = 'student' THEN sd.username
     WHEN cc.role = 'user' THEN u1.username
-
   END AS comment_username
 FROM applications_table a
 LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
