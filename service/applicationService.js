@@ -338,14 +338,17 @@ const notifystatus = async (req, res) => {
 const getexcelshheetdata = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;
-
-  try {
+console.log('udfshdfsd', userId,userRole)
+  try {  //studenteceldata
     let excelFilePath;
 
     if (userRole === 'admin') {
       excelFilePath = await applicationservice.getExcelDataForAllApplications(userRole);
     } else if (userRole === 'user') {
       excelFilePath = await applicationservice.getExcelData(userId);
+    } 
+    else if (userRole === 'student') {
+      excelFilePath = await applicationservice.studenteceldata(userId);
     } else {
       throw new Error('Unauthorized access'); //
     }

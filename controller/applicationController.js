@@ -1526,6 +1526,94 @@ async function getExcelDataForAllApplications(userRole) {
     throw error;
   }
 }
+
+
+
+
+
+// checkin application_table user_id is match with table of studentts tbale id
+
+async function studenteceldata(userId) {
+  try {
+    const query = `
+    SELECT DISTINCT
+    a.application_id,
+    a.student_firstname,
+    a.student_lastname,
+    a.student_passport_no,
+    a.application_status,
+    a.role,
+    u.username,
+    c.course_name
+  FROM applications_table a
+  INNER JOIN students u ON a.user_id = u.id
+  LEFT JOIN university au ON a.university_id = au.university_id
+  LEFT JOIN documnets d ON a.application_id = d.application_id
+  LEFT JOIN courses c ON a.course_id = c.course_id
+  WHERE u.id = ?`;
+const queryPromise = new Promise((resolve, reject) => {
+  db.query(query,userId,(error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+});
+
+const results = await queryPromise;
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('AllApplications');
+
+  // Define the headers for the Excel sheet
+  worksheet.columns = [
+    { header: 'Application ID', key: 'application_id' },
+    { header: 'Student Name', key: 'student_name' }, // Combine first and last name
+    { header: 'Passport Number', key: 'student_passport_no' },
+    { header: 'Course Name', key: 'course_name' },
+    { header: 'University Name', key: 'university_name' },
+    { header: 'Application Status', key: 'application_status' },
+    { header: 'Position', key: 'role' },
+
+
+    // Add more headers as needed
+  ];
+
+  // Process the database results and populate the Excel sheet
+  results.forEach((row) => {
+    // Create rows based on database results
+    const rowData = {
+      application_id: row.application_id,
+      student_name: `${row.student_firstname} ${row.student_lastname}`,
+      student_passport_no: row.student_passport_no,
+      course_name: row.course_name,
+      university_name: row.university_name,
+      application_status: row.application_status,
+      role:row.role
+      // Populate other fields accordingly
+    };
+    worksheet.addRow(rowData);
+  });
+
+  // Generate and save the Excel file
+  const excelFileName = `all_applications_${new Date().getTime()}.xlsx`;
+  const excelFilePath = path.join(excelFileDirectory, excelFileName);
+
+  await workbook.xlsx.writeFile(excelFilePath);
+
+  console.log(`Excel file saved as ${excelFilePath}`);
+  return excelFilePath;
+} catch (error) {
+  console.error('Error executing or saving Excel file:', error);
+  throw error;
+}
+}
+
+
+
+
+
+
 // // Function to fetch and add comments for each application
 // function fetchCommentsForApplications(applications, resolve, reject) {
 //   const applicationIds = applications.map((app) => app.application_id);
@@ -1843,7 +1931,8 @@ module.exports = {
     getApplicationsByAdminCountry,
     getallstudent,
     getusercount,
-    getbyidstudent
+    getbyidstudent,
+    studenteceldata
 };
 
 
