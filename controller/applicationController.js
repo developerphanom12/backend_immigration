@@ -452,13 +452,15 @@ async function getbyid(applicationId) {
   c.update_date,
   cc.id AS comment_id,
   cc.comment_text,
-  cc.role AS comment_role,
+  cc.role,
   cc.select_type,
   cc.created_at AS comment_created_at,
   CASE
     WHEN cc.role = 'staff' THEN staff.staff_name
-    WHEN cc.role = 'user' THEN u.username
-    WHEN cc.role = 'student' THEN student.username
+    WHEN cc.role = 'admin' THEN ad.username
+    WHEN cc.role = 'student' THEN sd.username
+    WHEN cc.role = 'user' THEN u1.username
+
   END AS comment_username
 FROM applications_table a
 LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
@@ -468,7 +470,10 @@ LEFT JOIN documnets d ON a.application_id = d.application_id
 LEFT JOIN courses c ON a.course_id = c.course_id 
 LEFT JOIN comment_table cc ON cc.application_id = a.application_id
 LEFT JOIN staff staff ON cc.role = 'staff' AND staff.id = cc.user_id
-LEFT JOIN students student ON cc.role = 'student' AND student.id = cc.user_id
+LEFT JOIN admintable ad ON cc.role = 'admin' AND ad.id = cc.user_id
+LEFT JOIN students sd ON cc.role = 'student' AND sd.id = cc.user_id
+LEFT JOIN user01 u1 ON cc.role = 'user' AND u1.id = cc.user_id
+
 WHERE a.application_id = ?`;
 
 
