@@ -265,12 +265,61 @@ const uploadImage1 = async (req, res) => {
     });
   
   };
-
   
+const registerUniversityAndUploadImage = async (req, res) => {
+    const {
+        university_name,
+        ambassador_name,
+        phone_number,
+        email,
+        username,
+        password
+    } = req.body;
 
-  const fetchonlyuniversity= async (req, res) => {
+    console.log("hgygygy", req.body);
 
-  }
+    try {
+        // Validate university_name
+        if (!university_name) {
+            throw new Error('University name cannot be null or empty.');
+        }
+
+        // Perform university registration and get the universityData
+        const universityData = await userservice.UniversityRegisterself({
+            university_name,
+            ambassador_name,
+            phone_number,
+            email,
+            username,
+            password
+        });
+
+        if (req.files) {
+            const id = universityData.id;
+
+            if (req.files['university_image']) {
+                const uniImageName = req.files['university_image'][0].filename;
+                await userservice.aCertificate(id, uniImageName);
+            }
+
+            if (req.files['registration_certificate']) {
+                const regCertImageName = req.files['registration_certificate'][0].filename;
+                await userservice.addRegistrationCertificate(id, regCertImageName);
+            }
+        }
+
+        res.status(200).json({
+            message: 'University registration and image upload successful',
+            data: universityData
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message || 'Something went wrong'
+        });
+    }
+};
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -280,6 +329,6 @@ module.exports = {
     getalluniversity,
     getById,
     uploadImage1,
-    fetchonlyuniversity,
-    getallcourses1
+    getallcourses1,
+    registerUniversityAndUploadImage
 }

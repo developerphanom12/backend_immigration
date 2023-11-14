@@ -1329,6 +1329,59 @@ const getApplicationCountsByUserId1 = () => {
   });
 };
 
+const staffcount = () => {
+  return new Promise((resolve, reject) => {
+    const query = `
+    SELECT
+    u.id AS user_id,
+    u.staff_name,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS rejectedCount,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'pending' THEN 1 ELSE NULL END), 0) AS pendingCount,
+    IFNULL(COUNT(CASE WHEN applications_table.application_status = 'approved' THEN 1 ELSE NULL END), 0) AS approvedCount
+  FROM
+    applications_table
+  RIGHT JOIN
+    staff u ON u.id = applications_table.user_id
+  WHERE
+    u.is_deleted = 0  
+  GROUP BY
+    u.id, u.staff_name;
+  
+    `;
+
+    db.query(query, (error, results) => {
+      if (error) {
+        console.error('Error executing query:', error);
+        reject(error);
+        logger.error('Error getting user application counts:', error);
+        return;
+      }
+
+      const userCounts = results.map((row) => ({
+        // userId: row.user_id,
+        username: row.staff_name,
+        rejectedCount: row.rejectedCount,
+        pendingCount: row.pendingCount,
+        approvedCount: row.approvedCount,
+      }));
+
+      if (userCounts.length === 0) {
+        resolve([
+          {
+            username: 'username',
+            rejectedCount: 0,
+            pendingCount: 0,
+            approvedCount: 0,
+          },
+        ]);
+      } else {
+        resolve(userCounts);
+      }
+      logger.info('User application counts retrieved successfully');
+    });
+  });
+};
+
 // // Example usage:
 // getApplicationCountsByUserId1()
 //   .then((result) => {
@@ -1932,7 +1985,8 @@ module.exports = {
     getallstudent,
     getusercount,
     getbyidstudent,
-    studenteceldata
+    studenteceldata,
+    staffcount
 };
 
 

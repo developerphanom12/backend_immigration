@@ -7,12 +7,13 @@ const { upload } = require('../service/multer');
   
 //******************************university routes********************************** *//
 
+router.post('/register', upload.fields([{ name: 'registration_certificate' }, { name: 'university_image' }]), univeristy.registerUniversityAndUploadImage);
+
+
 router.post('/universitys',authenticateToken, universityValid,univeristy.registerUniversity)
 
 
 router.get('/:id' ,  univeristy.getUniversityByIdHandler)
-
-
 
 router.get('/getall/university', authenticateToken, univeristy.getalluniversity) //------------>>>>>s
 
@@ -23,9 +24,7 @@ router.put('/updateUniversity/:id', univeristy.updateUniversity1);
 router.put('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
 
 
-
-
-/******************************  Courses Api  ********************************************************** */
+/******************************Courses Api********************************************************** */
     
 router.post('/courses1' ,coursesValid,authenticateToken, univeristy.courseCreate)
 

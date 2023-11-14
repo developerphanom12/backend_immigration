@@ -260,3 +260,24 @@
 2023-11-09T07:25:13.179Z [31merror[39m: Error getting application counts by user ID: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(COUNT(CASE WHEN a.application_status = 'rejected' THEN 1 ELSE NULL END), 0) AS ' at line 5
 2023-11-09T07:32:46.258Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'u.id' in 'field list'
 2023-11-09T07:33:51.441Z [31merror[39m: Error getting application counts by user ID: ER_BAD_FIELD_ERROR: Unknown column 'u.id' in 'field list'
+2023-11-14T10:54:28.428Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:54:40.780Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:56:06.255Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:56:19.736Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:56:42.276Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:57:20.250Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T10:58:21.645Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T11:00:17.857Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-14T11:07:23.205Z [31merror[39m: Error registering university: ER_WARN_DATA_OUT_OF_RANGE: Out of range value for column 'contact_number' at row 1
+2023-11-14T11:41:09.171Z [31merror[39m: Error registering university: ER_BAD_FIELD_ERROR: Unknown column 'contact_number' in 'field list'
+2023-11-14T11:41:22.787Z [31merror[39m: Error registering university: ER_BAD_FIELD_ERROR: Unknown column 'contact_number' in 'field list'
+2023-11-14T11:42:21.408Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'ambassador_name' cannot be null
+2023-11-14T11:42:36.657Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'phone_number' cannot be null
+2023-11-14T11:43:07.519Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'email' cannot be null
+2023-11-14T12:08:37.895Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'ambassador_name' cannot be null
+2023-11-14T12:08:56.304Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'phone_number' cannot be null
+2023-11-14T12:09:03.933Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'email' cannot be null
+2023-11-14T12:09:15.702Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'username' cannot be null
+2023-11-14T12:09:27.014Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'password' cannot be null
+2023-11-14T13:23:52.756Z [31merror[39m: Error getting user application counts: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'field list'
+2023-11-14T13:24:39.473Z [31merror[39m: Error getting user application counts: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'group statement'

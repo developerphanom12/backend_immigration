@@ -6,6 +6,11 @@ const { application } = require('express');
 const path = require('path')
 const fs = require('fs');
 const { use } = require('../routes/adminRoutes');
+
+
+
+
+
 const addApplication = async (req, res) => {
   const courseData = req.body;
   const userId = req.user.id;
@@ -307,6 +312,34 @@ const getApplicationCountsController = async (req, res) => {
 
 
 
+const staffdata = async (req, res) => {
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  try {
+    let counts;
+
+    if (userRole === 'admin') {
+      counts = await applicationservice.staffcount();
+    }
+    // Calculate totalApplications for each user
+    counts.forEach((userCounts) => {
+      userCounts.userTotalApplications =
+        userCounts.rejectedCount + userCounts.pendingCount + userCounts.approvedCount;
+    });
+
+    res.status(201).json({
+      status: 201,
+      message: 'Application counts retrieved successfully',
+      data: counts,
+    });
+  } catch (error) {
+    console.error('Error in getApplicationCountsController:', error);
+    const errorMessage = 'Error fetching application counts: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
+
+
 
 const notifystatus = async (req, res) => {
   const userId = req.user.id;
@@ -551,7 +584,10 @@ module.exports = {
   getApplicationCountsController,
   notifystatus,
   getexcelshheetdata,
-  getcooment, countby, updateDocuments,
+  getcooment, 
+  countby,
+   updateDocuments,
+   staffdata
   // getApplicationsByAdminCountryController
 
 };

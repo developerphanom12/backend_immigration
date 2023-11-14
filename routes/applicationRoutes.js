@@ -24,6 +24,7 @@ router.get('/search/with/',authenticateToken, application.searchApplicationsHand
 
 router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>//coutnall data with user
 
+router.get('/staffcount',authenticateToken,application.staffdata) //-->>//coutnall data with user
 
 router.get('/count',authenticateToken,application.countby) //-->>count data --->>>///
 

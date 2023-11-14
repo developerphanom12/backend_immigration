@@ -338,15 +338,6 @@ function addimageuniversity(userId, imagePath, callback) {
   }
   
 
-// function insertUserDocuments(userId, fileData, callback) {
-//     const sql = 'INSERT INTO user_documents_files (user_id, file_type, file_path) VALUES (?, ?, ?)';
-//     const values = [userId, fileData.fileType, fileData.filePath];
-
-//     db.query(sql, values, callback);
-// }
-
-
-
 
 
 function getallcourses() {
@@ -376,6 +367,92 @@ function getallcourses() {
     });
 }
 
+
+
+function UniversityRegisterself(university) {
+    return new Promise((resolve, reject) => {
+        const { university_name, ambassador_name, phone_number,email,username,password} = university;
+        const query = `
+        INSERT INTO UniversityRegistration  
+        (university_name, ambassador_name, phone_number,email,username,password)
+        VALUES (?, ?, ?,?,?,?)
+      `;
+
+        db.query(query, [university_name, ambassador_name, phone_number,email,username,password], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering university:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    university_name,
+                    ambassador_name,
+                    phone_number,
+                    email,
+                    username,
+                    password
+                };
+                resolve(insertedUniversity);
+                logger.info('University registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
+
+
+
+
+
+
+  // function for uploading image and registration certificate
+function addimg(userId, universityImage, registrationCertificate) {
+    return new Promise((resolve, reject) => {
+
+    const sql = 'UPDATE UniversityRegistration SET university_image = ?, registration_certificate = ? WHERE id = ?';
+    db.query(sql, [universityImage, registrationCertificate, userId], (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+  
+      return resolve( result);
+    });
+    })
+  }
+  
+
+
+async function addRegistrationCertificate(userId, regCertImageName) {
+    try {
+        const sql = 'UPDATE UniversityRegistration SET registration_certificate = ? WHERE id = ?';
+        const result =  db.query(sql, [regCertImageName, userId]);
+
+        // Check if the update was successful and handle it as needed
+        if (result.affectedRows === 0) {
+            throw new Error('No rows were updated. User may not exist or the field already has the same value.');
+        }
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function aCertificate(userId, uniImageName) {
+    try {
+        const sql = 'UPDATE UniversityRegistration SET university_image = ? WHERE id = ?';
+        const result =  db.query(sql, [uniImageName, userId]);
+
+        // Check if the update was successful and handle it as needed
+        if (result.affectedRows === 0) {
+            throw new Error('No rows were updated. User may not exist or the field already has the same value.');
+        }
+
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -386,5 +463,9 @@ module.exports = {
     getalluniversity,
     getCourseById,
     addimageuniversity,
-    getallcourses
+    getallcourses,
+    UniversityRegisterself,
+    addimg,
+    addRegistrationCertificate,
+    aCertificate
 }
