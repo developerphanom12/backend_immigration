@@ -22,9 +22,9 @@ router.get('/getbyid/:applicationId',authenticateToken,application.getbyid)
 
 router.get('/search/with/',authenticateToken, application.searchApplicationsHandler);
 
-router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>//coutnall data with user
+router.get('/getbydata',authenticateToken,application.getApplicationCountsController) //-->>//coutnall data with agent
 
-router.get('/staffcount',authenticateToken,application.staffdata) //-->>//coutnall data with user
+router.get('/staffcount',authenticateToken,application.staffdata) //-->>//coutnall data with staff
 
 router.get('/count',authenticateToken,application.countby) //-->>count data --->>>///
 

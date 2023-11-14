@@ -168,6 +168,7 @@ const searchApplicationsHandler = async (req, res) => {
 };
 
 const getUserApplicationsHandler = async (req, res) => {
+  
   const userId = req.user.id;
   const userRole = req.user.role;
   const adminCountryId = req.user.country_id;

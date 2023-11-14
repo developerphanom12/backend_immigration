@@ -1382,14 +1382,6 @@ const staffcount = () => {
   });
 };
 
-// // Example usage:
-// getApplicationCountsByUserId1()
-//   .then((result) => {
-//     console.log(result);
-//   })
-//   .catch((error) => {
-//     console.error(error);
-//   });
 
 async function notification(userId) {
   const query = `
