@@ -1784,77 +1784,157 @@ const countuser = (userId) => {
 };
 
 async function getApplicationsByAdminCountry(adminCountryId) {
-  return new Promise((resolve, reject) => {
     const query = `
-      SELECT
-        a.application_id,
-        a.student_firstname,
-        a.student_passport_no,
-        a.application_status,
-        a.student_email,
-        a.created_at,
-        u.id AS user_id,
-        u.username,
-        u.phone_number,
-        au.university_id AS university_id,
-        au.university_name,
-        au.person_name,
-        au.contact_number,
-        c.course_id AS course_id,
-        c.course_name,
-        c.course_level
-      FROM applications_table a
-      INNER JOIN user01 u ON a.user_id = u.id
-      LEFT JOIN documnets d ON a.application_id = d.application_id
-      LEFT JOIN university au ON a.university_id = au.university_id
-      LEFT JOIN courses c ON a.course_id = c.course_id
+    SELECT
+    a.application_id,
+    a.student_firstname,
+    a.student_passport_no,
+    a.application_status,
+    a.student_whatsapp_number,
+    a.created_at,
+    a.updated_at,
+    a.role,
+    CASE
+      WHEN a.role = 'user' THEN u.id
+      WHEN a.role = 'student' THEN s.id
+    END AS user_id,
+    CASE
+      WHEN a.role = 'user' THEN u.username
+      WHEN a.role = 'student' THEN s.username
+    END AS user_username,
+    CASE
+      WHEN a.role = 'user' THEN u.phone_number
+      WHEN a.role = 'student' THEN s.phone_number
+    END AS user_phone_number,
+    au.university_id AS university_id,
+    au.university_name,
+    au.person_name,
+    au.contact_number,
+    d.file_type,
+    d.file_path,
+    c.course_id AS course_id,
+    c.course_name,
+    c.course_level,
+    c.update_date,
+    cc.id AS comment_id,
+    cc.comment_text,
+    cc.role,
+    cc.select_type,
+    cc.created_at AS comment_created_at,
+    CASE
+      WHEN cc.role = 'staff' THEN staff.staff_name
+      WHEN cc.role = 'admin' THEN ad.username
+      WHEN cc.role = 'student' THEN sd.username
+      WHEN cc.role = 'user' THEN u1.username
+    END AS comment_username
+  FROM applications_table a
+  LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
+  LEFT JOIN students s ON a.user_id = s.id AND a.role = 'student'
+  LEFT JOIN university au ON a.university_id = au.university_id
+  LEFT JOIN documnets d ON a.application_id = d.application_id
+  LEFT JOIN courses c ON a.course_id = c.course_id 
+  LEFT JOIN comment_table cc ON cc.application_id = a.application_id
+  LEFT JOIN staff staff ON cc.role = 'staff' AND staff.id = cc.user_id
+  LEFT JOIN admintable ad ON cc.role = 'admin' AND ad.id = cc.user_id
+  LEFT JOIN students sd ON cc.role = 'student' AND sd.id = cc.user_id
+  LEFT JOIN user01 u1 ON cc.role = 'user' AND u1.id = cc.user_id
       WHERE a.country_id = ?; 
     `;
 
-    db.query(query, [adminCountryId], (error, results) => {
-      if (error) {
-        console.error('Error executing query:', error);
-        reject(error);
-        logger.error('Error getting applications by admin\'s country:', error); // Log the error
-      } else {
-        const allApplications = [];
-
-        results.forEach((row) => {
-        
-            const application = {
-              application_id: row.application_id,
-              student_firstname: row.student_firstname,
-              student_passport_no: row.student_passport_no,
-              student_email:row.student_email,
-              application_status: row.application_status,
-              created_at: row.created_at,
-              university_id: {
-                university_name: row.university_name,
-                person_name: row.person_name,
-                contact_number: row.contact_number,
-              },
-              user_id: {
-                id: row.user_id,
-                phone_number: row.phone_number,
-                username: row.username,
-              },
-              course_id: {
-                course_id: row.course_id,
-                course_name: row.course_name,
-                course_level: row.course_level,
-              },
-            };
-            allApplications.push(application);
-          
-        });
-
-        resolve(allApplications);
-        logger.info('Applications by fetch by staff with country retrieved successfully');
-      }
+  
+    return new Promise((resolve, reject) => {
+      db.query(query, adminCountryId, (error, results) => {
+        if (error) {
+          // Handle the error
+          reject(error);
+        } else {
+          const applications = [];
+  
+          results.forEach((row) => {
+            const application = applications.find(
+              (app) => app.application_id === row.application_id
+            );
+  
+            if (application) {
+              if (row.file_type !== null && row.file_path !== null) {
+                const document = {
+                  file_type: row.file_type,
+                  file_path: row.file_path,
+                };
+                application.documents.push(document);
+              }
+  
+              if (row.comment_id !== null && row.comment_text !== null) {
+                const comment = {
+                  comment_id: row.comment_id,
+                  comment_text: row.comment_text,
+                  username: row.comment_username, // Use the computed column
+                  role: row.role,
+                  select_type: row.select_type,
+                  created_at: row.comment_created_at,
+                };
+                application.comments.push(comment);
+              }
+            } else {
+              const newApplication = {
+                application_id: row.application_id,
+                student_firstname: row.student_firstname,
+                student_passport_no: row.student_passport_no,
+                application_status: row.application_status,
+                student_whatsapp_number: row.student_whatsapp_number,
+                created_at: row.created_at,
+                updated_at: row.updated_at,
+                role:row.role,
+                university_id: {
+                  university_name: row.university_name,
+                  person_name: row.person_name,
+                  contact_number: row.contact_number,
+                },
+                user_id: {
+                  id: row.user_id,
+                  username: row.user_username, // Use the computed column
+                  phone_number: row.user_phone_number,
+                },
+                course_id: {
+                  course_id: row.course_id,
+                  course_name: row.course_name,
+                  course_level: row.course_level,
+                  update_date: row.update_date,
+                },
+                documents: [],
+                comments: [],
+              };
+              console.log("fsdgdg",newApplication)
+  
+              if (row.file_type !== null && row.file_path !== null) {
+                const document = {
+                  file_type: row.file_type,
+                  file_path: row.file_path,
+                };
+                newApplication.documents.push(document);
+              }
+  
+              if (row.comment_id !== null && row.comment_text !== null) {
+                const comment = {
+                  comment_id: row.comment_id,
+                  comment_text: row.comment_text,
+                  username: row.comment_username, // Use the computed column
+                  role: row.role,
+                  select_type: row.select_type,
+                  created_at: row.comment_created_at,
+                };
+                newApplication.comments.push(comment);
+              }
+  
+              applications.push(newApplication);
+            }
+          });
+          resolve(applications);
+        }
+      });
     });
-  });
-}
-
+  }
+  
 
 
 async function getallstudent(userId) {
