@@ -1,7 +1,8 @@
 const { error } = require('winston');
 const db = require('../config/configration');
 const { logger } = require('../utils/logging')
-
+const  bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
 function UniversityRegister(university) {
     return new Promise((resolve, reject) => {
         const { university_name, course_type, founded_year,person_name,contact_number } = university;
@@ -371,29 +372,18 @@ function getallcourses() {
 
 function UniversityRegisterself(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, ambassador_name, phone_number,email,username,password} = university;
+        const { university_name, ambassador_name, phone_number,email,username,password,addressId} = university;
         const query = `
         INSERT INTO UniversityRegistration  
-        (university_name, ambassador_name, phone_number,email,username,password)
-        VALUES (?, ?, ?,?,?,?)
+        (university_name, ambassador_name, phone_number,email,username,password,address_id)
+        VALUES (?, ?, ?,?,?,?,?)
       `;
 
-        db.query(query, [university_name, ambassador_name, phone_number,email,username,password], (error, result) => {
+        db.query(query, [university_name, ambassador_name, phone_number,email,username,password,addressId], (error, result) => {
             if (error) {
                 reject(error);
-                logger.error('Error registering university:', error);
             } else {
-                const insertedUniversity = {
-                    id: result.insertId,
-                    university_name,
-                    ambassador_name,
-                    phone_number,
-                    email,
-                    username,
-                    password
-                };
-                resolve(insertedUniversity);
-                logger.info('University registered successfully', insertedUniversity);
+                resolve(result.insertId);
             }
         });
     });
@@ -453,6 +443,87 @@ async function aCertificate(userId, uniImageName) {
     }
 }
 
+
+
+function logiuniversity(username, password, callback) {
+
+    const query = 'SELECT * FROM UniversityRegistration WHERE username = ?';
+  
+    db.query(query, [username], async (err, results) => {
+      if (err) {
+        return callback(err, null);
+      }
+  
+      if (results.length === 0) {
+        return callback(null, { error: 'User not found' });
+      }
+  
+      const user = results[0];
+  
+      if (user.is_deleted === 1) {
+        return callback(null, { error: 'User not found' });
+      }
+      if (user.is_approved === 1) {
+        return callback(null, { error: 'You are not approved at this moment' });
+      }
+  
+      const passwordMatch = await bcrypt.compare(password, user.password);
+  
+      if (!passwordMatch) {
+        return callback(null, { error: 'Invalid password' });
+      }
+  
+      const secretKey = 'secretkey';
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
+  
+      return callback(null, {
+        data: {
+          user: {
+            id: user.id,
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            role: user.role,
+            token: token,
+          }
+        }
+      });
+    });
+  }
+  
+  function universityaddress(street_address, city, state, country,postal_code, user_id) {
+    return new Promise((resolve, reject) => {
+      const query = 'INSERT INTO university_address(street_address, city, state, country, postal_code,user_id) VALUES ( ?, ?, ?, ?, ?,?)';
+      db.query(query, [street_address, city, state, country,postal_code, user_id], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.insertId);
+        }
+      });
+    });
+}
+
+
+
+
+
+// updateUserAddress function remains the same
+function updateaddressuniversity(userId, addressId) {
+    return new Promise((resolve, reject) => { 
+      const query = 'UPDATE UniversityRegistration SET address_id = ? WHERE id = ?';
+      db.query(query, [addressId, userId], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
+
+
+  
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -467,5 +538,8 @@ module.exports = {
     UniversityRegisterself,
     addimg,
     addRegistrationCertificate,
-    aCertificate
+    aCertificate,
+    logiuniversity,
+    universityaddress,
+    updateaddressuniversity
 }

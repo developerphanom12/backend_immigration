@@ -171,6 +171,7 @@ const loginUserController = async (req, res) => {
 
 const forgetpass = async (req, res) => {
   const userId = req.user.id;
+  console.log('useid',userId)
   const { currentPassword, newPassword } = req.body;
 
   try {

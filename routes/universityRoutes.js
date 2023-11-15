@@ -9,6 +9,7 @@ const { upload } = require('../service/multer');
 
 router.post('/register', upload.fields([{ name: 'registration_certificate' }, { name: 'university_image' }]), univeristy.registerUniversityAndUploadImage);
 
+router.post('/unilogin',univeristy.uniersitylogin)
 
 router.post('/universitys',authenticateToken, universityValid,univeristy.registerUniversity)
 

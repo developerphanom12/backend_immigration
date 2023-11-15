@@ -264,7 +264,7 @@ function forgetPassword(userId, currentPassword, newPassword) {
       }
 
       // Update the user's password with the new password
-      const updateQuery = 'UPDATE users3 SET password = ? WHERE id = ?';
+      const updateQuery = 'UPDATE user01 SET password = ? WHERE id = ?';
 
       bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
         if (hashError) {

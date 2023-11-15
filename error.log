@@ -281,3 +281,11 @@
 2023-11-14T12:09:27.014Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'password' cannot be null
 2023-11-14T13:23:52.756Z [31merror[39m: Error getting user application counts: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'field list'
 2023-11-14T13:24:39.473Z [31merror[39m: Error getting user application counts: ER_BAD_FIELD_ERROR: Unknown column 'u.username' in 'group statement'
+2023-11-15T05:27:50.159Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'username' cannot be null
+2023-11-15T05:28:54.658Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'password' cannot be null
+2023-11-15T06:35:30.402Z [31merror[39m: Error registering university: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-11-15T06:36:11.987Z [31merror[39m: Error registering university: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-11-15T06:57:12.250Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-15T06:57:40.299Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
+2023-11-15T06:59:24.102Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'password' cannot be null
+2023-11-15T07:02:09.206Z [31merror[39m: Error registering university: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1

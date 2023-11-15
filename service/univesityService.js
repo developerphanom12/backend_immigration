@@ -1,7 +1,8 @@
 const userservice = require('../controller/universityController');
 const univeristy = require('../constants/universitymssg')
 const universityStatusMessages = require('../constants/universitymssg')
-
+const bcrypt = require('bcrypt');
+const { add } = require('winston');
 
 
 const handleServerError = (res, error) => {
@@ -273,7 +274,8 @@ const registerUniversityAndUploadImage = async (req, res) => {
         phone_number,
         email,
         username,
-        password
+        password,
+        address
     } = req.body;
 
     console.log("hgygygy", req.body);
@@ -283,19 +285,50 @@ const registerUniversityAndUploadImage = async (req, res) => {
         if (!university_name) {
             throw new Error('University name cannot be null or empty.');
         }
+        const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Perform university registration and get the universityData
-        const universityData = await userservice.UniversityRegisterself({
+        const userId = await userservice.UniversityRegisterself({
             university_name,
             ambassador_name,
             phone_number,
             email,
             username,
-            password
+            password:hashedPassword,
+            address:null
         });
 
+
+        const addressId = await userservice.universityaddress(
+            address.street_address,
+            address.city,  
+            address.state,
+            address.country,
+            address.postal_code,
+            userId, 
+          );
+          await userservice.updateaddressuniversity(userId, addressId);
+
+
+          const user = {
+            id: userId,
+            university_name,
+            ambassador_name,
+            phone_number,
+            email,
+            username,
+            password,
+            address: {
+              id: addressId,
+              street_address: address.street_address,
+              city: address.city,
+              state: address.state,
+              country:address.country,
+              postal_code: address.postal_code,
+            },
+            
+          };
         if (req.files) {
-            const id = universityData.id;
+            const id = userId.id;
 
             if (req.files['university_image']) {
                 const uniImageName = req.files['university_image'][0].filename;
@@ -310,7 +343,7 @@ const registerUniversityAndUploadImage = async (req, res) => {
 
         res.status(200).json({
             message: 'University registration and image upload successful',
-            data: universityData
+            data: user
         });
     } catch (error) {
         console.error(error);
@@ -320,6 +353,38 @@ const registerUniversityAndUploadImage = async (req, res) => {
         });
     }
 };
+
+
+
+
+const uniersitylogin = async (req, res) => {
+    try {
+      const { username, password } = req.body;
+  
+     userservice.logiuniversity(username, password, (err, result) => {
+        if (err) {
+          console.error('Error:', err);
+          return res.status(500).json({ error: 'An internal server error occurred' });
+        }
+  
+        if (result.error) {
+          return res.status(401).json({ error: result.error });
+        }
+   
+      
+        res.status(201).json({
+          message: "university login successfully",
+          status:201    ,
+          data: result.data,
+          token: result.token,
+        });
+       
+      });
+    } catch (error) {
+      console.error('Error logging in user:', error);
+      res.status(500).json({ error: 'An internal server error occurred' });
+    }
+  };
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -330,5 +395,6 @@ module.exports = {
     getById,
     uploadImage1,
     getallcourses1,
-    registerUniversityAndUploadImage
+    registerUniversityAndUploadImage,
+    uniersitylogin
 }
