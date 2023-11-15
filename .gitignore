@@ -10,3 +10,4 @@ uploads/
 # Ignore log files
 combine.log
 error.log
+.env
