@@ -4,8 +4,9 @@
 # Ignore Node.js dependencies directory
 node_modules/
 
+# Ignore uploaded files
 uploads/
 
-combine.log/
-
-error.log/
+# Ignore log files
+combine.log
+error.log

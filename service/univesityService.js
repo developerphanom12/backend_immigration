@@ -309,7 +309,7 @@ const registerUniversityAndUploadImage = async (req, res) => {
           await userservice.updateaddressuniversity(userId, addressId);
 
 
-          const user = {
+          const user = {  
             id: userId,
             university_name,
             ambassador_name,
