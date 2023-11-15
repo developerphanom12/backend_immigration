@@ -3,3 +3,9 @@
 
 # Ignore Node.js dependencies directory
 node_modules/
+
+uploads/
+
+combine.log/
+
+error.log/
