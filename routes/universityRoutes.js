@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const univeristy = require('../service/univesityService')
-const {universityValid, coursesValid} = require('../validation/validation');
+const {universityValid, coursesValid, coursenewschemma} = require('../validation/validation');
 const authenticateToken = require("../service/token");
 const { upload } = require('../service/multer');
   
@@ -12,7 +12,6 @@ router.post('/register', upload.fields([{ name: 'registration_certificate' }, { 
 router.post('/unilogin',univeristy.uniersitylogin)
 
 router.post('/universitys',authenticateToken, universityValid,univeristy.registerUniversity)
-
 
 router.get('/:id' ,  univeristy.getUniversityByIdHandler)
 
@@ -27,6 +26,9 @@ router.put('/image/:id', upload.single('university_image'), univeristy.uploadIma
 
 /******************************Courses Api********************************************************** */
     
+router.post('/newcoursesadd',authenticateToken, coursenewschemma,univeristy.courseadd)
+
+
 router.post('/courses1' ,coursesValid,authenticateToken, univeristy.courseCreate)
 
 

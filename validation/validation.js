@@ -79,6 +79,30 @@ const coursesValid = (req, res, next) => {
 };
 
 
+const coursesnewschema = Joi.object({
+  course_name: Joi.string().required(),
+  department: Joi.string().required(),
+  subject: Joi.string().required(),
+  tuition_fee: Joi.number().precision(2).required(),
+  duration_years: Joi.number().integer().required(),
+  course_type: Joi.string().valid('Graduation', 'Postgraduation', 'PhD', 'Diploma'),
+  university_id: Joi.number().integer().required(),
+  
+});
+
+
+// Middleware for request body validation
+const coursenewschemma = (req, res, next) => {
+
+  const { error } = coursesnewschema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
+
 
 const applicationSchema = Joi.object({
   course_id: Joi.number().integer().required(),
@@ -112,5 +136,6 @@ module.exports = {
   createUserSchema,
   validateRegistrationData,
   universityValid,
-  coursesValid,validateApplicationData
+  coursesValid,validateApplicationData,
+  coursenewschemma
 };

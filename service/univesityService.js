@@ -385,6 +385,41 @@ const uniersitylogin = async (req, res) => {
       res.status(500).json({ error: 'An internal server error occurred' });
     }
   };
+
+
+
+  const courseadd = async (req, res) => {
+    const userId = req.user.id;
+console.log("jdhfgfdjgdhfd", userId)
+    const { course_name, department, subject ,tuition_fee,duration_years,course_type,university_id} = req.body;
+
+    try {  
+        const universityData = await userservice.courseregister({
+            course_name,
+            department,
+            subject,
+            tuition_fee,
+            duration_years,
+            course_type,
+            university_id: userId
+        });
+
+
+        res.status(201).json({
+            message: "course add successfully",
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);
+        }
+    }
+};
+
+  
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -396,5 +431,6 @@ module.exports = {
     uploadImage1,
     getallcourses1,
     registerUniversityAndUploadImage,
-    uniersitylogin
+    uniersitylogin,
+    courseadd
 }

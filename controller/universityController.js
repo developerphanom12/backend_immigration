@@ -523,6 +523,38 @@ function updateaddressuniversity(userId, addressId) {
   }
 
 
+  function courseregister(university,userId) {
+    return new Promise((resolve, reject) => {
+        const { course_name, department, subject,tuition_fee,duration_years ,course_type,university_id} = university;
+        const query = `
+        INSERT INTO courses_list 
+        (course_name, department, subject,tuition_fee,duration_years,course_type,university_id)
+        VALUES (?, ?, ?,?,?,?,?)
+      `;
+
+        db.query(query, [course_name, department, subject,tuition_fee,duration_years,course_type,university_id], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering courses:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    course_name,
+                    department,
+                    subject,
+                    tuition_fee,
+                    duration_years,
+                    course_type,
+                    userId
+                    
+                };
+                resolve(insertedUniversity);
+                logger.info('courses registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
+
   
 module.exports = {
     UniversityRegister,
@@ -541,5 +573,6 @@ module.exports = {
     aCertificate,
     logiuniversity,
     universityaddress,
-    updateaddressuniversity
+    updateaddressuniversity,
+    courseregister
 }
