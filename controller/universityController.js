@@ -555,7 +555,396 @@ function updateaddressuniversity(userId, addressId) {
     });
 }
 
+
+
+function ugrequirement(university,userId) {
+    return new Promise((resolve, reject) => {
+        const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = university;
+        const query = `
+        INSERT INTO ug_requirememnt 
+        (english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id)
+        VALUES (?, ?, ?,?,?,?,?)
+      `;
+
+        db.query(query, [english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering courses:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    english_requirement,
+                    academic_requirement,
+                    offer_timeline,
+                    Credibility,
+                    Finance,
+                    Discount,
+                    userId
+                    
+                };
+                resolve(insertedUniversity);
+                logger.info('courses registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
+
+
   
+
+
+function pgrequirement(university,userId) {
+    return new Promise((resolve, reject) => {
+        const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = university;
+        const query = `
+        INSERT INTO pg_requirememnt 
+        (english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id)
+        VALUES (?, ?, ?,?,?,?,?)
+      `;
+
+        db.query(query, [english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering courses:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    english_requirement,
+                    academic_requirement,
+                    offer_timeline,
+                    Credibility,
+                    Finance,
+                    Discount,
+                    userId
+                    
+                };
+                resolve(insertedUniversity);
+                logger.info('courses registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
+
+
+
+function getallcoursesbyid(userId) {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.course_id,
+        c.course_name,
+        c.department,
+        c.subject,
+        c.tuition_fee,
+        c.duration_years,
+        c.course_type,
+        u.id AS university_id,
+        u.university_image
+      FROM courses_list c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+      WHERE u.id = ?;`
+
+        db.query(query,userId, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    course_id: row.course_id,
+                    course_name: row.course_name,
+                    department: row.department,
+                    subject: row.subject,
+                    tuition_fee: row.tuition_fee,
+                    duration_years: row.duration_years,
+                    course_type: row.course_type,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_image // Include the university image here
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+
+
+function getallcoursesbyftehc() {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.course_id,
+        c.course_name,
+        c.department,
+        c.subject,
+        c.tuition_fee,
+        c.duration_years,
+        c.course_type,
+        u.id AS university_id,
+        u.university_image
+      FROM courses_list c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id;`
+
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    course_id: row.course_id,
+                    course_name: row.course_name,
+                    department: row.department,
+                    subject: row.subject,
+                    tuition_fee: row.tuition_fee,
+                    duration_years: row.duration_years,
+                    course_type: row.course_type,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_image // Include the university image here
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+  
+
+
+function getallugbyid(userId) {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.ug_id,
+        c.english_requirement,
+        c.academic_requirement,
+        c.offer_timeline,
+        c.Credibility,
+        c.Finance,
+        c.Discount,
+        u.id AS university_id,
+        u.university_image
+      FROM  ug_requirememnt c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+      WHERE u.id = ?;`
+
+        db.query(query,userId, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    ug_requirement: row.ug_id,
+                    course_name: row.english_requirement,
+                    department: row.academic_requirement,
+                    subject: row.offer_timeline,
+                    tuition_fee: row.Credibility,
+                    duration_years: row.Finance,
+                    course_type: row.Discount,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_name 
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+
+
+
+function getallugrequirement() {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.ug_id,
+        c.english_requirement,
+        c.academic_requirement,
+        c.offer_timeline,
+        c.Credibility,
+        c.Finance,
+        c.Discount,
+        u.id AS university_id,
+        u.university_image
+      FROM  ug_requirememnt c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+     ;`
+
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    ug_requirement: row.ug_id,
+                    course_name: row.english_requirement,
+                    department: row.academic_requirement,
+                    subject: row.offer_timeline,
+                    tuition_fee: row.Credibility,
+                    duration_years: row.Finance,
+                    course_type: row.Discount,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_name // Include the university image here
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+
+
+function getallpgbyid(userId) {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.pg_id,
+        c.english_requirement,
+        c.academic_requirement,
+        c.offer_timeline,
+        c.Credibility,
+        c.Finance,
+        c.Discount,
+        u.id AS university_id,
+        u.university_image
+      FROM  pg_requirememnt c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+      WHERE u.id = ?;`
+
+        db.query(query,userId, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    pg_requirement: row.pg_id,
+                    course_name: row.english_requirement,
+                    department: row.academic_requirement,
+                    subject: row.offer_timeline,
+                    tuition_fee: row.Credibility,
+                    duration_years: row.Finance,
+                    course_type: row.Discount,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_name // Include the university image here
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
+
+
+
+function getallpgrequirement() {
+    return new Promise((resolve, reject) => {
+        const query = ` 
+        SELECT
+        c.pg_id,
+        c.english_requirement,
+        c.academic_requirement,
+        c.offer_timeline,
+        c.Credibility,
+        c.Finance,
+        c.Discount,
+        u.id AS university_id,
+        u.university_image
+      FROM  pg_requirememnt c
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+     ;`
+
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all courses:', error); // Log the error
+            } else {
+               
+
+                const usersWithAddresses = results.map((row) => ({
+                    pg_requirement: row.pg_id,
+                    course_name: row.english_requirement,
+                    department: row.academic_requirement,
+                    subject: row.offer_timeline,
+                    tuition_fee: row.Credibility,
+                    duration_years: row.Finance,
+                    course_type: row.Discount,
+                    university: {
+                        id: row.university_id,
+                        image: row.university_name // Include the university image here
+                    },
+                    is_active: row.is_active,
+                    create_date: row.create_date,
+                    update_date: row.update_date,
+                    is_deleted: row.is_deleted,
+                   
+                }));
+                
+                resolve(usersWithAddresses);
+                
+                logger.info('All courses retrieved successfully');
+            }
+        });
+    });
+}
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -574,5 +963,13 @@ module.exports = {
     logiuniversity,
     universityaddress,
     updateaddressuniversity,
-    courseregister
+    courseregister,
+    ugrequirement,
+    pgrequirement,
+    getallcoursesbyid,
+    getallcoursesbyftehc,
+    getallugbyid,
+    getallugrequirement,
+    getallpgbyid,
+    getallpgrequirement
 }

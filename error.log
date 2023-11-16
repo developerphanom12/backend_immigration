@@ -289,3 +289,13 @@
 2023-11-15T06:57:40.299Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'university_name' cannot be null
 2023-11-15T06:59:24.102Z [31merror[39m: Error registering university: ER_BAD_NULL_ERROR: Column 'password' cannot be null
 2023-11-15T07:02:09.206Z [31merror[39m: Error registering university: ER_WRONG_VALUE_COUNT_ON_ROW: Column count doesn't match value count at row 1
+2023-11-16T06:32:09.918Z [31merror[39m: Error registering courses: ER_NO_SUCH_TABLE: Table 'immigration_database.ug_requirement' doesn't exist
+2023-11-16T06:32:40.137Z [31merror[39m: Error registering courses: ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: Incorrect decimal value: 'Within 4 weeks of application' for column 'offer_timeline' at row 1
+2023-11-16T06:33:08.465Z [31merror[39m: Error registering courses: ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: Incorrect decimal value: '4 weeks' for column 'offer_timeline' at row 1
+2023-11-16T06:40:00.895Z [31merror[39m: Error registering courses: ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: Incorrect integer value: 'Merit-based scholarship' for column 'Discount' at row 1
+2023-11-16T08:02:00.659Z [31merror[39m: Error getting all courses: ER_BAD_FIELD_ERROR: Unknown column 'a.university_id' in 'on clause'
+2023-11-16T08:53:39.095Z [31merror[39m: Error getting all courses: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'u.university_image
+      FROM courses_list c
+      INNER JOIN UniversityRegistra' at line 10
+2023-11-16T09:36:56.289Z [31merror[39m: Error getting all courses: ER_BAD_FIELD_ERROR: Unknown column 'c.ug_id' in 'field list'
+2023-11-16T09:38:58.368Z [31merror[39m: Error getting all courses: ER_BAD_FIELD_ERROR: Unknown column 'c.pg_id' in 'field list'

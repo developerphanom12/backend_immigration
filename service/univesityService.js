@@ -266,8 +266,7 @@ const uploadImage1 = async (req, res) => {
     });
   
   };
-  
-const registerUniversityAndUploadImage = async (req, res) => {
+  const registerUniversityAndUploadImage = async (req, res) => {
     const {
         university_name,
         ambassador_name,
@@ -278,38 +277,53 @@ const registerUniversityAndUploadImage = async (req, res) => {
         address
     } = req.body;
 
-    console.log("hgygygy", req.body);
-
     try {
         // Validate university_name
         if (!university_name) {
             throw new Error('University name cannot be null or empty.');
         }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Save university registration data
         const userId = await userservice.UniversityRegisterself({
             university_name,
             ambassador_name,
             phone_number,
             email,
             username,
-            password:hashedPassword,
-            address:null
+            password: hashedPassword,
+            address: null
         });
 
-
+        // Save university address
         const addressId = await userservice.universityaddress(
             address.street_address,
-            address.city,  
+            address.city,
             address.state,
             address.country,
             address.postal_code,
-            userId, 
-          );
-          await userservice.updateaddressuniversity(userId, addressId);
+            userId
+        );
 
+        // Update user with address information
+        await userservice.updateaddressuniversity(userId, addressId);
 
-          const user = {  
+        let uniImageName, regCertImageName;
+
+        // Check and save university_image
+        if (req.files && req.files['university_image']) {
+            uniImageName = req.files['university_image'][0].filename;
+            await userservice.aCertificate(userId, uniImageName);
+        }
+
+        // Check and save registration_certificate
+        if (req.files && req.files['registration_certificate']) {
+            regCertImageName = req.files['registration_certificate'][0].filename;
+            await userservice.addRegistrationCertificate(userId, regCertImageName);
+        }
+
+        const user = {
             id: userId,
             university_name,
             ambassador_name,
@@ -318,28 +332,16 @@ const registerUniversityAndUploadImage = async (req, res) => {
             username,
             password,
             address: {
-              id: addressId,
-              street_address: address.street_address,
-              city: address.city,
-              state: address.state,
-              country:address.country,
-              postal_code: address.postal_code,
+                id: addressId,
+                street_address: address.street_address,
+                city: address.city,
+                state: address.state,
+                country: address.country,
+                postal_code: address.postal_code,
             },
-            
-          };
-        if (req.files) {
-            const id = userId.id;
-
-            if (req.files['university_image']) {
-                const uniImageName = req.files['university_image'][0].filename;
-                await userservice.aCertificate(id, uniImageName);
-            }
-
-            if (req.files['registration_certificate']) {
-                const regCertImageName = req.files['registration_certificate'][0].filename;
-                await userservice.addRegistrationCertificate(id, regCertImageName);
-            }
-        }
+            university_image: uniImageName,
+            registration_certificate: regCertImageName
+        };
 
         res.status(200).json({
             message: 'University registration and image upload successful',
@@ -353,7 +355,6 @@ const registerUniversityAndUploadImage = async (req, res) => {
         });
     }
 };
-
 
 
 
@@ -389,6 +390,9 @@ const uniersitylogin = async (req, res) => {
 
 
   const courseadd = async (req, res) => {
+    if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
     const userId = req.user.id;
 console.log("jdhfgfdjgdhfd", userId)
     const { course_name, department, subject ,tuition_fee,duration_years,course_type,university_id} = req.body;
@@ -419,7 +423,186 @@ console.log("jdhfgfdjgdhfd", userId)
     }
 };
 
+
+
+const ugRequirement = async (req, res) => {
+    if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+    const userId = req.user.id;
+console.log("jdhfgfdjgdhfd", userId)
+    const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = req.body;
+
+    try {  
+        const universityData = await userservice.ugrequirement({
+            english_requirement,
+             academic_requirement,
+              offer_timeline,	
+              Credibility,
+              Finance ,
+              Discount,
+              university_id:userId
+        });
+
+
+        res.status(201).json({
+            message: "UG Requirement add successfully",
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);
+        }
+    }
+};
+
   
+const pgRequirement = async (req, res) => {
+    if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+    const userId = req.user.id;
+console.log("jdhfgfdjgdhfd", userId)
+    const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = req.body;
+
+    try {  
+        const universityData = await userservice.pgrequirement({
+            english_requirement,
+             academic_requirement,
+              offer_timeline,	
+              Credibility,
+              Finance ,
+              Discount,
+              university_id:userId
+        });
+
+
+        res.status(201).json({
+            message: "UG Requirement add successfully",
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);
+        }
+    }
+};
+
+const getallacoursebyid = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const userRole = req.user.role; 
+        console.log('sdfsdfsdf', userId);
+
+        let userApplications;
+
+        if (userRole === 'university') {
+            userApplications = await userservice.getallcoursesbyid(userId);
+        } else {
+            userApplications = await userservice.getallcoursesbyftehc(); 
+        }
+
+        if (userApplications.length > 0) {
+            res.status(201).json({
+                message: "Courses fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        } else {
+            const responseMessage = 'No university courses found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+}
+
+
+const getallugrequirement = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const userRole = req.user.role; 
+        console.log('sdfsdfsdf', userId);
+
+        let userApplications;
+
+        if (userRole === 'university') {
+            userApplications = await userservice.getallugbyid(userId);
+        } else {
+            userApplications = await userservice.getallugrequirement(); 
+        }
+
+        if (userApplications.length > 0) {
+            res.status(201).json({
+                message: "Courses fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        } else {
+            const responseMessage = 'No university courses found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+}
+
+const getallpgrequirement = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const userRole = req.user.role; 
+        console.log('sdfsdfsdf', userId);
+
+        let userApplications;
+
+        if (userRole === 'university') {
+            userApplications = await userservice.getallpgbyid(userId);
+        } else {
+            userApplications = await userservice.getallpgrequirement(); 
+        }
+
+        if (userApplications.length > 0) {
+            res.status(201).json({
+                message: "Courses fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        } else {
+            const responseMessage = 'No university courses found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+}
+
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -432,5 +615,10 @@ module.exports = {
     getallcourses1,
     registerUniversityAndUploadImage,
     uniersitylogin,
-    courseadd
+    courseadd,
+    ugRequirement,
+    pgRequirement,
+    getallacoursebyid,
+    getallugrequirement,
+    getallpgrequirement
 }

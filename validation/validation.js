@@ -86,7 +86,7 @@ const coursesnewschema = Joi.object({
   tuition_fee: Joi.number().precision(2).required(),
   duration_years: Joi.number().integer().required(),
   course_type: Joi.string().valid('Graduation', 'Postgraduation', 'PhD', 'Diploma'),
-  university_id: Joi.number().integer().required(),
+  university_id: Joi.number().integer(),
   
 });
 
@@ -103,6 +103,29 @@ const coursenewschemma = (req, res, next) => {
   next();
 };
 
+
+const uggschema = Joi.object({
+  english_requirement: Joi.string(),
+  academic_requirement: Joi.string().required(),
+  offer_timeline: Joi.string().required(),
+  Credibility  : Joi.string().valid('Yes', 'No').required(),
+  Finance: Joi.string().valid('Yes', 'No').required(),
+  Discount:Joi.string().required(),
+  
+});
+
+
+// Middleware for request body validation
+const ugschema = (req, res, next) => {
+
+  const { error } = uggschema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
 
 const applicationSchema = Joi.object({
   course_id: Joi.number().integer().required(),
@@ -137,5 +160,6 @@ module.exports = {
   validateRegistrationData,
   universityValid,
   coursesValid,validateApplicationData,
-  coursenewschemma
+  coursenewschemma,
+  ugschema
 };
