@@ -12,6 +12,9 @@ router.get('/getallug', authenticateToken, univeristy.getallugrequirement) //---
 
 router.get('/getallpg', authenticateToken, univeristy.getallpgrequirement) //---------->>> get al pg courses requirement
 
+router.get('/getdatabyid', authenticateToken, univeristy.getallacoursebyid) //-->>>get all courses
+
+
 router.post('/register', upload.fields([{ name: 'registration_certificate' }, { name: 'university_image' }]), univeristy.registerUniversityAndUploadImage);
 
 router.post('/unilogin', univeristy.uniersitylogin)
@@ -54,7 +57,6 @@ router.get('/get/:id', univeristy.getById)
 
 
 
-router.get('/getdatabyme', authenticateToken, univeristy.getallacoursebyid) //-->>>get all courses
 
 
 module.exports = router;
