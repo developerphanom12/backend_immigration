@@ -10,6 +10,7 @@ const nodemailer = require('nodemailer');
 const randomstring = require('randomstring');
 
 //***************************user-routes-here****************************//
+router.get('/get/detail/by',authenticateToken, userService.getprofilebyid);
 
 
 /**---1---**/
