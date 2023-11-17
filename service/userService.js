@@ -262,6 +262,46 @@ const setNewPassword = (req, res) => {
   });
 };
 
+
+
+const getprofilebyid = async (req, res) => {
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  try {
+    let counts;
+
+    if (userRole === 'university') {
+      const a = await userservice.getbyunivesity(userId);
+       res.status(201).json({
+        status: 201,
+        message: 'profile get s retrieved successfully',
+        data: a,
+      });
+    }
+
+    if (userRole === 'user') {
+    const  counts = await userservice.getbyiduser(userId);
+      res.status(201).json({
+       status: 201,
+       message: 'profile get s retrieved successfully',
+       data: counts,
+     });
+    }
+    if (userRole === 'student') {
+   const   count = await userservice.getbyidstudent(userId);
+      res.status(201).json({
+       status: 201,
+       message: 'profile get s retrieved successfully',
+       data: count,
+     });
+    }
+  } catch (error) {
+    console.error('Error in getApplicationCountsController:', error);
+    const errorMessage = 'Error fetching application counts: ' + error.message;
+    res.status(500).json({ error: errorMessage });
+  }
+};
+
 module.exports = {
   registerUser,
   getByIdUser,
@@ -271,5 +311,6 @@ module.exports = {
   forgetpass,
   updateUser,
   forgetpasswordbyemail,
-  verifyOTP1,setNewPassword
+  verifyOTP1,setNewPassword,
+  getprofilebyid
 };
