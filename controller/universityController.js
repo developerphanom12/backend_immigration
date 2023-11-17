@@ -463,9 +463,10 @@ function logiuniversity(username, password, callback) {
       if (user.is_deleted === 1) {
         return callback(null, { error: 'User not found' });
       }
-      if (user.is_approved === 1) {
+      if (user.is_approved !== 1) {
         return callback(null, { error: 'You are not approved at this moment' });
       }
+      
   
       const passwordMatch = await bcrypt.compare(password, user.password);
   
