@@ -733,7 +733,10 @@ function getallcoursesbyftehc() {
   
 
 
-function getallugbyid(userId) {
+function 
+
+
+getallugbyid(userId) {
     return new Promise((resolve, reject) => {
         const query = ` 
         SELECT
@@ -760,12 +763,12 @@ function getallugbyid(userId) {
 
                 const usersWithAddresses = results.map((row) => ({
                     ug_requirement: row.ug_id,
-                    course_name: row.english_requirement,
-                    department: row.academic_requirement,
-                    subject: row.offer_timeline,
-                    tuition_fee: row.Credibility,
-                    duration_years: row.Finance,
-                    course_type: row.Discount,
+                    english_requirement: row.english_requirement,
+                    academic_requirement: row.academic_requirement,
+                    offer_timeline: row.offer_timeline,
+                    Credibility: row.Credibility,
+                    Finance: row.Finance,
+                    Discount: row.Discount,
                     university: {
                         id: row.university_id,
                         image: row.university_name 
@@ -814,12 +817,12 @@ function getallugrequirement() {
 
                 const usersWithAddresses = results.map((row) => ({
                     ug_requirement: row.ug_id,
-                    course_name: row.english_requirement,
-                    department: row.academic_requirement,
-                    subject: row.offer_timeline,
-                    tuition_fee: row.Credibility,
-                    duration_years: row.Finance,
-                    course_type: row.Discount,
+                    english_requirement: row.english_requirement,
+                    academic_requirement: row.academic_requirement,
+                    offer_timeline: row.offer_timeline,
+                    Credibility: row.Credibility,
+                    Finance: row.Finance,
+                    Discount: row.Discount,
                     university: {
                         id: row.university_id,
                         image: row.university_name // Include the university image here
@@ -867,12 +870,12 @@ function getallpgbyid(userId) {
 
                 const usersWithAddresses = results.map((row) => ({
                     pg_requirement: row.pg_id,
-                    course_name: row.english_requirement,
-                    department: row.academic_requirement,
-                    subject: row.offer_timeline,
-                    tuition_fee: row.Credibility,
-                    duration_years: row.Finance,
-                    course_type: row.Discount,
+                    english_requirement: row.english_requirement,
+                    academic_requirement: row.academic_requirement,
+                    offer_timeline: row.offer_timeline,
+                    Credibility: row.Credibility,
+                    Finance: row.Finance,
+                    Discount: row.Discount,
                     university: {
                         id: row.university_id,
                         image: row.university_name // Include the university image here
@@ -921,12 +924,12 @@ function getallpgrequirement() {
 
                 const usersWithAddresses = results.map((row) => ({
                     pg_requirement: row.pg_id,
-                    course_name: row.english_requirement,
-                    department: row.academic_requirement,
-                    subject: row.offer_timeline,
-                    tuition_fee: row.Credibility,
-                    duration_years: row.Finance,
-                    course_type: row.Discount,
+                    english_requirement: row.english_requirement,
+                    academic_requirement: row.academic_requirement,
+                    offer_timeline: row.offer_timeline,
+                    Credibility: row.Credibility,
+                    Finance: row.Finance,
+                    Discount: row.Discount,
                     university: {
                         id: row.university_id,
                         image: row.university_name // Include the university image here
