@@ -315,12 +315,22 @@ const uploadImage1 = async (req, res) => {
         if (req.files && req.files['university_image']) {
             uniImageName = req.files['university_image'][0].filename;
             await userservice.aCertificate(userId, uniImageName);
+        } else {
+            // Handle the case where university_image is not provided
+            return res.status(400).json({
+                message: 'University image is required.',
+            });
         }
 
         // Check and save registration_certificate
         if (req.files && req.files['registration_certificate']) {
             regCertImageName = req.files['registration_certificate'][0].filename;
             await userservice.addRegistrationCertificate(userId, regCertImageName);
+        } else {
+            // Handle the case where registration_certificate is not provided
+            return res.status(400).json({
+                message: 'Registration certificate is required.',
+            });
         }
 
         const user = {
