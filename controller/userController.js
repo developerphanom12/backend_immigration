@@ -656,6 +656,179 @@ const setNewPassword = (email, newPassword, callback) => {
   });
 };
 
+
+
+
+const getbyiduser = (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+    SELECT
+    u.id AS user_id,
+    u.username,
+    u.firstname,
+    u.lastname,
+    u.email,
+    u.phone_number,
+    u.create_date,
+    u.update_date,
+    a.address_id AS address_id,
+    a.street_address,
+    a.city,
+    a.state,
+    a.postal_code
+  FROM user01 u
+  INNER JOIN user_address_by a ON u.id = a.user_id
+  WHERE u.id = ?`;
+
+  db.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      reject(error);
+      logger.error('Error getting user by ID:', error); // Log the error
+    } else {
+      if (results.length === 0) {
+        resolve(null);
+      } else {
+        // Extract user and address details//
+        const userWithAddress = {
+          user_id: results[0].user_id,
+          username: results[0].username,
+          firstname: results[0].firstname,
+          lastname: results[0].lastname,
+          email: results[0].email,
+          phone_number: results[0].phone_number,
+          create_date  : results[0].create_date,
+          update_date : results[0].update_date,
+          address: {
+            address_id: results[0].address_id,
+            street_address: results[0].street_address,
+            city: results[0].city,
+            state: results[0].state,
+            postal_code: results[0].postal_code,
+          },
+        };
+        resolve(userWithAddress);
+        logger.info('User retrieved by ID successfully');
+      }
+    }
+  });
+});
+};
+
+
+
+
+const getbyidstudent= (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+    SELECT
+    u.id AS user_id,
+    u.username,
+    u.first_name,
+    u.last_name,
+    u.gender,
+    u.dob,
+    u.email,
+    u.phone_number,
+    a.address_id AS address_id,
+    a.street_address,
+    a.city,
+    a.state,
+    a.postal_code
+  FROM students u
+  INNER JOIN student_addresse a ON u.id = a.student_id
+  WHERE u.id = ?`;
+
+  db.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      reject(error);
+      logger.error('Error getting user by ID:', error); // Log the error
+    } else {
+      if (results.length === 0) {
+        resolve(null);
+      } else {
+        // Extract user and address details//
+        const userWithAddress = {
+          user_id: results[0].user_id,
+          username: results[0].username,
+          firstname: results[0].first_name,
+          lastname: results[0].last_name,
+          email: results[0].email,
+          phone_number: results[0].phone_number,
+          create_date  : results[0].create_date,
+          update_date : results[0].update_date,
+          address: {
+            address_id: results[0].address_id,
+            street_address: results[0].street_address,
+            city: results[0].city,
+            state: results[0].state,
+            postal_code: results[0].postal_code,
+          },
+        };
+        resolve(userWithAddress);
+        logger.info('User retrieved by ID successfully');
+      }
+    }
+  });
+});
+};
+
+
+
+const getbyunivesity= (userId) => {
+  return new Promise((resolve, reject) => {
+    const query = `
+    SELECT
+    u.id AS user_id,
+    u.ambassador_name,
+    u.phone_number,
+    u.email,
+    u.username,
+    u.university_name,
+    a.address_id AS address_id,
+    a.street_address,
+    a.city,
+    a.state,
+    a.postal_code
+  FROM UniversityRegistration u
+  INNER JOIN university_address a ON u.id = a.user_id
+  WHERE u.id = ?`;
+
+  db.query(query, [userId], (error, results) => {
+    if (error) {
+      console.error('Error executing query:', error);
+      reject(error);
+      logger.error('Error getting user by ID:', error); // Log the error
+    } else {
+      if (results.length === 0) {
+        resolve(null);
+      } else {
+        // Extract user and address details//
+        const userWithAddress = {
+          user_id: results[0].user_id,
+          username: results[0].ambassador_name,
+          email: results[0].email,
+          phone_number: results[0].phone_number,
+          university_name:results[0].university_name,
+          create_date  : results[0].create_date,
+          update_date : results[0].update_date,
+          address: {
+            address_id: results[0].address_id,
+            street_address: results[0].street_address,
+            city: results[0].city,
+            state: results[0].state,
+            postal_code: results[0].postal_code,
+          },
+        };
+        resolve(userWithAddress);
+        logger.info('User retrieved by ID successfully');
+      }
+    }
+  });
+});
+};
+
 module.exports = {
   registerUser,
   authenticateUser,
@@ -670,6 +843,12 @@ module.exports = {
   insertUser,
   getUserByEmail,
   updateUserAddress,
-  getProfileImageFilename,sendOTPAndStoreInDatabase,verifyOTP,setNewPassword
+  getProfileImageFilename,
+  sendOTPAndStoreInDatabase,
+  verifyOTP,
+  setNewPassword,
+  getbyiduser,
+  getbyidstudent,
+  getbyunivesity
 }
 // create apipost method first otp send on email and there store in table then scond post api fetch user id from req.user.id and fetch otp from table where user id there then create api ost method new password and confrim password
