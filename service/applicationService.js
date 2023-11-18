@@ -312,21 +312,24 @@ const getApplicationCountsController = async (req, res) => {
 };
 
 
-
 const staffdata = async (req, res) => {
   const userId = req.user.id;
   const userRole = req.user.role;
+  console.log("dfgdbfshdf",userId,userRole)
   try {
     let counts;
 
     if (userRole === 'admin') {
       counts = await applicationservice.staffcount();
     }
-    // Calculate totalApplications for each user
-    counts.forEach((userCounts) => {
-      userCounts.userTotalApplications =
-        userCounts.rejectedCount + userCounts.pendingCount + userCounts.approvedCount;
-    });
+
+    // Check if counts is defined before iterating
+    if (counts) {
+      counts.forEach((userCounts) => {
+        userCounts.userTotalApplications =
+          userCounts.rejectedCount + userCounts.pendingCount + userCounts.approvedCount;
+      });
+    }
 
     res.status(201).json({
       status: 201,
@@ -339,6 +342,7 @@ const staffdata = async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 };
+
 
 
 
