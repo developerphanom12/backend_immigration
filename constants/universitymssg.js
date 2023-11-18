@@ -8,6 +8,14 @@ module.exports = {
         message: "University not found",
         status: 404
       },
+      USERNOTFOND: {
+        message: "AGENT not found",
+        status: 404
+      },
+      STUDENTNOTFOND: {
+        message: "AGENT not found",
+        status: 404
+      },
       unauthorized: {
         message: "Unauthorized",
         status: 401
@@ -29,6 +37,14 @@ module.exports = {
       },
       universityUpdateSuccess: {
         message: "University updated successfully",
+        status: 200
+      },
+      uSERUpdateSuccess: {
+        message: "Agent updated successfully",
+        status: 200
+      },
+      STUDENTUpdateSuccess: {
+        message: "Agent updated successfully",
         status: 200
       },
       universityFetchSuccess: {

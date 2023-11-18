@@ -26,7 +26,7 @@ router.get('/:id', univeristy.getUniversityByIdHandler)
 router.get('/getall/university', authenticateToken, univeristy.getalluniversity) //------------>>>>>s
 
 
-router.put('/updateUniversity/:id', univeristy.updateUniversity1);
+router.put('/updateUniversity',authenticateToken, univeristy.updateUniversity1);
 
 
 router.put('/image/:id', upload.single('university_image'), univeristy.uploadImage1)

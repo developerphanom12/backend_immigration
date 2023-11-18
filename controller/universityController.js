@@ -1,18 +1,18 @@
 const { error } = require('winston');
 const db = require('../config/configration');
 const { logger } = require('../utils/logging')
-const  bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 function UniversityRegister(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, course_type, founded_year,person_name,contact_number } = university;
+        const { university_name, course_type, founded_year, person_name, contact_number } = university;
         const query = `
         INSERT INTO university 
         (university_name, course_type, founded_year,person_name,contact_number)
         VALUES (?, ?, ?,?,?)
       `;
 
-        db.query(query, [university_name, course_type, founded_year,person_name,contact_number], (error, result) => {
+        db.query(query, [university_name, course_type, founded_year, person_name, contact_number], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering university:', error);
@@ -62,23 +62,23 @@ function getCourseById(id) {
                     const response = {
                         data: {
                             course_id: courseData.course_id,
-                            university_id :{
-                            university_id: courseData.university_id,
-                            university_name : courseData.university_name,
-                            founded_year :  courseData.founded_year,
-                            course_type: courseData.course_type,
-                            is_active: courseData.is_active,
-                            create_date: courseData.create_date,
-                            update_date: courseData.update_date,
-                            is_deleted: courseData.is_deleted
-                           },
-                                
+                            university_id: {
+                                university_id: courseData.university_id,
+                                university_name: courseData.university_name,
+                                founded_year: courseData.founded_year,
+                                course_type: courseData.course_type,
+                                is_active: courseData.is_active,
+                                create_date: courseData.create_date,
+                                update_date: courseData.update_date,
+                                is_deleted: courseData.is_deleted
+                            },
+
                             user_id: {
                                 id: courseData.user_id,
                                 username: courseData.username,
                                 email: courseData.email,
-                                 is_active: courseData.is_active,
-                               
+                                is_active: courseData.is_active,
+
                             },
                             course_name: courseData.course_name,
                             course_level: courseData.course_level,
@@ -112,7 +112,7 @@ function getalluniversity() {
                     university_id: row.university_id,
                     university_name: row.university_name,
                     course_type: row.course_type,
-                    person_name:row.person_name,
+                    person_name: row.person_name,
                     contact_number: row.contact_number,
                     founded_year: row.founded_year,
                     university_image: row.university_image,
@@ -128,24 +128,24 @@ function getalluniversity() {
         });
     });
 }
+
 function updateUniversity(id, updatedUniversityData) {
     return new Promise((resolve, reject) => {
-        const { university_name, course_type, founded_year,person_name,contact_number } = updatedUniversityData;
+        const { university_name, ambassador_name, phone_number, email } = updatedUniversityData;
 
         // Construct the SQL query
         const query = `
-        UPDATE university
+        UPDATE UniversityRegistration
         SET 
           university_name = COALESCE(?, university_name),
-          course_type = COALESCE(?, course_type),
-          founded_year = COALESCE(?, founded_year),
-          person_name = COALESCE(?, person_name),\
-          contact_number = COALESCE(?,contact_number)
-        WHERE university_id = ?;
+          ambassador_name = COALESCE(?, ambassador_name),
+          phone_number = COALESCE(?, phone_number),
+          email = COALESCE(?, email)
+          WHERE id = ?;
       `;
 
 
-        db.query(query, [university_name, course_type, founded_year, contact_number,person_name,id], (error, result) => {
+        db.query(query, [university_name, ambassador_name, phone_number, email, id], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error updating university:', error);
@@ -153,7 +153,7 @@ function updateUniversity(id, updatedUniversityData) {
                 if (result.affectedRows > 0) {
 
                     const fetchQuery = `
-              SELECT * FROM university WHERE university_id = ?;
+              SELECT * FROM UniversityRegistration WHERE id = ?;
             `;
 
                     db.query(fetchQuery, [id], (fetchError, fetchResult) => {
@@ -166,18 +166,165 @@ function updateUniversity(id, updatedUniversityData) {
                                 resolve(updatedUniversity);
                                 logger.info('University updated successfully', updatedUniversity);
                             } else {
-                                resolve(null); 
+                                resolve(null);
                             }
                         }
                     });
                 } else {
-                    resolve(null); 
+                    resolve(null);
                 }
             }
         });
     });
 }
 
+function updateUserData(id, updatedUserData) {
+    return new Promise((resolve, reject) => {
+        const { username, firstname, lastname, email, phone_number, address } = updatedUserData;
+
+        // Construct the SQL query to update user information and address
+        const updateQuery = `
+            UPDATE user01 u
+            JOIN user_address_by a ON u.id = a.user_id
+            SET 
+                u.username = COALESCE(?, u.username),
+                u.firstname = COALESCE(?, u.firstname),
+                u.lastname = COALESCE(?, u.lastname),
+                u.email = COALESCE(?, u.email),
+                u.phone_number = COALESCE(?, u.phone_number),
+                a.street_address = COALESCE(?, a.street_address),
+                a.city = COALESCE(?, a.city),
+                a.state = COALESCE(?, a.state),
+                a.postal_code = COALESCE(?, a.postal_code)
+            WHERE u.id = ?;
+        `;
+
+        // Execute the update query
+        db.query(
+            updateQuery,
+            [
+                username,
+                firstname,
+                lastname,
+                email,
+                phone_number,
+                address.street_address,
+                address.city,
+                address.state,
+                address.postal_code,
+                id
+            ],
+            (updateError, updateResult) => {
+                if (updateError) {
+                    reject(updateError);
+                    logger.error('Error updating user information and address:', updateError);
+                } else {
+                    // Check if any rows were affected (indicating a successful update)
+                    if (updateResult.affectedRows > 0) {
+                        // Fetch the updated data after the update
+                        const fetchQuery = `
+                            SELECT * FROM user01 u
+                            JOIN user_address_by a ON u.id = a.user_id
+                            WHERE u.id = ?;
+                        `;
+                        
+                        db.query(fetchQuery, [id], (fetchError, fetchResult) => {
+                            if (fetchError) {
+                                reject(fetchError);
+                                logger.error('Error fetching updated user data:', fetchError);
+                            } else {
+                                // Check if the fetch query returned any data
+                                if (fetchResult.length > 0) {
+                                    const updatedUserData = fetchResult[0];
+                                    resolve(updatedUserData);
+                                    logger.info('User information and address updated successfully', updatedUserData);
+                                } else {
+                                    resolve(null);
+                                }
+                            }
+                        });
+                    } else {
+                        resolve(null);
+                    }
+                }
+            }
+        );
+    });
+}
+
+function updateStudentdata(id, updatedUserData) {
+    return new Promise((resolve, reject) => {
+        const { username, first_name, last_name, email, phone_number, address } = updatedUserData;
+
+        // Construct the SQL query to update user information and address
+        const updateQuery = `
+            UPDATE students u
+            JOIN student_addresse a ON u.id = a.student_id
+            SET 
+                u.username = COALESCE(?, u.username),
+                u.first_name = COALESCE(?, u.first_name),
+                u.last_name = COALESCE(?, u.last_name),
+                u.email = COALESCE(?, u.email),
+                u.phone_number = COALESCE(?, u.phone_number),
+                a.street_address = COALESCE(?, a.street_address),
+                a.city = COALESCE(?, a.city),
+                a.state = COALESCE(?, a.state),
+                a.postal_code = COALESCE(?, a.postal_code)
+            WHERE u.id = ?;
+        `;
+
+        // Execute the update query
+        db.query(
+            updateQuery,
+            [
+                username,
+                first_name,
+                last_name,
+                email,
+                phone_number,
+                address.street_address,
+                address.city,
+                address.state,
+                address.postal_code,
+                id
+            ],
+            (updateError, updateResult) => {
+                if (updateError) {
+                    reject(updateError);
+                    logger.error('Error updating user information and address:', updateError);
+                } else {
+                    // Check if any rows were affected (indicating a successful update)
+                    if (updateResult.affectedRows > 0) {
+                        // Fetch the updated data after the update
+                        const fetchQuery = `
+                            SELECT * FROM students u
+                            JOIN student_addresse a ON u.id = a.student_id
+                            WHERE u.id = ?;
+                        `;
+                        
+                        db.query(fetchQuery, [id], (fetchError, fetchResult) => {
+                            if (fetchError) {
+                                reject(fetchError);
+                                logger.error('Error fetching updated user data:', fetchError);
+                            } else {
+                                // Check if the fetch query returned any data
+                                if (fetchResult.length > 0) {
+                                    const updatedUserData = fetchResult[0];
+                                    resolve(updatedUserData);
+                                    logger.info('User information and address updated successfully', updatedUserData);
+                                } else {
+                                    resolve(null);
+                                }
+                            }
+                        });
+                    } else {
+                        resolve(null);
+                    }
+                }
+            }
+        );
+    });
+}
 
 function createCourse(courseData, userId) {
     return new Promise((resolve, reject) => {
@@ -305,7 +452,7 @@ function getAllCoursesWithUserDataAndUniversity() {
                         university_name: row.university_name,
                         founded_year: row.founded_year,
                         course_type: row.course_type,
-                        university_image : row.university_image,
+                        university_image: row.university_image,
                         is_active: row.is_active,
                         is_deleted: row.is_deleted,
                         create_date: row.create_date,
@@ -329,15 +476,15 @@ function getAllCoursesWithUserDataAndUniversity() {
 function addimageuniversity(userId, imagePath, callback) {
     const sql = 'UPDATE university SET  university_image = ? WHERE university_id = ?';
     db.query(sql, [imagePath, userId], (err, result) => {
-      if (err) {
-        return callback(err);
-      }
-  
-      return callback(null, result);
-  
+        if (err) {
+            return callback(err);
+        }
+
+        return callback(null, result);
+
     })
-  }
-  
+}
+
 
 
 
@@ -352,7 +499,7 @@ function getallcourses() {
                 logger.error('Error getting all users:', error); // Log the error
             } else {
                 const usersWithAddresses = results.map((row) => ({
-                    course_id	: row.course_id	,
+                    course_id: row.course_id,
                     course_name: row.course_name,
                     course_level: row.course_type,
                     is_active: row.is_active,
@@ -372,14 +519,14 @@ function getallcourses() {
 
 function UniversityRegisterself(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, ambassador_name, phone_number,email,username,password,addressId} = university;
+        const { university_name, ambassador_name, phone_number, email, username, password, addressId } = university;
         const query = `
         INSERT INTO UniversityRegistration  
         (university_name, ambassador_name, phone_number,email,username,password,address_id)
         VALUES (?, ?, ?,?,?,?,?)
       `;
 
-        db.query(query, [university_name, ambassador_name, phone_number,email,username,password,addressId], (error, result) => {
+        db.query(query, [university_name, ambassador_name, phone_number, email, username, password, addressId], (error, result) => {
             if (error) {
                 reject(error);
             } else {
@@ -394,27 +541,27 @@ function UniversityRegisterself(university) {
 
 
 
-  // function for uploading image and registration certificate
+// function for uploading image and registration certificate
 function addimg(userId, universityImage, registrationCertificate) {
     return new Promise((resolve, reject) => {
 
-    const sql = 'UPDATE UniversityRegistration SET university_image = ?, registration_certificate = ? WHERE id = ?';
-    db.query(sql, [universityImage, registrationCertificate, userId], (err, result) => {
-      if (err) {
-        return reject(err);
-      }
-  
-      return resolve( result);
-    });
+        const sql = 'UPDATE UniversityRegistration SET university_image = ?, registration_certificate = ? WHERE id = ?';
+        db.query(sql, [universityImage, registrationCertificate, userId], (err, result) => {
+            if (err) {
+                return reject(err);
+            }
+
+            return resolve(result);
+        });
     })
-  }
-  
+}
+
 
 
 async function addRegistrationCertificate(userId, regCertImageName) {
     try {
         const sql = 'UPDATE UniversityRegistration SET registration_certificate = ? WHERE id = ?';
-        const result =  db.query(sql, [regCertImageName, userId]);
+        const result = db.query(sql, [regCertImageName, userId]);
 
         // Check if the update was successful and handle it as needed
         if (result.affectedRows === 0) {
@@ -430,7 +577,7 @@ async function addRegistrationCertificate(userId, regCertImageName) {
 async function aCertificate(userId, uniImageName) {
     try {
         const sql = 'UPDATE UniversityRegistration SET university_image = ? WHERE id = ?';
-        const result =  db.query(sql, [uniImageName, userId]);
+        const result = db.query(sql, [uniImageName, userId]);
 
         // Check if the update was successful and handle it as needed
         if (result.affectedRows === 0) {
@@ -448,60 +595,60 @@ async function aCertificate(userId, uniImageName) {
 function logiuniversity(username, password, callback) {
 
     const query = 'SELECT * FROM UniversityRegistration WHERE username = ?';
-  
+
     db.query(query, [username], async (err, results) => {
-      if (err) {
-        return callback(err, null);
-      }
-  
-      if (results.length === 0) {
-        return callback(null, { error: 'User not found' });
-      }
-  
-      const user = results[0];
-  
-      if (user.is_deleted === 1) {
-        return callback(null, { error: 'User not found' });
-      }
-      if (user.is_approved !== 1) {
-        return callback(null, { error: 'You are not approved at this moment' });
-      }
-      
-  
-      const passwordMatch = await bcrypt.compare(password, user.password);
-  
-      if (!passwordMatch) {
-        return callback(null, { error: 'Invalid password' });
-      }
-  
-      const secretKey = 'secretkey';
-      const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
-  
-      return callback(null, {
-        data: {
-          user: {
-            id: user.id,
-            username: user.username,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            role: user.role,
-            token: token,
-          }
-        }
-      });
-    });
-  }
-  
-  function universityaddress(street_address, city, state, country,postal_code, user_id) {
-    return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO university_address(street_address, city, state, country, postal_code,user_id) VALUES ( ?, ?, ?, ?, ?,?)';
-      db.query(query, [street_address, city, state, country,postal_code, user_id], (err, result) => {
         if (err) {
-          reject(err);
-        } else {
-          resolve(result.insertId);
+            return callback(err, null);
         }
-      });
+
+        if (results.length === 0) {
+            return callback(null, { error: 'User not found' });
+        }
+
+        const user = results[0];
+
+        if (user.is_deleted === 1) {
+            return callback(null, { error: 'User not found' });
+        }
+        if (user.is_approved !== 1) {
+            return callback(null, { error: 'You are not approved at this moment' });
+        }
+
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return callback(null, { error: 'Invalid password' });
+        }
+
+        const secretKey = 'secretkey';
+        const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
+
+        return callback(null, {
+            data: {
+                user: {
+                    id: user.id,
+                    username: user.username,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
+                    role: user.role,
+                    token: token,
+                }
+            }
+        });
+    });
+}
+
+function universityaddress(street_address, city, state, country, postal_code, user_id) {
+    return new Promise((resolve, reject) => {
+        const query = 'INSERT INTO university_address(street_address, city, state, country, postal_code,user_id) VALUES ( ?, ?, ?, ?, ?,?)';
+        db.query(query, [street_address, city, state, country, postal_code, user_id], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.insertId);
+            }
+        });
     });
 }
 
@@ -511,29 +658,29 @@ function logiuniversity(username, password, callback) {
 
 // updateUserAddress function remains the same
 function updateaddressuniversity(userId, addressId) {
-    return new Promise((resolve, reject) => { 
-      const query = 'UPDATE UniversityRegistration SET address_id = ? WHERE id = ?';
-      db.query(query, [addressId, userId], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-
-
-  function courseregister(university,userId) {
     return new Promise((resolve, reject) => {
-        const { course_name, department, subject,tuition_fee,duration_years ,course_type,university_id} = university;
+        const query = 'UPDATE UniversityRegistration SET address_id = ? WHERE id = ?';
+        db.query(query, [addressId, userId], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+}
+
+
+function courseregister(university, userId) {
+    return new Promise((resolve, reject) => {
+        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id } = university;
         const query = `
         INSERT INTO courses_list 
         (course_name, department, subject,tuition_fee,duration_years,course_type,university_id)
         VALUES (?, ?, ?,?,?,?,?)
       `;
 
-        db.query(query, [course_name, department, subject,tuition_fee,duration_years,course_type,university_id], (error, result) => {
+        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);
@@ -547,7 +694,7 @@ function updateaddressuniversity(userId, addressId) {
                     duration_years,
                     course_type,
                     userId
-                    
+
                 };
                 resolve(insertedUniversity);
                 logger.info('courses registered successfully', insertedUniversity);
@@ -558,16 +705,16 @@ function updateaddressuniversity(userId, addressId) {
 
 
 
-function ugrequirement(university,userId) {
+function ugrequirement(university, userId) {
     return new Promise((resolve, reject) => {
-        const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = university;
+        const { english_requirement, academic_requirement, offer_timeline, Credibility, Finance, Discount, university_id } = university;
         const query = `
         INSERT INTO ug_requirememnt 
         (english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id)
         VALUES (?, ?, ?,?,?,?,?)
       `;
 
-        db.query(query, [english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id], (error, result) => {
+        db.query(query, [english_requirement, academic_requirement, offer_timeline, Credibility, Finance, Discount, university_id], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);
@@ -581,7 +728,7 @@ function ugrequirement(university,userId) {
                     Finance,
                     Discount,
                     userId
-                    
+
                 };
                 resolve(insertedUniversity);
                 logger.info('courses registered successfully', insertedUniversity);
@@ -591,19 +738,19 @@ function ugrequirement(university,userId) {
 }
 
 
-  
 
 
-function pgrequirement(university,userId) {
+
+function pgrequirement(university, userId) {
     return new Promise((resolve, reject) => {
-        const { english_requirement, academic_requirement, offer_timeline,	Credibility,Finance ,Discount,university_id} = university;
+        const { english_requirement, academic_requirement, offer_timeline, Credibility, Finance, Discount, university_id } = university;
         const query = `
         INSERT INTO pg_requirememnt 
         (english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id)
         VALUES (?, ?, ?,?,?,?,?)
       `;
 
-        db.query(query, [english_requirement, academic_requirement, offer_timeline,Credibility,Finance,Discount,university_id], (error, result) => {
+        db.query(query, [english_requirement, academic_requirement, offer_timeline, Credibility, Finance, Discount, university_id], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);
@@ -617,7 +764,7 @@ function pgrequirement(university,userId) {
                     Finance,
                     Discount,
                     userId
-                    
+
                 };
                 resolve(insertedUniversity);
                 logger.info('courses registered successfully', insertedUniversity);
@@ -645,13 +792,13 @@ function getallcoursesbyid(userId) {
       INNER JOIN UniversityRegistration u ON c.university_id = u.id
       WHERE u.id = ?;`
 
-        db.query(query,userId, (error, results) => {
+        db.query(query, userId, (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     course_id: row.course_id,
@@ -669,11 +816,11 @@ function getallcoursesbyid(userId) {
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
@@ -703,7 +850,7 @@ function getallcoursesbyftehc() {
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     course_id: row.course_id,
@@ -721,23 +868,23 @@ function getallcoursesbyftehc() {
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
     });
 }
-  
 
 
-function 
+
+function
 
 
-getallugbyid(userId) {
+    getallugbyid(userId) {
     return new Promise((resolve, reject) => {
         const query = ` 
         SELECT
@@ -754,13 +901,13 @@ getallugbyid(userId) {
       INNER JOIN UniversityRegistration u ON c.university_id = u.id
       WHERE u.id = ?;`
 
-        db.query(query,userId, (error, results) => {
+        db.query(query, userId, (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     ug_requirement: row.ug_id,
@@ -772,17 +919,17 @@ getallugbyid(userId) {
                     Discount: row.Discount,
                     university: {
                         id: row.university_id,
-                        image: row.university_name 
+                        image: row.university_name
                     },
                     is_active: row.is_active,
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
@@ -814,7 +961,7 @@ function getallugrequirement() {
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     ug_requirement: row.ug_id,
@@ -832,11 +979,11 @@ function getallugrequirement() {
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
@@ -861,13 +1008,13 @@ function getallpgbyid(userId) {
       INNER JOIN UniversityRegistration u ON c.university_id = u.id
       WHERE u.id = ?;`
 
-        db.query(query,userId, (error, results) => {
+        db.query(query, userId, (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     pg_requirement: row.pg_id,
@@ -885,11 +1032,11 @@ function getallpgbyid(userId) {
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
@@ -921,7 +1068,7 @@ function getallpgrequirement() {
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
-               
+
 
                 const usersWithAddresses = results.map((row) => ({
                     pg_requirement: row.pg_id,
@@ -939,11 +1086,11 @@ function getallpgrequirement() {
                     create_date: row.create_date,
                     update_date: row.update_date,
                     is_deleted: row.is_deleted,
-                   
+
                 }));
-                
+
                 resolve(usersWithAddresses);
-                
+
                 logger.info('All courses retrieved successfully');
             }
         });
@@ -975,5 +1122,7 @@ module.exports = {
     getallugbyid,
     getallugrequirement,
     getallpgbyid,
-    getallpgrequirement
+    getallpgrequirement,
+    updateUserData,
+    updateStudentdata
 }
