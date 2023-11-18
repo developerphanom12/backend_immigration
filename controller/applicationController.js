@@ -1341,7 +1341,7 @@ const staffcount = () => {
   FROM
     applications_table
   RIGHT JOIN
-    staff u ON u.id = applications_table.user_id
+    staff u ON u.country_id = applications_table.country_id
   WHERE
     u.is_deleted = 0  
   GROUP BY
