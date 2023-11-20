@@ -3,10 +3,10 @@ const userservice = require('../controller/userController');
 const { createUserSchema } = require('../validation/validation')
 const messages = require('../constants/message')
 const saltRounds = 10;
-const db = require('../config/configration'); 
+const db = require('../config/configration');
 const fs = require('fs')
 
- 
+
 const registerUser = async (req, res) => {
   const { username, password, firstname, lastname, email, phone_number, address } = req.body;
 
@@ -22,18 +22,18 @@ const registerUser = async (req, res) => {
       username,
       hashedPassword,
       firstname,
-      lastname,    
+      lastname,
       email,
       phone_number,
-      null 
+      null
     );
 
     const addressId = await userservice.insertAddress(
       address.street_address,
-      address.city,  
+      address.city,
       address.state,
       address.postal_code,
-      userId, 
+      userId,
     );
 
     await userservice.updateUserAddress(userId, addressId);
@@ -52,7 +52,7 @@ const registerUser = async (req, res) => {
         state: address.state,
         postal_code: address.postal_code,
       },
-      
+
     };
 
     res.status(messages.USER_API.USER_CREATE.status).json({
@@ -92,7 +92,7 @@ const getByIdUser = async (req, res) => {
 //----->>> get all user data
 
 const getAllUsers = async (req, res) => {
-  
+
   try {
     const allUsers = await userservice.getalluser();
 
@@ -142,7 +142,7 @@ const loginUserController = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-   userservice.loginUser(username, password, (err, result) => {
+    userservice.loginUser(username, password, (err, result) => {
       if (err) {
         console.error('Error:', err);
         return res.status(500).json({ error: 'An internal server error occurred' });
@@ -151,14 +151,14 @@ const loginUserController = async (req, res) => {
       if (result.error) {
         return res.status(401).json({ error: result.error });
       }
- 
-    
+
+
       res.status(messages.USER_API.USER_LOGIN_SUCCESS.status).json({
         message: messages.USER_API.USER_LOGIN_SUCCESS.message,
         data: result.data,
         token: result.token,
       });
-     
+
     });
   } catch (error) {
     console.error('Error logging in user:', error);
@@ -171,19 +171,93 @@ const loginUserController = async (req, res) => {
 
 const forgetpass = async (req, res) => {
   const userId = req.user.id;
-  console.log('useid',userId)
+  const userRole = req.user.role;
+
+  console.log('useid', userId)
   const { currentPassword, newPassword } = req.body;
 
   try {
-    await userservice.forgetPassword(userId, currentPassword, newPassword);
 
-    res.status(messages.USER_API.USER_PASSWORD_CHANGE.status).json({
-      message: messages.USER_API.USER_PASSWORD_CHANGE.message,
-      data: userId
-    });
-    } catch (error) {
+    if (userRole == 'user') {
+      try {
+        await userservice.forgetPassword(userId, currentPassword, newPassword);
+
+        res.status(messages.USER_API.USER_PASSWORD_CHANGE.status).json({
+          message: messages.USER_API.USER_PASSWORD_CHANGE.message,
+          status:201,
+          data: userId
+        });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          status: 401,
+          error: 'failed to change password'
+        });
+      }
+    }
+
+
+    if (userRole == 'student') {
+      try{
+        await userservice.forgetpassstudent(userId, currentPassword, newPassword);
+
+        res.status(messages.USER_API.STUDENT_PASSWORD_CHANGE.status).jsonb({
+          messages: messages.USER_API.STUDENT_PASSWORD_CHANGE,
+          status:201,
+          data: userId
+        })
+      }
+      catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          status: 401,
+          error: 'failed to change password'
+        });
+      }
+     
+    }
+
+    if (userRole == 'university') {
+      try{
+        await userservice.forgetfor_university(userId, currentPassword, newPassword);
+
+        res.status(messages.USER_API.UNIVERSITY_PASSWORD_CHANGE.message).json({
+          messages: messages.USER_API.UNIVERSITY_PASSWORD_CHANGE,
+          status:201,
+          data: userId
+        })
+      }
+      catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          status: 401,
+          error: 'failed to change password'
+        });
+      }
+     
+    }
+
+    if (userRole == 'staff') {
+      try{
+        await userservice.forgetpassforstaff(userId, currentPassword, newPassword);
+
+        res.status(messages.USER_API.STAFF_PASSWORD_CHANGE.message).json({
+          messages: messages.USER_API.STAFF_PASSWORD_CHANGE,
+          status:201,
+          data: userId
+        })
+      }
+      catch (error) {
+        console.error(error);
+        return res.status(500).json({
+          status: 401,
+          error: 'failed to change password'
+        });
+      }
+    }
+  } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({ status: 404,error: 'Internal server error' });
   }
 };
 
@@ -204,9 +278,9 @@ async function updateUser(req, res) {
     res.status(messages.USER_API.USER_UPDATE.status).json({
       message: messages.USER_API.USER_UPDATE.message,
       data: updatedUser
-    }); 
-   } 
-   catch (error) {
+    });
+  }
+  catch (error) {
     console.error('Error updating user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
@@ -215,11 +289,13 @@ async function forgetpasswordbyemail(req, res) {
   const { email } = req.body;
 
   try {
-    const otp =  userservice.sendOTPAndStoreInDatabase(email);
+    const otp = userservice.sendOTPAndStoreInDatabase(email);
     if (otp) {
-      res.status(200).json({message: 'OTP sent successfully' ,data:{
-        email:email
-    }});
+      res.status(200).json({
+        message: 'OTP sent successfully', data: {
+          email: email
+        }
+      });
     } else {
       res.status(500).json({ error: 'Failed to send OTP' });
     }
@@ -241,10 +317,10 @@ const verifyOTP1 = (req, res) => {
     }
 
     if (result === 'used') {
-      return res.status(401).json({status:400, error: 'OTP has already been used' });
+      return res.status(401).json({ status: 400, error: 'OTP has already been used' });
     }
 
-    res.status(200).json({ status : 201,message: 'OTP verified successfully' });
+    res.status(200).json({ status: 201, message: 'OTP verified successfully' });
   });
 };
 
@@ -258,7 +334,7 @@ const setNewPassword = (req, res) => {
       return res.status(500).json({ error: 'Error setting a new password' });
     }
 
-    res.status(200).json({ status : 200,message: 'New password set successfully' });
+    res.status(200).json({ status: 200, message: 'New password set successfully' });
   });
 };
 
@@ -272,7 +348,7 @@ const getprofilebyid = async (req, res) => {
 
     if (userRole === 'university') {
       const a = await userservice.getbyunivesity(userId);
-       res.status(201).json({
+      res.status(201).json({
         status: 201,
         message: 'profile get s retrieved successfully',
         data: a,
@@ -280,20 +356,20 @@ const getprofilebyid = async (req, res) => {
     }
 
     if (userRole === 'user') {
-    const  counts = await userservice.getbyiduser(userId);
+      const counts = await userservice.getbyiduser(userId);
       res.status(201).json({
-       status: 201,
-       message: 'profile get s retrieved successfully',
-       data: counts,
-     });
+        status: 201,
+        message: 'profile get s retrieved successfully',
+        data: counts,
+      });
     }
     if (userRole === 'student') {
-   const   count = await userservice.getbyidstudent(userId);
+      const count = await userservice.getbyidstudent(userId);
       res.status(201).json({
-       status: 201,
-       message: 'profile get s retrieved successfully',
-       data: count,
-     });
+        status: 201,
+        message: 'profile get s retrieved successfully',
+        data: count,
+      });
     }
   } catch (error) {
     console.error('Error in getApplicationCountsController:', error);
@@ -311,6 +387,6 @@ module.exports = {
   forgetpass,
   updateUser,
   forgetpasswordbyemail,
-  verifyOTP1,setNewPassword,
+  verifyOTP1, setNewPassword,
   getprofilebyid
 };

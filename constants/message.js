@@ -48,8 +48,19 @@ module.exports = {
             message: " USER PASSWORD CHANGE SUCCESSFULLY",
             status: 401
         },
+        STUDENT_PASSWORD_CHANGE: {
+            message: "  STUDENT PASSWORD CHANGE SUCCESSFULLY",
+            status: 401
+        },
+        UNIVERSITY_PASSWORD_CHANGE: {
+            message: "  UNIVERSITY PASSWORD CHANGE SUCCESSFULLY",
+            status: 401
+        },
 
-
+        STAFF_PASSWORD_CHANGE: {
+            message: "  UNIVERSITY PASSWORD CHANGE SUCCESSFULLY",
+            status: 401
+        },
         USER_UPDATE: {
             message: " USER UPDATE SUCCESSFULLY",
             status: 200

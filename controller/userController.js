@@ -284,6 +284,150 @@ function forgetPassword(userId, currentPassword, newPassword) {
   });
 }
 
+// function for forgot password
+function forgetpassstudent(userId, currentPassword, newPassword) {
+  return new Promise((resolve, reject) => {
+    
+    const selectQuery = 'SELECT * FROM students WHERE id = ?';
+
+    db.query(selectQuery, [userId], async (selectError, userResults) => {
+      if (selectError) {
+        reject(selectError);
+        return;
+      }
+
+      if (userResults.length === 0) {
+        reject(new Error('User not found'));
+        return;
+      }
+
+      const user = userResults[0];
+     // check password match with new password 
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!passwordMatch) {
+        reject(new Error('Incorrect current password'));
+        return;
+      }
+
+      // Update the user's password with the new password
+      const updateQuery = 'UPDATE students SET password = ? WHERE id = ?';
+
+      bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
+        if (hashError) {
+          reject(hashError);
+          return;
+        } 
+
+        db.query(updateQuery, [hashedPassword, userId], (updateError, updateResults) => {
+          if (updateError) {
+            reject(updateError);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+  });
+}
+
+
+// function for forgot password
+function forgetfor_university(userId, currentPassword, newPassword) {
+  return new Promise((resolve, reject) => {
+    
+    const selectQuery = 'SELECT * FROM  UniversityRegistration WHERE id = ?';
+
+    db.query(selectQuery, [userId], async (selectError, userResults) => {
+      if (selectError) {
+        reject(selectError);
+        return;
+      }
+
+      if (userResults.length === 0) {
+        reject(new Error('University not found'));
+        return;
+      }
+
+      const user = userResults[0];
+     // check password match with new password 
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!passwordMatch) {
+        reject(new Error('Incorrect current password'));
+        return;
+      }
+
+      // Update the user's password with the new password
+      const updateQuery = 'UPDATE  UniversityRegistration SET password = ? WHERE id = ?';
+
+      bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
+        if (hashError) {
+          reject(hashError);
+          return;
+        } 
+
+        db.query(updateQuery, [hashedPassword, userId], (updateError, updateResults) => {
+          if (updateError) {
+            reject(updateError);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+  });
+}
+
+
+// function for forgot password
+function forgetpassforstaff(userId, currentPassword, newPassword) {
+  return new Promise((resolve, reject) => {
+    
+    const selectQuery = 'SELECT * FROM staff WHERE id = ?';
+
+    db.query(selectQuery, [userId], async (selectError, userResults) => {
+      if (selectError) {
+        reject(selectError);
+        return;
+      }
+
+      if (userResults.length === 0) {
+        reject(new Error('User not found'));
+        return;
+      }
+
+      const user = userResults[0];
+     // check password match with new password 
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+
+      if (!passwordMatch) {
+        reject(new Error('Incorrect current password'));
+        return;
+      }
+
+      // Update the user's password with the new password
+      const updateQuery = 'UPDATE staff SET password = ? WHERE id = ?';
+
+      bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
+        if (hashError) {
+          reject(hashError);
+          return;
+        } 
+
+        db.query(updateQuery, [hashedPassword, userId], (updateError, updateResults) => {
+          if (updateError) {
+            reject(updateError);
+          } else {
+            resolve();
+          }
+        });
+      });
+    });
+  });
+}
+
+
 // function for update user data 
 async function updateUserField(userId, field, newValue) {
   return new Promise((resolve, reject) => {
@@ -396,140 +540,6 @@ const getUserByEmail = async (email) => {
  
 };
 
-
-// // //GET USER BY ID
-//  const getByIdUser = async (req, res) => {
-//   try {
-//     const userId = req.params.userId;
-//     const user = await getUserById(userId);
-
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     res.status(200).json(user);
-//   } catch (error) {
-//     console.error('Error retrieving user by ID:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }catch (error) {
-//     console.error('Error fetching user by ID:', error);
-//     res.status(messages.COMMON.INVALID_ID.status).json({
-//       message: messages.COMMON.INVALID_ID.message,
-
-//     });
-//   }
-// };
-
-
-// // Update user information
-// const userUpdate = async (req, res) => {
-//   const userId = req.params.id;
-//   const { username, password, firstname, lastname, email, phone_number } = req.body;
-
-//   try {
-//     // Find the user by ID
-//     const user = await User.findById(userId);
-
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     if (username && user.username !== username) {
-//       const existingUsername = await User.findOne({ username });
-//       if (existingUsername) {
-//         return res.status(409).json({ error: 'Username already exists' });
-//       }
-//     }
-
-//     if (email && user.email !== email) {
-//       const existingEmail = await User.findOne({ email });
-//       if (existingEmail) {
-//         return res.status(409).json({ error: 'Email already exists' });
-//       }
-//     }
-
-//     if (username) user.username = username;
-
-//     if (password) {
-//       const hashedPassword = await bcrypt.hash(password, 10);
-//       user.password = hashedPassword;
-//     }
-//     if (firstname) user.firstname = firstname;
-//     if (lastname) user.lastname = lastname;
-//     if (email) user.email = email;
-//     if (phone_number) user.phone_number = phone_number;
-//         user.updated_at = new Date()
-
-//     await user.save();
-
-//     res.status(messages.USER_API.USER_UPDATE.status).json({
-//       message: messages.USER_API.USER_UPDATE.message,
-//       user: user
-
-//     });
-//   } catch (error) {
-//     console.error('Error updating user:', error);
-//     res.status(500).json({ error: 'An internal server error occurred' });
-//   }
-// };
-
-
-// //---------------->get all user api
-// const gettingalluser = async (req, res) => {
-
-//   try {
-
-//     const users = await User.find({ is_deleted: false });
-//     console.log("usersss", users) // check in console
-//     res.status(200).json({ data: users });
-
-//   } catch (error) {
-
-//     console.error('Error fetching users:', error);
-//     res.status(500).json({ error: 'An internal server error occurred' });
-
-//   }
-
-// };
-
-// //-------------> forget user passqword 
-// const forgetPassword = async (req, res) => {
-//   const { id } = req.params;
-//   const { currentPassword, newPassword } = req.body;
-
-//   try {
-//     const user = await User.findById(id);
-//     const { error } = forgetPasswordSchema.validate(req.body);
-
-//     if (error) {
-//       return res.status(400).json({ validation: error.details[0].message });
-//     }
-
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     //password compare 
-//     const passwordMatch = await bcrypt.compare(currentPassword, user.password);
-
-//     if (!passwordMatch) {
-//       return res.status(400).json({ error: 'Incorrect current password' });
-//     }
-
-//     if (newPassword.length < 8) {
-//       return res.status(400).json({ error: 'New password is too short' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     user.password = hashedPassword;
-//     await user.save();
-
-//     return res.status(200).json({ message: 'Password changed successfully' });
-//   } catch (error) {
-//     console.error(error);
-//     return res.status(500).json({ error: 'Internal server error' });
-//   }
-// }
 
 
 
@@ -849,6 +859,9 @@ module.exports = {
   setNewPassword,
   getbyiduser,
   getbyidstudent,
-  getbyunivesity
+  getbyunivesity,
+  forgetpassstudent,
+  forgetfor_university,
+  forgetpassforstaff
 }
 // create apipost method first otp send on email and there store in table then scond post api fetch user id from req.user.id and fetch otp from table where user id there then create api ost method new password and confrim password
