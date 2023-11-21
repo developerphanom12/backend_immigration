@@ -56,7 +56,16 @@ router.get('/get/:id', univeristy.getById)
 
 
 
+///***forgot password*****////
 
+
+router.post('/reset', univeristy.forgetpasswordEMAIL)
+
+
+
+router.post('/verify-otp',univeristy.VERIFYOTP)
+
+router.post('/set-new-password', univeristy.SETNEWpassWORD)
 
 
 module.exports = router;

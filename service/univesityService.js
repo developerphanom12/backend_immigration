@@ -675,6 +675,61 @@ const getallpgrequirement = async (req, res) => {
     }
 }
 
+async function forgetpasswordEMAIL(req, res) {
+    const { email } = req.body;
+  
+    try {
+      const otp = userservice.sendotpuniversity(email);
+      if (otp) {
+        res.status(200).json({
+          message: 'OTP sent successfully', data: {
+            email: email
+          }
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to send OTP' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to send OTP' });
+    }
+  }
+  
+  
+  
+  const VERIFYOTP = (req, res) => {
+    const { otp } = req.body;
+  
+    userservice.verifyOTP(otp, (error, result) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error verifying OTP' });
+      }
+  
+      if (result === 'invalid') {
+        return res.status(401).json({ status: 404, error: 'Invalid OTP' });
+      }
+  
+      if (result === 'used') {
+        return res.status(401).json({ status: 400, error: 'OTP has already been used' });
+      }
+  
+      res.status(200).json({ status: 201, message: 'OTP verified successfully' });
+    });
+  };
+  
+  
+  
+  const SETNEWpassWORD = (req, res) => {
+    const { email, newPassword } = req.body;
+  
+    userservice.setNewPassword(email, newPassword, (error) => {
+      if (error) {
+        return res.status(500).json({ error: 'Error setting a new password' });
+      }
+  
+      res.status(200).json({ status: 200, message: 'New password set successfully' });
+    });
+  };
+  
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -692,5 +747,8 @@ module.exports = {
     pgRequirement,
     getallacoursebyid,
     getallugrequirement,
-    getallpgrequirement
+    getallpgrequirement,
+    forgetpasswordEMAIL,
+    VERIFYOTP,
+    SETNEWpassWORD
 }

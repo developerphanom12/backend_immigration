@@ -573,7 +573,7 @@ function sendOTPAndStoreInDatabase(email) {
         return;
       }
 
-      // First, delete the previous OTP records associated with the user's email
+      // First, delete the previous OTP records associated with the user's email 
       const deletePreviousQuery = 'DELETE FROM otp_table_verify WHERE email = ?';
       db.query(deletePreviousQuery, [email], (deletePreviousError) => {
         if (deletePreviousError) {
@@ -615,6 +615,7 @@ function sendOTPAndStoreInDatabase(email) {
     });
   });
 }
+
 function verifyOTP (otp, callback){
   const otpQuery = 'SELECT email, is_verified FROM otp_table_verify WHERE otp = ?';
 
@@ -665,7 +666,6 @@ const setNewPassword = (email, newPassword, callback) => {
     });  
   });
 };
-
 
 
 
@@ -862,6 +862,7 @@ module.exports = {
   getbyunivesity,
   forgetpassstudent,
   forgetfor_university,
-  forgetpassforstaff
+  forgetpassforstaff,
+  
 }
 // create apipost method first otp send on email and there store in table then scond post api fetch user id from req.user.id and fetch otp from table where user id there then create api ost method new password and confrim password
