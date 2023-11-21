@@ -178,7 +178,7 @@ const forgetpass = async (req, res) => {
 
   try {
 
-    if (userRole == 'user') {
+    if (userRole === 'user') {
       try {
         await userservice.forgetPassword(userId, currentPassword, newPassword);
 
@@ -197,7 +197,7 @@ const forgetpass = async (req, res) => {
     }
 
 
-    if (userRole == 'student') {
+    if (userRole === 'student') {
       try{
         await userservice.forgetpassstudent(userId, currentPassword, newPassword);
 
@@ -217,7 +217,7 @@ const forgetpass = async (req, res) => {
      
     }
 
-    if (userRole == 'university') {
+    if (userRole === 'university') {
       try{
         await userservice.forgetfor_university(userId, currentPassword, newPassword);
 
