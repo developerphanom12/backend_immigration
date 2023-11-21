@@ -100,7 +100,70 @@ const loginStudent = async (req, res) => {
     }
   };
   
+
+
+
+async function forgetpasswordbyemail(req, res) {
+  const { email } = req.body;
+
+  try {
+    const otp = studnetservice.sendotpSTudent(email);
+    if (otp) {
+      res.status(200).json({
+        message: 'OTP sent successfully', data: {
+          email: email
+        }
+      });
+    } else {
+      res.status(500).json({ error: 'Failed to send OTP' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+}
+
+
+
+const verifyOTP1 = (req, res) => {
+  const { otp } = req.body;
+
+  studnetservice.verifyOTP(otp, (error, result) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error verifying OTP' });
+    }
+
+    if (result === 'invalid') {
+      return res.status(401).json({ status: 404, error: 'Invalid OTP' });
+    }
+
+    if (result === 'used') {
+      return res.status(401).json({ status: 400, error: 'OTP has already been used' });
+    }
+
+    res.status(200).json({ status: 201, message: 'OTP verified successfully' });
+  });
+};
+
+
+
+const setNewPassword = (req, res) => {
+  const { email, newPassword } = req.body;
+
+  studnetservice.setNewPassword(email, newPassword, (error) => {
+    if (error) {
+      return res.status(500).json({ error: 'Error setting a new password' });
+    }
+
+    res.status(200).json({ status: 200, message: 'New password set successfully' });
+  });
+};
+
+
+
   module.exports = {
     studentRegister,
-    loginStudent
+    loginStudent,
+    forgetpasswordbyemail,
+    verifyOTP1,
+    setNewPassword
   }
