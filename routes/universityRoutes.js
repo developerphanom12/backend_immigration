@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const univeristy = require('../service/univesityService')
-const { universityValid, coursesValid, coursenewschemma, ugschema } = require('../validation/validation');
+const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutionfess } = require('../validation/validation');
 const authenticateToken = require("../service/token");
 const { upload } = require('../service/multer');
 
@@ -54,7 +54,7 @@ router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //
 router.get('/get/:id', univeristy.getById)
 
 
-
+router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)
 
 ///***forgot password*****////
 
