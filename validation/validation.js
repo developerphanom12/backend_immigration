@@ -42,7 +42,7 @@ const UniversitySchema = Joi.object({
 
 
 
-// Middleware for request body validation
+// Middleware for request body validation 
 const universityValid = (req, res, next) => {
 
   const { error } = UniversitySchema.validate(req.body);
@@ -85,6 +85,13 @@ const coursesnewschema = Joi.object({
   duration_years: Joi.number().integer().required(),
   course_type: Joi.string().valid('Graduation', 'Postgraduation', 'PhD', 'Diploma'),
   university_id: Joi.number().integer(),
+  tution: Joi.object({
+    hostel_meals: Joi.number().precision(2).positive().required(),
+    tuition_fees: Joi.number().precision(2).positive().required(),
+    transportation: Joi.number().precision(2).positive().required(),
+    phone_internet: Joi.number().precision(2).positive().required(),
+    total: Joi.number().precision(2).positive().required(),
+  }).required(),
   
 });
 

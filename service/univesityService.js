@@ -467,9 +467,10 @@ const courseadd = async (req, res) => {
     }
     const userId = req.user.id;
     console.log("jdhfgfdjgdhfd", userId)
-    const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id } = req.body;
+    const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id ,tution} = req.body;
 
     try {
+        // Insert course information
         const universityData = await userservice.courseregister({
             course_name,
             department,
@@ -477,9 +478,21 @@ const courseadd = async (req, res) => {
             tuition_fee,
             duration_years,
             course_type,
-            university_id: userId
+            university_id: userId,
+            tution: null
         });
 
+        // Insert tuition fees information
+        const addressId = await userservice.insertfees(
+            tution.hostel_meals,
+            tution.tuition_fees,
+            tution.transportation,
+            tution.phone_internet,
+            tution.total,
+        );
+
+        // Update the corresponding course entry with the tuition ID
+        await userservice.updatetution(universityData.id, addressId);
 
         res.status(201).json({
             message: "course add successfully",
@@ -760,6 +773,40 @@ async function forgetpasswordEMAIL(req, res) {
     });
   };
   
+
+
+  const getallbyidcourses = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log('sdfsdfsdf', userId);
+
+        let userApplications;
+
+        // Assuming userservice.getallcoursesbyids returns a promise
+        userApplications = await userservice.getallcoursesbyids(userId);
+
+        if (userApplications.length > 0) {
+            res.status(201).json({
+                message: "Courses fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        } else {
+            const responseMessage = 'No university courses found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+};
+
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -781,5 +828,6 @@ module.exports = {
     forgetpasswordEMAIL,
     VERIFYOTP,
     SETNEWpassWORD,
-    tutionfess
+    tutionfess,
+    getallbyidcourses
 }

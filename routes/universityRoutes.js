@@ -15,9 +15,9 @@ router.get('/getallpg', authenticateToken, univeristy.getallpgrequirement) //---
 router.get('/getdatabyid', authenticateToken, univeristy.getallacoursebyid) //-->>>get all courses
 
 
-router.post('/register', upload.fields([{ name: 'university_image' }, { name: 'registration_certificate' }]), univeristy.registerUniversityAndUploadImage);
+router.post('/register', upload.fields([{ name: 'university_image' }, { name: 'registration_certificate' }]), univeristy.registerUniversityAndUploadImage); //allnewapi
 
-router.post('/unilogin', univeristy.uniersitylogin)
+router.post('/unilogin', univeristy.uniersitylogin)  //allnewapi
 
 router.post('/universitys', authenticateToken, universityValid, univeristy.registerUniversity)
 
@@ -34,11 +34,11 @@ router.put('/image/:id', upload.single('university_image'), univeristy.uploadIma
 
 /******************************Courses Api********************************************************** */
 
-router.post('/newcoursesadd', authenticateToken, coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api
+router.post('/newcoursesadd', authenticateToken, coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
 
-router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api
+router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 
-router.post('/pgrequirement', authenticateToken, ugschema, univeristy.pgRequirement) //---------->>> //by ambassdor new api
+router.post('/pgrequirement', authenticateToken, ugschema, univeristy.pgRequirement) //---------->>> //by ambassdor new api //allnewapi
 
 
 router.post('/courses1', coursesValid, authenticateToken, univeristy.courseCreate)
@@ -47,20 +47,21 @@ router.post('/courses1', coursesValid, authenticateToken, univeristy.courseCreat
 router.get('/get/allcourse', univeristy.getAllCoursesHandler);
 
 
-router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //----->>>>>>>>>>courses
+router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //----->>>>>>>>>>courses  //allnewapi
 
 
 
-router.get('/get/:id', univeristy.getById)
+router.get('/get/:id', univeristy.getallbyidcourses)//////------>>>>>>>>getftech new courses //allnewapi
 
 
-router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)
+router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)  // tuion fess
 
 ///***forgot password*****////
 
 
 router.post('/reset', univeristy.forgetpasswordEMAIL)
 
+// router.get('/get/:id', univeristy.getById)
 
 
 router.post('/verify-otp',univeristy.VERIFYOTP)
