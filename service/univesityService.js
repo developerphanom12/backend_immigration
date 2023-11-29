@@ -496,6 +496,36 @@ const courseadd = async (req, res) => {
 };
 
 
+const tutionfess = async (req, res) => {
+
+    const { course_id, hostel_meals, tuition_fees, transportation, phone_internet, total } = req.body;
+
+    try {
+        const universityData = await userservice.Tutionfess({
+            course_id,
+            hostel_meals,
+            tuition_fees,
+            transportation,
+            phone_internet,
+            total
+         });
+
+
+        res.status(201).json({
+            message: "tution add successfully",
+            status:201,
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);
+        }
+    }
+};
+
 
 const ugRequirement = async (req, res) => {
     if (req.user.role !== 'university') {
@@ -750,5 +780,6 @@ module.exports = {
     getallpgrequirement,
     forgetpasswordEMAIL,
     VERIFYOTP,
-    SETNEWpassWORD
+    SETNEWpassWORD,
+    tutionfess
 }

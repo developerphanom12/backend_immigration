@@ -717,6 +717,36 @@ function courseregister(university, userId) {
     });
 }
 
+function Tutionfess(university) {
+    return new Promise((resolve, reject) => {
+        const { course_id, hostel_meals, tuition_fees, transportation, phone_internet, total } = university;
+        const query = `
+        INSERT INTO tution_fees 
+        (course_id, hostel_meals, tuition_fees,transportation,phone_internet,total)
+        VALUES (?, ?, ?,?,?,?)
+      `;
+
+        db.query(query, [course_id, hostel_meals, tuition_fees, transportation, phone_internet, total], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering tutionfess with course:', error);
+            } else {
+                const insertedUniversity = {
+                    tution_id: result.insertId,
+                    course_id,
+                    hostel_meals,
+                    tuition_fees,
+                    transportation,
+                    phone_internet,
+                    total
+
+                };
+                resolve(insertedUniversity);
+                logger.info('tution fess registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
 
 
 function ugrequirement(university, userId) {
@@ -1277,5 +1307,6 @@ module.exports = {
     updateStudentdata,
     sendotpuniversity,
     setNewPassword,
-    verifyOTP
+    verifyOTP,
+    Tutionfess
 }

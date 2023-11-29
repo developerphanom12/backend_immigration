@@ -15,8 +15,6 @@ const createUserSchema = Joi.object({
   }).required(),
 });
 
-
-
 // Middleware for request body validation
 const validateRegistrationData = (req, res, next) => {
 
@@ -154,12 +152,31 @@ const validateApplicationData = (req, res, next) => {
   next();
 };
 
+const expensesSchema = Joi.object({
+  course_id: Joi.number().integer().positive().required(),
+  hostel_meals: Joi.number().precision(2).positive().required(),
+  tuition_fees: Joi.number().precision(2).positive().required(),
+  transportation: Joi.number().precision(2).positive().required(),
+  phone_internet: Joi.number().precision(2).positive().required(),
+  total: Joi.number().precision(2).positive().required(),
+});
 
+
+const validatetutionfess = (req, res, next) => {
+  const { error } = expensesSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
 module.exports = {
   createUserSchema,
   validateRegistrationData,
   universityValid,
   coursesValid,validateApplicationData,
   coursenewschemma,
-  ugschema
+  ugschema,
+  validatetutionfess
 };
