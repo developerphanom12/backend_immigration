@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const univeristy = require('../service/univesityService')
-const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutionfess } = require('../validation/validation');
+const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutionfess, validateUniversityRegisastration } = require('../validation/validation');
 const authenticateToken = require("../service/token");
 const { upload } = require('../service/multer');
 
@@ -15,7 +15,7 @@ router.get('/getallpg', authenticateToken, univeristy.getallpgrequirement) //---
 router.get('/getdatabyid', authenticateToken, univeristy.getallacoursebyid) //-->>>get all courses
 
 
-router.post('/register', upload.fields([{ name: 'university_image' }, { name: 'registration_certificate' }]), univeristy.registerUniversityAndUploadImage); //allnewapi
+router.post('/register',upload.fields([{ name: 'university_image' }, { name: 'registration_certificate' }]), validateUniversityRegisastration,univeristy.registerUniversityAndUploadImage); //allnewapi
 
 router.post('/unilogin', univeristy.uniersitylogin)  //allnewapi
 

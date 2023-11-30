@@ -310,3 +310,8 @@
                 a.co' at line 11
 2023-11-18T10:33:52.263Z [31merror[39m: Error updating university: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'WHERE id = 51' at line 7
 2023-11-18T10:55:39.726Z [31merror[39m: Error updating user information and address: ER_BAD_FIELD_ERROR: Unknown column 'u.firstname' in 'field list'
+2023-11-29T07:25:10.605Z [31merror[39m: Error registering tutionfess with course: ER_BAD_FIELD_ERROR: Unknown column 'hostel_meals' in 'field list'
+2023-11-29T07:25:53.921Z [31merror[39m: Error registering tutionfess with course: ER_NO_SUCH_TABLE: Table 'immigration_database.tution_fees' doesn't exist
+2023-11-29T07:42:25.679Z [31merror[39m: Error registering tutionfess with course: ER_NO_DEFAULT_FOR_FIELD: Field 'tution_id' doesn't have a default value
+2023-11-29T12:23:55.075Z [31merror[39m: Error getting all courses: ER_PARSE_ERROR: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FROM courses_list c
+      INNER JOIN UniversityRegistration u ON c.university_id' at line 17

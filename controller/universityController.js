@@ -756,14 +756,14 @@ function getallcourses() {
 
 function UniversityRegisterself(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, ambassador_name, phone_number, email, username, password, addressId } = university;
+        const { university_name, ambassador_name, phone_number, email, username, password, addressId,year_established,type } = university;
         const query = `
         INSERT INTO UniversityRegistration  
-        (university_name, ambassador_name, phone_number,email,username,password,address_id)
-        VALUES (?, ?, ?,?,?,?,?)
+        (university_name, ambassador_name, phone_number,email,username,password,address_id,year_established,type)
+        VALUES (?, ?, ?,?,?,?,?,?,?)
       `;
 
-        db.query(query, [university_name, ambassador_name, phone_number, email, username, password, addressId], (error, result) => {
+        db.query(query, [university_name, ambassador_name, phone_number, email, username, password, addressId,year_established,type], (error, result) => {
             if (error) {
                 reject(error);
             } else {
@@ -1596,7 +1596,6 @@ function verifyOTP (otp, callback){
                 const courses = {};
                 results.forEach((row) => {
                     if (!courses[row.course_id]) {
-                        // Initialize the course data if not already present
                         courses[row.course_id] = {
                             course_id: row.course_id,
                             course_name: row.course_name,

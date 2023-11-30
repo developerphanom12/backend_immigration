@@ -328,6 +328,7 @@ const uploadImage1 = async (req, res) => {
     });
 
 };
+
 const registerUniversityAndUploadImage = async (req, res) => {
     const {
         university_name,
@@ -336,7 +337,9 @@ const registerUniversityAndUploadImage = async (req, res) => {
         email,
         username,
         password,
-        address
+        address,
+        year_established,
+        type
     } = req.body;
 
     try {
@@ -355,7 +358,9 @@ const registerUniversityAndUploadImage = async (req, res) => {
             email,
             username,
             password: hashedPassword,
-            address: null
+            address: null,
+            year_established,
+            type
         });
 
         // Save university address
@@ -412,7 +417,9 @@ const registerUniversityAndUploadImage = async (req, res) => {
                 postal_code: address.postal_code,
             },
             university_image: uniImageName,
-            registration_certificate: regCertImageName
+            registration_certificate: regCertImageName,
+            year_established,
+            type
         };
 
         res.status(200).json({
@@ -507,7 +514,7 @@ const courseadd = async (req, res) => {
             res.status(401).json({ error: error.message });
         } else {
 
-            handleServerError(res, error);
+            handleServerError(res, error);                          
         }
     }
 };

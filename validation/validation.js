@@ -180,6 +180,45 @@ const validatetutionfess = (req, res, next) => {
 
   next();
 };
+
+
+
+const registrationSchema = Joi.object({
+  university_name: Joi.string().required(),
+  ambassador_name: Joi.string().required(),
+  phone_number: Joi.string().required(),
+  email: Joi.string().email().required(),
+  username: Joi.string().required(),
+  password: Joi.string().required(),
+  address: Joi.object({
+    street_address: Joi.string().required(),
+    city: Joi.string().required(),
+    state: Joi.string().required(),
+    country: Joi.string().required(),
+    postal_code: Joi.string().required(),
+  }).required(),
+  year_established: Joi.number().required(),
+  type: Joi.string().valid('private', 'government').required(),
+});
+
+// Middleware function for validating the request body
+const validateUniversityRegisastration = (req, res, next) => {
+  const { error } = registrationSchema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+
+  // Validate the presence of university_image and registration_certificate files
+  if (!req.files || !req.files['university_image'] || !req.files['registration_certificate']) {
+    return res.status(400).json({
+      message: 'University image and registration certificate are required.',
+    });
+  }
+
+  next();
+};
 module.exports = {
   createUserSchema,
   validateRegistrationData,
@@ -187,5 +226,6 @@ module.exports = {
   coursesValid,validateApplicationData,
   coursenewschemma,
   ugschema,
-  validatetutionfess
+  validatetutionfess,
+  validateUniversityRegisastration
 };
