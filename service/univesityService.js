@@ -467,7 +467,7 @@ const courseadd = async (req, res) => {
     }
     const userId = req.user.id;
     console.log("jdhfgfdjgdhfd", userId)
-    const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id ,tution} = req.body;
+    const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id ,tution,requirements} = req.body;
 
     try {
         // Insert course information
@@ -479,7 +479,7 @@ const courseadd = async (req, res) => {
             duration_years,
             course_type,
             university_id: userId,
-            tution: null
+            tution: null,
         });
 
         // Insert tuition fees information
@@ -494,6 +494,10 @@ const courseadd = async (req, res) => {
         // Update the corresponding course entry with the tuition ID
         await userservice.updatetution(universityData.id, addressId);
 
+        for (const requirement of requirements) {
+            await userservice.insertRequirement(universityData.id, requirement);
+        }
+        
         res.status(201).json({
             message: "course add successfully",
             data: universityData

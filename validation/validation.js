@@ -92,6 +92,8 @@ const coursesnewschema = Joi.object({
     phone_internet: Joi.number().precision(2).positive().required(),
     total: Joi.number().precision(2).positive().required(),
   }).required(),
+  requirements: Joi.array().items(Joi.string()).required(),
+
   
 });
 

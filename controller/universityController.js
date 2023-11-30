@@ -921,6 +921,19 @@ function insertfees(hostel_meals,tuition_fees, transportation, phone_internet,to
   }
 
 
+// Modify the insertfees function to handle multiple requirements
+function insertRequirement(courseId, requirement) {
+    return new Promise((resolve, reject) => {
+        const query = 'INSERT INTO entiry_requirements (course_id, requirement) VALUES (?, ?)';
+        db.query(query, [courseId, requirement], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.insertId);
+            }
+        });
+    });
+}
 
 
   function updatetution(courseId, tuitionId) {
@@ -1545,32 +1558,34 @@ function verifyOTP (otp, callback){
   };
 
 
-
-
-function getallcoursesbyids(userId) {
+  function getallcoursesbyids(userId) {
     return new Promise((resolve, reject) => {
-        const query = ` 
+        const query = `
         SELECT
-        c.course_id,
-        c.course_name,
-        c.department,
-        c.subject,
-        c.tuition_fee,
-        c.duration_years,
-        c.course_type,
-        a.tution_id AS tuition_id ,
-        a.hostel_meals,
-        a.tuition_fees,
-        a.transportation,
-        a.phone_internet,
-        a.total,
-        u.id AS university_id,
-        u.university_image,
-        u.university_name
-      FROM courses_list c
-      INNER JOIN UniversityRegistration u ON c.university_id = u.id
-      LEFT JOIN  tution_fees a ON c.tuition_id = a.tution_id
-      WHERE c.course_id = ?;`
+            c.course_id,
+            c.course_name,
+            c.department,
+            c.subject,
+            c.tuition_fee,
+            c.duration_years,
+            c.course_type,
+            a.tution_id AS tuition_id ,
+            a.hostel_meals,
+            a.tuition_fees,
+            a.transportation,
+            a.phone_internet,
+            a.total,
+            u.id AS university_id,
+            u.university_image,
+            u.university_name,
+            au.course_id AS entry_requirements_course_id,
+            au.requirement AS entry_requirement,
+            au.create_date AS entry_requirement_create_date
+        FROM courses_list c
+        INNER JOIN UniversityRegistration u ON c.university_id = u.id
+        LEFT JOIN tution_fees a ON c.tuition_id = a.tution_id
+        LEFT JOIN entiry_requirements au ON c.course_id = au.course_id
+        WHERE c.course_id = ?;`;
 
         db.query(query, userId, (error, results) => {
             if (error) {
@@ -1578,37 +1593,46 @@ function getallcoursesbyids(userId) {
                 reject(error);
                 logger.error('Error getting all courses:', error); // Log the error
             } else {
+                const courses = {};
+                results.forEach((row) => {
+                    if (!courses[row.course_id]) {
+                        // Initialize the course data if not already present
+                        courses[row.course_id] = {
+                            course_id: row.course_id,
+                            course_name: row.course_name,
+                            department: row.department,
+                            subject: row.subject,
+                            tuition_fee: row.tuition_fee,
+                            duration_years: row.duration_years,
+                            course_type: row.course_type,
+                            university: {
+                                id: row.university_id,
+                                image: row.university_image,
+                                university_name: row.university_name,
+                            },
+                            tution: {
+                                tution_id: row.tution_id,
+                                hostel_meals: row.hostel_meals,
+                                tuition_fees: row.tuition_fees,
+                                transportation: row.transportation,
+                                phone_internet: row.phone_internet,
+                                total: row.total,
+                            },
+                            entry_requirements: [],
+                        };
+                    }
+                    // Add entry requirement data to the course
+                    if (row.entry_requirements_course_id) {
+                        courses[row.course_id].entry_requirements.push({
+                            course_id: row.entry_requirements_course_id,
+                            requirement: row.entry_requirement,
+                            create_date: row.entry_requirement_create_date,
+                        });
+                    }
+                });
 
-
-                const usersWithAddresses = results.map((row) => ({
-                    course_id: row.course_id,
-                    course_name: row.course_name,
-                    department: row.department,
-                    subject: row.subject,
-                    tuition_fee: row.tuition_fee,
-                    duration_years: row.duration_years,
-                    course_type: row.course_type,
-                    university: {
-                        id: row.university_id,
-                        image: row.university_image, // Include the university image here,
-                        university_name : row.university_name
-                    },
-                    tution : {
-                        tution_id : row.tution_id,
-                        hostel_meals : row.hostel_meals,
-                        tuition_fees : row.tuition_fees,
-                        transportation : row.transportation,
-                        phone_internet: row.phone_internet,
-                        total: row.total
-                    },
-                    is_active: row.is_active,
-                    create_date: row.create_date,
-                    update_date: row.update_date,
-                    is_deleted: row.is_deleted,
-
-                }));
-
-                resolve(usersWithAddresses);
+                // Resolve with an array of course data
+                resolve(Object.values(courses));
 
                 logger.info('All courses retrieved successfully');
             }
@@ -1653,6 +1677,7 @@ module.exports = {
     Tutionfess,
     insertfees,
     updatetution,
-    getallcoursesbyids
+    getallcoursesbyids,
+    insertRequirement
     
 }

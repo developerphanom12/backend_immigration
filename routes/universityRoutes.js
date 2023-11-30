@@ -34,7 +34,7 @@ router.put('/image/:id', upload.single('university_image'), univeristy.uploadIma
 
 /******************************Courses Api********************************************************** */
 
-router.post('/newcoursesadd', authenticateToken, coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
+router.post('/newcoursesadd', authenticateToken, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
 
 router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 
