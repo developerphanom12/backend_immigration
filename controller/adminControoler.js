@@ -154,9 +154,41 @@ const updateApplicationStatus = async (req, res) => {
       });
     });
 }
+
+
+
+// add role in this page  
+const getallagnt = async (req, res) => {
+
+  try {
+      const allUsers = await admin.getallagent();
+
+   if(allUsers){
+    res.status(201).json({
+      message: 'retrive all agent successfully',
+      status: 201,
+      data: allUsers,
+  });
+   }else{
+    res.status(404).json({
+      message: "not data found",
+      status: 404
+    })
+   }
+      
+  } catch (error) {
+      console.error('Error retrieving all universities:', error);
+      res.status(500).json({
+        status :500,
+          message: 'Error retrieving all universities',
+      });
+  }
+};
+
 module.exports = {
     registerAdmin,
     loginUser,
     getAllApplicationstoadmin,
-    updateApplicationStatus
+    updateApplicationStatus,
+    getallagnt
 }

@@ -484,7 +484,7 @@ WHERE a.application_id = ?`;
         // Handle the error
         reject(error);
       } else {
-        const applications = [];
+        const applications = [];  
 
         results.forEach((row) => {
           const application = applications.find(
@@ -504,7 +504,7 @@ WHERE a.application_id = ?`;
               const comment = {
                 comment_id: row.comment_id,
                 comment_text: row.comment_text,
-                username: row.comment_username, // Use the computed column
+                username: row.comment_username, 
                 role: row.role,
                 select_type: row.select_type,
                 created_at: row.comment_created_at,
@@ -1527,11 +1527,11 @@ async function getExcelDataForAllApplications(userRole) {
 
   // Execute the database query using await
   const results = await queryPromise;
-    // Process the results and populate the Excel sheet
+    // Process the results and populate the Excel sheet 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('AllApplications');
 
-    // Define the headers for the Excel sheet
+    // Define the headers for the Excel sheet//
     worksheet.columns = [
       { header: 'Application ID', key: 'application_id' },
       { header: 'Student Name', key: 'student_name' }, // Combine first and last name

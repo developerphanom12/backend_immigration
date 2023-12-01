@@ -160,11 +160,37 @@ const updateApplicationStatus = (applicationId, newStatus,callback) => {
   };
   
   
+function getallagent() {
+  return new Promise((resolve, reject) => {
+      const query = `SELECT  * FROM user01 WHERE is_deleted = 0`
+
+      db.query(query, (error, results) => {
+          if (error) {
+              console.error('Error executing query:', error);
+              reject(error);
+              logger.error('Error getting all users:', error); // Log the error
+          } else {
+              const usersWithAddresses = results.map((row) => ({
+                  id: row.id,
+                  firstname: row.firstname,
+                  lastname: row.lastname,
+                  email: row.email,
+                  phone_number: row.phone_number,
+                  role: row.role,
+              }));
+              resolve(usersWithAddresses);
+              logger.info('All users retrieved successfully');
+          }
+      });
+  });
+}
+
   
 module.exports = {
     adminregister,
     loginadmin,
     getallapplication,
-    updateApplicationStatus
+    updateApplicationStatus,
+    getallagent
 }
 

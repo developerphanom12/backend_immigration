@@ -222,6 +222,12 @@ const validateUniversityRegisastration = (req, res, next) => {
 
 
 
+// staff_name,
+// password,
+// staff_email,
+// staff_phone_number,
+// country_id,
+
 
 const FAQschema = Joi.object({
   question: Joi.string().required(),
@@ -241,8 +247,22 @@ const FAqschema = (req, res, next) => {
   next();
 };
 
+const addstaff = Joi.object({
+  staff_name: Joi.string().required(),
+  password : Joi.string().required(),
+  staff_email: Joi.string().email().required(),
+  staff_phone_number : Joi.string().email().required(),
+  country_id : Joi.number().integer().required()
+})
 
 
+const addstaffrequired =(req,res,next) => {
+  const {error} = addstaff.validate(req.body)
+
+  if(error){
+    return res.status(400).json({error: error.details[0].message});
+  }
+}
 // const coursesadd = Joi.object({
 //   course_name: Joi.string().required(),
 //   department: Joi.string().required(),
@@ -307,5 +327,6 @@ module.exports = {
   validatetutionfess,
   validateUniversityRegisastration,
   FAqschema,
-  NewUpdateuniversity
+  NewUpdateuniversity,
+  addstaffrequired
 };
