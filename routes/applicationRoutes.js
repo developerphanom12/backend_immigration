@@ -7,6 +7,21 @@ const authenticateToken = require('../service/token');
 
 // const jwt = require('jsonwebtoken');
 // const secretKey = 'secretkey';
+// import React, { useState } from 'react';
+
+// function YourComponent() {
+//   const [a, setA] = useState("this is");
+
+//   const handleChange = (event) => {
+//     setA(event.target.value);
+//   };
+
+//   return (
+//     <input type="text" value={a} onChange={handleChange} />
+//   );
+// }
+
+// export default YourComponent;
 
 
 router.post('/addappplications',authenticateToken, application.addApplication) 

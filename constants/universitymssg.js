@@ -8,6 +8,10 @@ module.exports = {
         message: "University not found",
         status: 404
       },
+      courseNotFound: {
+        message: "Course not found",
+        status: 404
+      },
       USERNOTFOND: {
         message: "AGENT not found",
         status: 404
@@ -37,6 +41,10 @@ module.exports = {
       },
       universityUpdateSuccess: {
         message: "University updated successfully",
+        status: 200
+      },
+      courseUpdateSuccess: {
+        message: "Course updated successfully",
         status: 200
       },
       uSERUpdateSuccess: {

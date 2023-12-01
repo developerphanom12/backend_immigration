@@ -24,3 +24,5 @@ router.post('/stafflogin/' , addcountry.stafflogin)
 router.get('/getallcountry/' , authenticateToken,addcountry.fetchallcountry)
 
 module.exports =router;
+
+

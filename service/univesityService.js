@@ -2,7 +2,7 @@ const userservice = require('../controller/universityController');
 const univeristy = require('../constants/universitymssg')
 const universityStatusMessages = require('../constants/universitymssg')
 const bcrypt = require('bcrypt');
-const { add } = require('winston');
+const { add, error } = require('winston');
 
 
 const handleServerError = (res, error) => {
@@ -818,6 +818,166 @@ async function forgetpasswordEMAIL(req, res) {
     }
 };
 
+// // Assuming you have an Express-like controller function
+// function updateCoursesAndTuitionController(req, res) {
+//     const courseId = req.params.id; 
+
+//     userservice.updatecoursesandNew(courseId)
+//         .then((result) => {
+//             // Handle success
+//             res.status(200).json({ success: true, message: 'Courses and tuition fees updated successfully', result });
+//         })
+//         .catch((error) => {
+//             // Handle error
+//             res.status(500).json({ success: false, message: 'Error updating courses and tuition fees', error: error.message });
+//         });
+// }
+
+
+// const updateUniversity1 = async (req, res) => {
+//     const universityId = req.user.id;
+//     const userRole = req.user.role;
+
+//     try {
+//         if (userRole === 'university') {
+//             const { university_name, ambassador_name, phone_number, email, address} = req.body;
+//             const updatedUniversity = await userservice.updateUniversity(universityId, {
+//                 university_name,
+//                 ambassador_name,
+//                 phone_number,
+//                 email,
+//                 address: address || {},
+//             }).catch((error) => {
+//                 return res.status(400).json({ error: error.message });
+//             });
+
+//             if (!updatedUniversity) {
+//                 const notFoundMessage = universityStatusMessages.common.universityNotFound;
+//                 return res.status(notFoundMessage.status).json({ error: notFoundMessage.message });
+//             }
+
+//             const successMessage = universityStatusMessages.universityApi.universityUpdateSuccess;
+//             res.status(successMessage.status).json({
+//                 message: successMessage.message,
+//                 status:200
+//             });
+//         }
+//     }
+// }
+
+
+
+
+const updateCoursesAndTuitionController = async (req, res) => {
+    const courseId = req.params.id;
+    const userRole = req.user.role;
+
+    try {
+        if (userRole === 'university') {
+            const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = req.body;
+            const updatedUniversity = await userservice.updatecoursesandNew(courseId, {
+                course_name,
+                department,
+                subject,
+                tuition_fee,
+                duration_years,
+                course_type,
+                // address: address || {},
+            }).catch((error) => {
+                return res.status(400).json({ status: 400, error: error.message });
+            });
+
+            if (!updatedUniversity) {
+                const notFoundMessage = universityStatusMessages.common.courseNotFound;
+                return res.status(notFoundMessage.status).json({ error: notFoundMessage.message });
+            }
+
+            const successMessage = universityStatusMessages.universityApi.courseUpdateSuccess;
+            res.status(successMessage.status).json({
+                message: successMessage.message,
+                status:200
+            });
+        }else{
+            res.status(404).json({
+                message: "forbiiden for regular user",
+                status: 404,
+            })
+        }
+
+       
+       
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+const UniversityFAQ = async (req, res) => {
+    if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+    const userId = req.user.id;
+    console.log("jdhfgfdjgdhfd", userId)
+    const { university_id,question,answer} = req.body;
+
+    try {
+        // Insert course information
+        const universityData = await userservice.universityFaq({
+            university_id: userId,
+            question,
+            answer,
+          
+        });
+        res.status(201).json({
+            message: "Faq add successfully",
+            status: 201,
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);                          
+        }
+    }
+};
+
+
+const latestupdateUniversity = async (req, res) => {
+    if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+    const userId = req.user.id;
+    console.log("jdhfgfdjgdhfd", userId)
+    const { university_id, heading,descriptions} = req.body;
+
+    try {
+        // Insert course information
+        const universityData = await userservice.univeristyUpdatelatest({
+            university_id: userId,
+            heading,
+        });
+// 
+        for (const requirement of descriptions) {
+            await userservice.insertArrayDescription(universityData.id, requirement);
+        }
+        
+        res.status(201).json({
+            message: "newupdate add successfully",
+            data: universityData
+        });
+    } catch (error) {
+        if (error) {
+            res.status(401).json({ error: error.message });
+        } else {
+
+            handleServerError(res, error);                          
+        }
+    }
+};
+
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -840,5 +1000,8 @@ module.exports = {
     VERIFYOTP,
     SETNEWpassWORD,
     tutionfess,
-    getallbyidcourses
+    getallbyidcourses,
+    updateCoursesAndTuitionController,
+    UniversityFAQ,
+    latestupdateUniversity
 }

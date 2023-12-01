@@ -219,6 +219,84 @@ const validateUniversityRegisastration = (req, res, next) => {
 
   next();
 };
+
+
+
+
+const FAQschema = Joi.object({
+  question: Joi.string().required(),
+  answer: Joi.string().required(),
+});
+
+
+// Middleware for request body validation
+const FAqschema = (req, res, next) => {
+
+  const { error } = FAQschema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
+
+
+
+// const coursesadd = Joi.object({
+//   course_name: Joi.string().required(),
+//   department: Joi.string().required(),
+//   subject: Joi.string().required(),
+//   tuition_fee: Joi.string().email().required(),
+//   duration_years: Joi.string().required(),
+//   course_type: Joi.string().required(),
+//   tution: Joi.object({
+//     hostel_meals: Joi.string().required(),
+//     tuition_fees: Joi.string().required(),
+//     transportation: Joi.string().required(),
+//     country: Joi.string().required(),
+//     postal_code: Joi.string().required(),
+//   }).required(),
+//   year_established: Joi.number().required(),
+//   type: Joi.string().valid('private', 'government').required(),
+// });
+
+
+// // Middleware for request body validation
+// const CoursesAdd = (req, res, next) => {
+
+//   const { error } = coursesadd.validate(req.body);
+
+//   if (error) {
+//     return res.status(400).json({ error: error.details[0].message });
+//   }
+
+//   next();
+// };
+
+
+
+
+const newupdateUniversity = Joi.object({
+  heading: Joi.string().required(),
+  descriptions: Joi.array().items(Joi.string()).required(),
+
+  
+});
+
+
+// Middleware for request body validation
+const NewUpdateuniversity = (req, res, next) => {
+
+  const { error } = newupdateUniversity.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
+  }
+
+  next();
+};
+
 module.exports = {
   createUserSchema,
   validateRegistrationData,
@@ -227,5 +305,7 @@ module.exports = {
   coursenewschemma,
   ugschema,
   validatetutionfess,
-  validateUniversityRegisastration
+  validateUniversityRegisastration,
+  FAqschema,
+  NewUpdateuniversity
 };

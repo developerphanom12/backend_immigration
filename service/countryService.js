@@ -26,9 +26,32 @@ const addcountry = async (req, res) => {
     }
   };
 
+  // import React, { useState } from 'react';
 
+  // function YourComponent() {
+  //   // State variable 'a' with initial value 1
+  //   const [a, setA] = useState(1);
+  
+  //   // Handler function to update 'a' when input changes
+  //   const handleInputChange = (event) => {
+  //     // Parse the input value as a number and update 'a'
+  //     setA(parseInt(event.target.value, 10));
+  //   };
+  
+  //   return (
+  //     <div>
+  //       {/* Input field with onChange event to trigger handleInputChange */}
+  //       <input type="number" value={a} onChange={handleInputChange} />
+  //       {/* Display the current value of 'a' */}
+  //       <p>Current value of 'a': {a}</p>
+  //     </div>
+  //   );
+  // }
+  // without usesate simple way inract js
+  // export default YourComponent;
+  
 
-
+//
   const addstaff = async (req, res) => {
     const { staff_name, password, staff_email, staff_phone_number ,country_id} = req.body;
 
