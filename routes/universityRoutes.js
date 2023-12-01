@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const univeristy = require('../service/univesityService')
-const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutionfess, validateUniversityRegisastration } = require('../validation/validation');
+const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutionfess, validateUniversityRegisastration, FAqschema, NewUpdateuniversity } = require('../validation/validation');
 const authenticateToken = require("../service/token");
 const { upload } = require('../service/multer');
 
@@ -31,10 +31,11 @@ router.put('/updateUniversity',authenticateToken, univeristy.updateUniversity1);
 
 router.put('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
 
+router.post('/universityFaq', authenticateToken,FAqschema, univeristy.UniversityFAQ) //---------->>> //by ambassdor new api //allnewapi
 
 /******************************Courses Api********************************************************** */
 
-router.post('/newcoursesadd', authenticateToken, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
+router.post('/newcoursesadd', authenticateToken,coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
 
 router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 
@@ -55,6 +56,12 @@ router.get('/get/:id', univeristy.getallbyidcourses)//////------>>>>>>>>getftech
 
 
 router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)  // tuion fess
+
+router.put('/updatess/:id',authenticateToken, univeristy.updateCoursesAndTuitionController); ///--->>>update coursed ata new
+
+router.post('/newupdateuniveristy',authenticateToken, univeristy.updateCoursesAndTuitionController); ///--->>>update coursed ata new
+
+router.post('/latestupdate', authenticateToken,NewUpdateuniversity, univeristy.latestupdateUniversity) //---------->>> //by ambassdor new api //allnewapi
 
 ///***forgot password*****////
 

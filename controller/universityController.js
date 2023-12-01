@@ -922,6 +922,21 @@ function insertfees(hostel_meals,tuition_fees, transportation, phone_internet,to
 
 
 // Modify the insertfees function to handle multiple requirements
+function insertArrayDescription(requirement) {
+    return new Promise((resolve, reject) => {
+        const query = 'INSERT INTO new_update_university (descpription) VALUES (?)';
+        db.query(query, [requirement], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.insertId);
+            }
+        });
+    });
+}
+
+
+// Modify the insertfees function to handle multiple requirements
 function insertRequirement(courseId, requirement) {
     return new Promise((resolve, reject) => {
         const query = 'INSERT INTO entiry_requirements (course_id, requirement) VALUES (?, ?)';
@@ -934,7 +949,6 @@ function insertRequirement(courseId, requirement) {
         });
     });
 }
-
 
   function updatetution(courseId, tuitionId) {
     return new Promise((resolve, reject) => {
@@ -1640,7 +1654,114 @@ function verifyOTP (otp, callback){
 }
 
   
+function updatecoursesandNew(id, updatedUniversityData) {
+    return new Promise((resolve, reject) => {
+        const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = updatedUniversityData;
+
+        // Construct the SQL query
+        const query = `
+        UPDATE courses_list
+        SET 
+        course_name = COALESCE(?, course_name),
+        department = COALESCE(?, department),
+        subject = COALESCE(?, subject),
+        tuition_fee = COALESCE(?, tuition_fee),
+        duration_years = COALESCE(?, duration_years),
+        course_type = COALESCE(?, course_type)
+
+          WHERE course_id = ?;
+      `;
+
+
+        db.query(query, [course_name, department, subject, tuition_fee, duration_years,course_type,id], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error updating university:', error);
+            } else {
+                if (result.affectedRows > 0) {
+
+                    const fetchQuery = `
+              SELECT * FROM courses_list WHERE course_id = ?;
+            `;
+
+                    db.query(fetchQuery, [id], (fetchError, fetchResult) => {
+                        if (fetchError) {
+                            reject(fetchError);
+                            logger.error('Error fetching updated university:', fetchError);
+                        } else {
+                            if (fetchResult.length > 0) {
+                                const updatedUniversity = fetchResult[0];
+                                resolve(updatedUniversity);
+                                logger.info('University updated successfully', updatedUniversity);
+                            } else {
+                                resolve(null);
+                            }
+                        }
+                    });
+                } else {
+                    resolve(null);
+                }
+            }
+        });
+    });
+}
   
+
+function universityFaq(university, userId) {
+    return new Promise((resolve, reject) => {
+        const { university_id, question, answer} = university;
+        const query = `
+        INSERT INTO university_faq 
+        (university_id, question, answer)
+        VALUES (?, ?, ?)
+      `;
+
+        db.query(query, [university_id, question, answer], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error register FAq:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    userId,
+                    question,
+                    answer
+
+                };
+                resolve(insertedUniversity);
+                logger.info('FAq registered successfully', insertedUniversity);
+            }
+        });
+    });
+}
+
+
+function univeristyUpdatelatest(university, userId) {
+    return new Promise((resolve, reject) => {
+        const { university_id,heading } = university;
+        const query = `
+        INSERT INTO new_update_university 
+        (university_id, heading)
+        VALUES (?, ?)
+      `;
+
+        db.query(query, [ university_id,heading], (error, result) => {
+            if (error) {
+                reject(error);
+                logger.error('Error registering Update latest:', error);
+            } else {
+                const insertedUniversity = {
+                    id: result.insertId,
+                    userId,
+                    heading
+
+                };
+                resolve(insertedUniversity);
+                logger.info(' add successfully latest Update of successfully', insertedUniversity);
+            }
+        });
+    });
+}
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -1677,6 +1798,10 @@ module.exports = {
     insertfees,
     updatetution,
     getallcoursesbyids,
-    insertRequirement
+    insertRequirement,
+    updatecoursesandNew,
+    universityFaq,
+    univeristyUpdatelatest,
+    insertArrayDescription
     
 }
