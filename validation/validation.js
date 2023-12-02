@@ -299,9 +299,7 @@ const addstaffrequired =(req,res,next) => {
 
 const newupdateUniversity = Joi.object({
   heading: Joi.string().required(),
-  descriptions: Joi.array().items(Joi.string()).required(),
-
-  
+  descpription: Joi.string().required(),
 });
 
 

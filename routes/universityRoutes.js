@@ -5,7 +5,7 @@ const { universityValid, coursesValid, coursenewschemma, ugschema, validatetutio
 const authenticateToken = require("../service/token");
 const { upload } = require('../service/multer');
 
-//******************************university routes********************************** *//
+//******************************university routes***********************************//
 
 
 router.get('/getallug', authenticateToken, univeristy.getallugrequirement) //--->>get al ug courses requirement
@@ -57,7 +57,7 @@ router.get('/get/:id', univeristy.getallbyidcourses)//////------>>>>>>>>getftech
 
 router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)  // tuion fess
 
-router.put('/updatess/:id',authenticateToken, univeristy.updateCoursesAndTuitionController); ///--->>>update coursed ata new
+router.put('/updatess/:id',authenticateToken, univeristy.updateCoursesAndTuitionController); ///--->>>update coursed  new api  
 
 router.post('/newupdateuniveristy',authenticateToken, univeristy.updateCoursesAndTuitionController); ///--->>>update coursed ata new
 

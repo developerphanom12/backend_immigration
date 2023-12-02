@@ -920,12 +920,10 @@ function insertfees(hostel_meals,tuition_fees, transportation, phone_internet,to
     });
   }
 
-
-// Modify the insertfees function to handle multiple requirements
-function insertArrayDescription(requirement) {
+  function insertArrayDescription(description) {
     return new Promise((resolve, reject) => {
         const query = 'INSERT INTO new_update_university (descpription) VALUES (?)';
-        db.query(query, [requirement], (err, result) => {
+        db.query(query, [description], (err, result) => {
             if (err) {
                 reject(err);
             } else {
@@ -934,7 +932,6 @@ function insertArrayDescription(requirement) {
         });
     });
 }
-
 
 // Modify the insertfees function to handle multiple requirements
 function insertRequirement(courseId, requirement) {
@@ -1221,10 +1218,7 @@ function getallcoursesbyftehc() {
 
 
 
-function
-
-
-    getallugbyid(userId) {
+function getallugbyid(userId) {
     return new Promise((resolve, reject) => {
         const query = ` 
         SELECT
@@ -1446,7 +1440,7 @@ const transporter = nodemailer.createTransport({
     service: 'Gmail', 
     auth: {
       user: 'ashimavineet2729@gmail.com',
-      pass: 'xoxe zsvs rwec pjwe',   ////---->>>>>app password  from google
+      pass: 'lvzi nwhx jzng oumz',   ////---->>>>>app password  from google
     },
   });
   
@@ -1654,58 +1648,133 @@ function verifyOTP (otp, callback){
 }
 
   
-function updatecoursesandNew(id, updatedUniversityData) {
+// function updatecoursesandNew(id, updatedUniversityData) {
+//     return new Promise((resolve, reject) => {
+//         const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = updatedUniversityData;
+
+//         // Construct the SQL query
+//         const query = `
+//         UPDATE courses_list
+//         SET 
+//         course_name = COALESCE(?, course_name),
+//         department = COALESCE(?, department),
+//         subject = COALESCE(?, subject),
+//         tuition_fee = COALESCE(?, tuition_fee),
+//         duration_years = COALESCE(?, duration_years),
+//         course_type = COALESCE(?, course_type)
+
+//           WHERE course_id = ?;
+//       `;
+
+
+//         db.query(query, [course_name, department, subject, tuition_fee, duration_years,course_type,id], (error, result) => {
+//             if (error) {
+//                 reject(error);
+//                 logger.error('Error updating university:', error);
+//             } else {
+//                 if (result.affectedRows > 0) {
+
+//                     const fetchQuery = `
+//               SELECT * FROM courses_list WHERE course_id = ?;
+//             `;
+
+//                     db.query(fetchQuery, [id], (fetchError, fetchResult) => {
+//                         if (fetchError) {
+//                             reject(fetchError);
+//                             logger.error('Error fetching updated university:', fetchError);
+//                         } else {
+//                             if (fetchResult.length > 0) {
+//                                 const updatedUniversity = fetchResult[0];
+//                                 resolve(updatedUniversity);
+//                                 logger.info('University updated successfully', updatedUniversity);
+//                             } else {
+//                                 resolve(null);
+//                             }
+//                         }
+//                     });
+//                 } else {
+//                     resolve(null);
+//                 }
+//             }
+//         });
+//     });
+// }
+  
+
+function updatecoursesandNew(id, updatedUserData) {
     return new Promise((resolve, reject) => {
-        const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = updatedUniversityData;
+        const { course_name, department, subject, 	tuition_fee, duration_years,course_type,tution} = updatedUserData;
 
-        // Construct the SQL query
-        const query = `
-        UPDATE courses_list
-        SET 
-        course_name = COALESCE(?, course_name),
-        department = COALESCE(?, department),
-        subject = COALESCE(?, subject),
-        tuition_fee = COALESCE(?, tuition_fee),
-        duration_years = COALESCE(?, duration_years),
-        course_type = COALESCE(?, course_type)
+        const updateQuery = `
+            UPDATE courses_list u
+            JOIN  tution_fees a ON u.tuition_id = a.tution_id
+            SET 
+                u.course_name = COALESCE(?, u.course_name),
+                u.department = COALESCE(?, u.department),
+                u.subject = COALESCE(?, u.subject),
+                u.tuition_fee = COALESCE(?, u.tuition_fee),
+                u.duration_years = COALESCE(?, u.duration_years),
+                u.course_type = COALESCE(?, u.course_type),
+                a.hostel_meals = COALESCE(?, a.hostel_meals),
+                a.tuition_fees = COALESCE(?, a.tuition_fees),
+                a.transportation = COALESCE(?, a.transportation),
+                a.phone_internet = COALESCE(?, a.phone_internet),
+                a.total = COALESCE(?, a.total)
+            WHERE u.tuition_id = ?;
+        `;
 
-          WHERE course_id = ?;
-      `;
-
-
-        db.query(query, [course_name, department, subject, tuition_fee, duration_years,course_type,id], (error, result) => {
-            if (error) {
-                reject(error);
-                logger.error('Error updating university:', error);
-            } else {
-                if (result.affectedRows > 0) {
-
-                    const fetchQuery = `
-              SELECT * FROM courses_list WHERE course_id = ?;
-            `;
-
-                    db.query(fetchQuery, [id], (fetchError, fetchResult) => {
-                        if (fetchError) {
-                            reject(fetchError);
-                            logger.error('Error fetching updated university:', fetchError);
-                        } else {
-                            if (fetchResult.length > 0) {
-                                const updatedUniversity = fetchResult[0];
-                                resolve(updatedUniversity);
-                                logger.info('University updated successfully', updatedUniversity);
-                            } else {
-                                resolve(null);
-                            }
-                        }
-                    });
+        db.query(
+            updateQuery,
+            [
+                course_name,
+                department,
+                subject,
+                tuition_fee,
+                duration_years,
+                course_type,
+                tution.hostel_meals,
+                tution.tuition_fees,
+                tution.transportation,
+                tution.phone_internet,
+                tution.total,
+                id
+            ],
+            (updateError, updateResult) => {
+                if (updateError) {
+                    reject(updateError);
+                    logger.error('Error updating courses information and tutionfees:', updateError);
                 } else {
-                    resolve(null);
+                    // Check if any rows were affected (indicating a successful update)
+                    if (updateResult.affectedRows > 0) {
+                        // Fetch the updated data after the update
+                        const fetchQuery = `
+                            SELECT * FROM courses_list u
+                            JOIN tution_fees a ON u.tuition_id = a.tution_id
+                            WHERE u.tuition_id = ?;
+                        `;
+                        
+                        db.query(fetchQuery, [id], (fetchError, fetchResult) => {
+                            if (fetchError) {
+                                reject(fetchError);
+                                logger.error('Error fetching updated courses data:', fetchError);
+                            } else {
+                                if (fetchResult.length > 0) {
+                                    const updatedUserData = fetchResult[0];
+                                    resolve(updatedUserData);
+                                    logger.info('courses information and tutionfees updated successfully', updatedUserData);
+                                } else {
+                                    resolve(null);
+                                }
+                            }
+                        });
+                    } else {
+                        resolve(null);
+                    }
                 }
             }
-        });
+        );
     });
 }
-  
 
 function universityFaq(university, userId) {
     return new Promise((resolve, reject) => {
@@ -1738,14 +1807,14 @@ function universityFaq(university, userId) {
 
 function univeristyUpdatelatest(university, userId) {
     return new Promise((resolve, reject) => {
-        const { university_id,heading } = university;
+        const { university_id,heading ,	descpription} = university;
         const query = `
         INSERT INTO new_update_university 
-        (university_id, heading)
-        VALUES (?, ?)
+        (university_id, heading,descpription)
+        VALUES (?, ?,?)
       `;
 
-        db.query(query, [ university_id,heading], (error, result) => {
+        db.query(query, [ university_id,heading,descpription], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering Update latest:', error);
@@ -1753,7 +1822,8 @@ function univeristyUpdatelatest(university, userId) {
                 const insertedUniversity = {
                     id: result.insertId,
                     userId,
-                    heading
+                    heading,
+                    descpription
 
                 };
                 resolve(insertedUniversity);

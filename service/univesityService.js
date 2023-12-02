@@ -874,7 +874,8 @@ const updateCoursesAndTuitionController = async (req, res) => {
 
     try {
         if (userRole === 'university') {
-            const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = req.body;
+            const { course_name, department, subject, 	tuition_fee, duration_years,course_type,tution} 
+            = req.body;
             const updatedUniversity = await userservice.updatecoursesandNew(courseId, {
                 course_name,
                 department,
@@ -882,7 +883,7 @@ const updateCoursesAndTuitionController = async (req, res) => {
                 tuition_fee,
                 duration_years,
                 course_type,
-                // address: address || {},
+                tution: tution || {},
             }).catch((error) => {
                 return res.status(400).json({ status: 400, error: error.message });
             });
@@ -951,29 +952,26 @@ const latestupdateUniversity = async (req, res) => {
     }
     const userId = req.user.id;
     console.log("jdhfgfdjgdhfd", userId)
-    const { university_id, heading,descriptions} = req.body;
+    const { university_id, heading,	descpription} = req.body;
 
     try {
         // Insert course information
         const universityData = await userservice.univeristyUpdatelatest({
             university_id: userId,
             heading,
+            descpription
         });
-// 
-        for (const requirement of descriptions) {
-            await userservice.insertArrayDescription(universityData.id, requirement);
-        }
-        
+
         res.status(201).json({
             message: "newupdate add successfully",
+            status: 201,
             data: universityData
         });
     } catch (error) {
         if (error) {
             res.status(401).json({ error: error.message });
         } else {
-
-            handleServerError(res, error);                          
+            handleServerError(res, error);
         }
     }
 };
