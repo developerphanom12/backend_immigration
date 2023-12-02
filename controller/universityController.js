@@ -1513,7 +1513,6 @@ const transporter = nodemailer.createTransport({
   
 
 
-
 function verifyOTP (otp, callback){
     const otpQuery = 'SELECT email, is_verified FROM otp_table_verify WHERE otp = ?';
   

@@ -28,13 +28,13 @@ router.post('/stafflogin/' , addcountry.stafflogin);
 
 router.get('/getallcountry/' , authenticateToken,addcountry.fetchallcountry);
 
-router.get('/getagent' , authenticateToken,adminservice.getallagnt); //---->>> all agent
+router.get('/getagent' , authenticateToken,adminservice.getallagent); //---->>> all agent-----//
 
-router.get('/getallstudent' , authenticateToken,adminservice.getallagnt); //---->>> all agent
+router.get('/getallstudent' , authenticateToken,adminservice.getallstudent); //---->>> all student
 
-router.get('/getalluniversity' , authenticateToken,adminservice.getallagnt); //---->>> all agent
+router.get('/getalluniversity' , authenticateToken,adminservice.getalluniversity); //---->>> all university
 
-
+router.post('/updat11e',authenticateToken, adminservice.updatestatusofagent)
 module.exports =router;
 
 

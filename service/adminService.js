@@ -1,6 +1,6 @@
 const db = require('../config/configration')
 const { logger } = require('../utils/logging')
-
+const nodemailer = require('nodemailer')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -147,19 +147,117 @@ const updateApplicationStatus = (applicationId, newStatus,callback) => {
   
     db.query(updateQuery, [newStatus,applicationId], (error, result) => {
       if (error) {
+        console.error('Error updating agent status:', error);
+        return callback(error, null);
+      }
+  
+      if (result.affectedRows === 0) {
+        return callback(null, { error: 'agent not found' });
+      }
+  
+      return callback(null, { message: 'agent status updated successfully' });
+    });
+  };
+  
+
+  const updateagent = (is_aprooved,userId,callback) => {
+    const updateQuery = 'UPDATE user01 SET is_aprooved = ? WHERE id = ?';
+  
+    db.query(updateQuery, [is_aprooved,userId], (error, result) => {
+      if (error) {
         console.error('Error updating application status:', error);
         return callback(error, null);
       }
   
       if (result.affectedRows === 0) {
-        return callback(null, { error: 'Application not found' });
+        return callback(null, { error: 'agent not found' });
       }
   
-      return callback(null, { message: 'Application status updated successfully' });
+      return callback(null, { message: 'agent status updated successfully' });
     });
   };
-  
-  
+
+
+
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', 
+  auth: {
+    user: 'ashimavineet2729@gmail.com',
+    pass: 'lvzi nwhx jzng oumz',
+  },
+});
+
+function sendApprovalEmail(email) {
+  const mailOption = {
+    from: 'ashimavineet2729@gmail.com',
+    to: email,
+    subject: 'Profile Approved',
+    text: 'Congratulations! Your profile has been approved.',
+    html: `
+   <p> Mention Below Link login here </p>
+    <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/login"> click here</a>.</p>
+    <p class="message">Please use these credentials to access your account.</p>
+`,
+  };
+  transporter.sendMail(mailOption, (error, info) => {
+    if (error) {
+      console.error('Error sending approval email:', error);
+    } else {
+      console.log('Approval email sent:', info.response);
+    }
+  });
+
+}
+
+// function sendApprovalEmailofagent(email) {
+//   const mailOptions = {
+//     from: 'ashimavineet2729@gmail.com',
+//     to: email,
+//     subject: 'Your Profile Not Approved',
+    
+//     html: `
+//     <p>Sorry! Your profile has not approved.message".</p>
+// `,
+//   };
+
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.error('Error sending approval email:', error);
+//     } else {
+//       console.log('Approval email sent:', info.response);
+//     }
+//   });
+// }
+
+function sendApprovalIfApproved(userId, email) {
+  const selectQuery = 'SELECT email FROM user01 WHERE id = ?';
+
+  db.query(selectQuery, [userId, email], (selectError, selectResults) => {
+    if (selectError) {
+      console.error('Error retrieving user information:', selectError);
+      return;
+    }
+
+    if (selectResults.length === 0) {
+      console.log('User not found');
+      return;
+    }
+
+    const { is_approved } = selectResults[0];
+
+    if (is_approved === 1) {
+      sendApprovalEmail(email);
+    } 
+    // if (is_approved === 0) {
+    //   sendApprovalEmailofagent(email);
+    // }
+    
+
+
+  });
+}
+
+
 function getallagent() {
   return new Promise((resolve, reject) => {
       const query = `SELECT  * FROM user01 WHERE is_deleted = 0`
@@ -186,11 +284,138 @@ function getallagent() {
 }
 
   
+function getallstudent() {
+  return new Promise((resolve, reject) => {
+      const query = `SELECT  * FROM students WHERE is_deleted = 0`
+
+      db.query(query, (error, results) => {
+          if (error) {
+              console.error('Error executing query:', error);
+              reject(error);
+              logger.error('Error getting all users:', error); // Log the error
+          } else {
+              const usersWithAddresses = results.map((row) => ({
+                  id: row.id,
+                  first_name: row.first_name,
+                  last_name: row.last_name,
+                  email: row.email,
+                  phone_number: row.phone_number,
+                  dob:row.dob,
+                  role: row.role,
+              }));
+              resolve(usersWithAddresses);
+              logger.info('All users retrieved successfully');
+          }
+      });
+  });
+}
+
+
+  
+function getalluniversity() {
+  return new Promise((resolve, reject) => {
+      const query = `SELECT  * FROM UniversityRegistration WHERE is_deleted = 0`
+
+      db.query(query, (error, results) => {
+          if (error) {
+              console.error('Error executing query:', error);
+              reject(error);
+              logger.error('Error getting all university:', error); // Log the error
+          } else {
+              const usersWithAddresses = results.map((row) => ({
+                  id: row.id,
+                  university_name: row.university_name,
+                  ambassador_name: row.ambassador_name,
+                  phone_number: row.phone_number,
+                  email: row.email,
+                  year_established :row.callbackyear_established,
+                  role: row.role,
+              }));
+              resolve(usersWithAddresses);
+              logger.info('All university retrieved successfully');
+          }
+      });
+  });
+}
+
+
+
+
 module.exports = {
     adminregister,
     loginadmin,
     getallapplication,
     updateApplicationStatus,
-    getallagent
+    getallagent,
+    getallstudent,
+    getalluniversity,
+    sendApprovalIfApproved,
+    updateagent,
+    sendApprovalEmail,
+    // sendApprovalEmailofagent
 }
+
+
+
+
+
+
+
+
+
+
+
+// const transporter = nodemailer.createTransport({
+//   service: 'Gmail', 
+//   auth: {
+//     user: 'ashimavineet2729@gmail.com',
+//     pass: 'lvzi nwhx jzng oumz', // ---->>>>>app password from google
+//   },
+// });
+
+// function sendApprovalEmail(email) {
+//   const mailOptions = {
+//     from: 'ashimavineet2729@gmail.com',
+//     to: email,
+//     subject: 'Application Approved',
+//     text: 'Congratulations! Your application has been approved.',
+//   };
+
+//   transporter.sendMail(mailOptions, (error, info) => {
+//     if (error) {
+//       console.error('Error sending approval email:', error);
+//     } else {
+//       console.log('Approval email sent:', info.response);
+//     }
+//   });
+// }
+
+// function sendotpuniversity(email) {
+//   return new Promise((resolve, reject) => {
+//     const emailQuery = 'SELECT email, status FROM UniversityRegistration WHERE email = ?';
+
+//     db.query(emailQuery, [email], (emailError, emailResults) => {
+//       if (emailError) {
+//         console.error('Error retrieving user email:', emailError);
+//         reject(emailError);
+//         return;
+//       }
+
+//       if (emailResults.length === 0) {
+//         reject('User not found');
+//         return;
+//       }
+
+//       const { status } = emailResults[0];
+
+//       // Check if the user is approved
+//       if (status === 'approved') {
+//         sendApprovalEmail(email);
+//         resolve('Approval email sent.');
+//       } else {
+//         reject('User not approved');
+//       }
+//     });
+//   });
+// }
 
