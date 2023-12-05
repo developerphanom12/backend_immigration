@@ -187,10 +187,10 @@ const getallagent = async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Error retrieving all universities:', error);
+    console.error('Error retrieving all agent:', error);
     res.status(500).json({
       status: 500,
-      message: 'Error retrieving all universities',
+      message: 'Error retrieving all agent',
     });
   }
 };
@@ -212,7 +212,7 @@ const getalluniversity = async (req, res) => {
 
     if (allUsers) {
       res.status(201).json({
-        message: 'retrive all agent successfully',
+        message: 'retrive all university successfully',
         status: 201,
         data: allUsers,
       });
@@ -247,7 +247,7 @@ const getallstudent = async (req, res) => {
 
     if (allUsers) {
       res.status(201).json({
-        message: 'retrive all agent successfully',
+        message: 'retrive all studnet successfully',
         status: 201,
         data: allUsers,
       });
@@ -259,10 +259,10 @@ const getallstudent = async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Error retrieving all universities:', error);
+    console.error('Error retrieving all studnet:', error);
     res.status(500).json({
       status: 500,
-      message: 'Error retrieving all universities',
+      message: 'Error retrieving all studnet',
     });
   }
 };

@@ -251,7 +251,7 @@ const addstaff = Joi.object({
   staff_name: Joi.string().required(),
   password : Joi.string().required(),
   staff_email: Joi.string().email().required(),
-  staff_phone_number : Joi.string().email().required(),
+  staff_phone_number : Joi.number().integer().required(),
   country_id : Joi.number().integer().required()
 })
 
@@ -262,6 +262,7 @@ const addstaffrequired =(req,res,next) => {
   if(error){
     return res.status(400).json({error: error.details[0].message});
   }
+  next();
 }
 // const coursesadd = Joi.object({
 //   course_name: Joi.string().required(),

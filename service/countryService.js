@@ -53,6 +53,14 @@ const addcountry = async (req, res) => {
 
 //
   const addstaff = async (req, res) => {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        status: 401,
+        error: 'Forbidden for regular users'
+      });
+    }
+    console.log('User Role:', req.user.role);
+  
     const { staff_name, password, staff_email, staff_phone_number ,country_id} = req.body;
 
     try {  

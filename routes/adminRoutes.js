@@ -20,7 +20,7 @@ router.post('/statusupdate',authenticateToken,adminservice.updateApplicationStat
 router.post('/addcountrywise/' , addcountry.addcountry);
 
 
-router.post('/addstaff/' ,addstaffrequired,addcountry.addstaff);
+router.post('/addstaff' ,authenticateToken,addstaffrequired,addcountry.addstaff);
 
 
 router.post('/stafflogin/' , addcountry.stafflogin);
@@ -28,7 +28,7 @@ router.post('/stafflogin/' , addcountry.stafflogin);
 
 router.get('/getallcountry/' , authenticateToken,addcountry.fetchallcountry);
 
-router.get('/getagent' , authenticateToken,adminservice.getallagent); //---->>> all agent-----//
+router.get('/getagent' ,authenticateToken,adminservice.getallagent); //---->>> all agent-----//
 
 router.get('/getallstudent' , authenticateToken,adminservice.getallstudent); //---->>> all student
 

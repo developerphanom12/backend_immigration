@@ -79,7 +79,7 @@ function sendRegistrationEmail(email, username, password) {
         service: 'Gmail',
         auth: {
             user: 'ashimavineet2729@gmail.com',
-            pass: 'lvzi nwhx jzng oumz', 
+            pass: 'suqo spfj ajsb fieb', 
         }
     })
     const mailOptions = {
