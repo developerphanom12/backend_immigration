@@ -387,7 +387,7 @@ const updateuniversity = async (req, res) => {
         };
       }
 
-      console.log('updateuniversity status  successfully');
+      console.log('updateuniversity add status  successfully');
 
       if (	is_approved === 1) {
         admin.sendupdateuniveristy(email);
