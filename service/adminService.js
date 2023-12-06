@@ -279,7 +279,7 @@ function sendupdateuniveristy(email) {
     text: 'Congratulations! Your profile has been approved.',
     html: `
    <p> Mention Below Link login here </p>
-    <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/studentlogin"> click here</a>.</p>
+    <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/unilogin"> click here</a>.</p>
     <p class="message">Please use these credentials to access your account.</p>
 `,
   };
@@ -291,34 +291,6 @@ function sendupdateuniveristy(email) {
     }
   });
 
-}
-
-function sendApprovalIfApproved(userId, email) {
-  const selectQuery = 'SELECT email FROM user01 WHERE id = ?';
-
-  db.query(selectQuery, [userId, email], (selectError, selectResults) => {
-    if (selectError) {
-      console.error('Error retrieving user information:', selectError);
-      return;
-    }
-
-    if (selectResults.length === 0) {
-      console.log('User not found');
-      return;
-    }
-
-    const { is_approved } = selectResults[0];
-
-    if (is_approved === 1) {
-      sendApprovalEmail(email);
-    } 
-    // if (is_approved === 0) {
-    //   sendApprovalEmailofagent(email);
-    // }
-    
-
-
-  });
 }
 
 

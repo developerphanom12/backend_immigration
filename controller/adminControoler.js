@@ -268,50 +268,6 @@ const getallstudent = async (req, res) => {
 };
 
 
-// const approveUserController = async (req, res) => {
-//   const { applicationId, email } = req.body;
-
-//   // Assuming you have middleware that checks the admin role
-//   if (req.user.role !== 'admin') {
-//     return res.status(403).json({
-//       status: 403,
-//       error: 'Forbidden. Only admin can approve or reject applications.'
-//     });
-//   }
-
-//   try {
-//     const user = await userController.getUserByIdAndEmail(applicationId, email);
-
-//     if (!user) {
-//       return res.status(404).json({
-//         status: 404,
-//         error: 'User not found'
-//       });
-//     }
-
-//     const { is_approved } = user;
-
-//     if (is_approved === 1) {
-//       emailController.sendApprovalEmail(email);
-//       return res.status(200).json({
-//         status: 200,
-//         message: 'User approved, and approval email sent successfully'
-//       });
-//     } else {
-//       return res.status(400).json({
-//         status: 400,
-//         error: 'User not approved'
-//       });
-//     }
-//   } catch (error) {
-//     console.error('Error approving user:', error);
-//     return res.status(500).json({
-//       status: 500,
-//       error: 'Failed to approve user'
-//     });
-//   }
-// };
-
 
 const updatestatusofagent = async (req, res) => {
   const { userId, email, is_aprooved } = req.body;
