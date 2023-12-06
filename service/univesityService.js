@@ -818,53 +818,6 @@ async function forgetpasswordEMAIL(req, res) {
     }
 };
 
-// // Assuming you have an Express-like controller function
-// function updateCoursesAndTuitionController(req, res) {
-//     const courseId = req.params.id; 
-
-//     userservice.updatecoursesandNew(courseId)
-//         .then((result) => {
-//             // Handle success
-//             res.status(200).json({ success: true, message: 'Courses and tuition fees updated successfully', result });
-//         })
-//         .catch((error) => {
-//             // Handle error
-//             res.status(500).json({ success: false, message: 'Error updating courses and tuition fees', error: error.message });
-//         });
-// }
-
-
-// const updateUniversity1 = async (req, res) => {
-//     const universityId = req.user.id;
-//     const userRole = req.user.role;
-
-//     try {
-//         if (userRole === 'university') {
-//             const { university_name, ambassador_name, phone_number, email, address} = req.body;
-//             const updatedUniversity = await userservice.updateUniversity(universityId, {
-//                 university_name,
-//                 ambassador_name,
-//                 phone_number,
-//                 email,
-//                 address: address || {},
-//             }).catch((error) => {
-//                 return res.status(400).json({ error: error.message });
-//             });
-
-//             if (!updatedUniversity) {
-//                 const notFoundMessage = universityStatusMessages.common.universityNotFound;
-//                 return res.status(notFoundMessage.status).json({ error: notFoundMessage.message });
-//             }
-
-//             const successMessage = universityStatusMessages.universityApi.universityUpdateSuccess;
-//             res.status(successMessage.status).json({
-//                 message: successMessage.message,
-//                 status:200
-//             });
-//         }
-//     }
-// }
-
 
 
 

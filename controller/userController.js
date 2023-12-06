@@ -198,25 +198,30 @@ function loginUser(username, password, callback) {
 
   const query = 'SELECT * FROM user01 WHERE username = ?';
 
+ 
   db.query(query, [username], async (err, results) => {
     if (err) {
-      return callback(err, null);
+        return callback(err, null);
     }
 
     if (results.length === 0) {
-      return callback(null, { error: 'User not found' });
+        return callback(null, { error: 'User not found' });
     }
 
     const user = results[0];
 
     if (user.is_deleted === 1) {
-      return callback(null, { error: 'User not found' });
+        return callback(null, { error: 'User not found' });
     }
+    if (user.is_aprooved !== 1) {
+        return callback(null, { error: 'You are not approved at this moment' });
+    }
+
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return callback(null, { error: 'Invalid password' });
+        return callback(null, { error: 'Invalid password' });
     }
 
     const secretKey = 'secretkey';

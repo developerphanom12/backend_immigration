@@ -833,30 +833,31 @@ function logiuniversity(username, password, callback) {
 
     const query = 'SELECT * FROM UniversityRegistration WHERE username = ?';
 
-    db.query(query, [username], async (err, results) => {
-        if (err) {
-            return callback(err, null);
-        }
+    
+  db.query(query, [username], async (err, results) => {
+    if (err) {
+        return callback(err, null);
+    }
 
-        if (results.length === 0) {
-            return callback(null, { error: 'User not found' });
-        }
+    if (results.length === 0) {
+        return callback(null, { error: 'User not found' });
+    }
 
-        const user = results[0];
+    const user = results[0];
 
-        if (user.is_deleted === 1) {
-            return callback(null, { error: 'User not found' });
-        }
-        if (user.is_approved !== 1) {
-            return callback(null, { error: 'You are not approved at this moment' });
-        }
+    if (user.is_deleted === 1) {
+        return callback(null, { error: 'User not found' });
+    }
+    if (user.is_approved !== 1) {
+        return callback(null, { error: 'You are not approved at this moment' });
+    }
 
 
-        const passwordMatch = await bcrypt.compare(password, user.password);
+    const passwordMatch = await bcrypt.compare(password, user.password);
 
-        if (!passwordMatch) {
-            return callback(null, { error: 'Invalid password' });
-        }
+    if (!passwordMatch) {
+        return callback(null, { error: 'Invalid password' });
+    }
 
         const secretKey = 'secretkey';
         const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
