@@ -52,7 +52,7 @@ router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //
 
 
 
-router.get('/get/:id', univeristy.getallbyidcourses)//////------>>>>>>>>getftech new courses //allnewapi
+router.get('/get/:id',authenticateToken, univeristy.getallbyidcourses)//////------>>>>>>>>getftech new courses //allnewapi
 
 
 router.post('/tutionfess', validatetutionfess, univeristy.tutionfess)  // tuion fess
