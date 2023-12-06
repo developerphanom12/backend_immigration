@@ -209,25 +209,89 @@ function sendApprovalEmail(email) {
 
 }
 
-// function sendApprovalEmailofagent(email) {
-//   const mailOptions = {
-//     from: 'ashimavineet2729@gmail.com',
-//     to: email,
-//     subject: 'Your Profile Not Approved',
-    
-//     html: `
-//     <p>Sorry! Your profile has not approved.message".</p>
-// `,
-//   };
 
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error sending approval email:', error);
-//     } else {
-//       console.log('Approval email sent:', info.response);
-//     }
-//   });
-// }
+
+function sendapprovalstudent(email) {
+  const mailOption = {
+    from: 'ashimavineet2729@gmail.com',
+    to: email,
+    subject: 'Profile Approved',
+    text: 'Congratulations! Your profile has been approved.',
+    html: `
+   <p> Mention Below Link login here </p>
+    <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/studentlogin"> click here</a>.</p>
+    <p class="message">Please use these credentials to access your account.</p>
+`,
+  };
+  transporter.sendMail(mailOption, (error, info) => {
+    if (error) {
+      console.error('Error sending approval email:', error);
+    } else {
+      console.log('Approval email sent:', info.response);
+    }
+  });
+
+}
+
+
+
+const updatestudent = (is_aprooved,userId,callback) => {
+  const updateQuery = 'UPDATE students SET is_aprooved = ? WHERE id = ?';
+
+  db.query(updateQuery, [is_aprooved,userId], (error, result) => {
+    if (error) {
+      console.error('Error updating students status:', error);
+      return callback(error, null);
+    }
+
+    if (result.affectedRows === 0) {
+      return callback(null, { error: 'students not found' });
+    }
+
+    return callback(null, { message: 'students status updated successfully' });
+  });
+};
+
+
+const updateUNiversity = (	is_approved	,userId,callback) => {
+  const updateQuery = 'UPDATE UniversityRegistration SET 	is_approved	 = ? WHERE id = ?';
+
+  db.query(updateQuery, [is_approved	,userId], (error, result) => {
+    if (error) {
+      console.error('Error updating students status:', error);
+      return callback(error, null);
+    }
+
+    if (result.affectedRows === 0) {
+      return callback(null, { error: 'students not found' });
+    }
+
+    return callback(null, { message: 'students status updated successfully' });
+  });
+};
+
+
+function sendupdateuniveristy(email) {
+  const mailOption = {
+    from: 'ashimavineet2729@gmail.com',
+    to: email,
+    subject: 'Profile Approved',
+    text: 'Congratulations! Your profile has been approved.',
+    html: `
+   <p> Mention Below Link login here </p>
+    <p class="message">You can access your account <a href="https://immigration.phanomprofessionals.com/studentlogin"> click here</a>.</p>
+    <p class="message">Please use these credentials to access your account.</p>
+`,
+  };
+  transporter.sendMail(mailOption, (error, info) => {
+    if (error) {
+      console.error('Error sending approval email:', error);
+    } else {
+      console.log('Approval email sent:', info.response);
+    }
+  });
+
+}
 
 function sendApprovalIfApproved(userId, email) {
   const selectQuery = 'SELECT email FROM user01 WHERE id = ?';
@@ -352,70 +416,10 @@ module.exports = {
     sendApprovalIfApproved,
     updateagent,
     sendApprovalEmail,
+    updatestudent,
+    sendapprovalstudent,
+    updateUNiversity,
+    sendupdateuniveristy
     // sendApprovalEmailofagent
 }
-
-
-
-
-
-
-
-
-
-
-
-// const transporter = nodemailer.createTransport({
-//   service: 'Gmail', 
-//   auth: {
-//     user: 'ashimavineet2729@gmail.com',
-//     pass: 'lvzi nwhx jzng oumz', // ---->>>>>app password from google
-//   },
-// });
-
-// function sendApprovalEmail(email) {
-//   const mailOptions = {
-//     from: 'ashimavineet2729@gmail.com',
-//     to: email,
-//     subject: 'Application Approved',
-//     text: 'Congratulations! Your application has been approved.',
-//   };
-
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error sending approval email:', error);
-//     } else {
-//       console.log('Approval email sent:', info.response);
-//     }
-//   });
-// }
-
-// function sendotpuniversity(email) {
-//   return new Promise((resolve, reject) => {
-//     const emailQuery = 'SELECT email, status FROM UniversityRegistration WHERE email = ?';
-
-//     db.query(emailQuery, [email], (emailError, emailResults) => {
-//       if (emailError) {
-//         console.error('Error retrieving user email:', emailError);
-//         reject(emailError);
-//         return;
-//       }
-
-//       if (emailResults.length === 0) {
-//         reject('User not found');
-//         return;
-//       }
-
-//       const { status } = emailResults[0];
-
-//       // Check if the user is approved
-//       if (status === 'approved') {
-//         sendApprovalEmail(email);
-//         resolve('Approval email sent.');
-//       } else {
-//         reject('User not approved');
-//       }
-//     });
-//   });
-// }
 

@@ -417,6 +417,7 @@ async function getUserApplications(userId, studentName, applicationId) {
   });
 }
 
+
 async function getbyid(applicationId) {
   const query = `
   SELECT

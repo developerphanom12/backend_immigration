@@ -358,6 +358,95 @@ const updatestatusofagent = async (req, res) => {
 
 
 
+const updatestudent = async (req, res) => {
+  const { userId, email, is_aprooved } = req.body;
+
+  try {
+    if (req.user.role !== 'admin') {
+      throw {
+        status: 403,
+        error: 'Forbidden. Only admin can approve or reject applications.'
+      };
+    }
+
+    if (is_aprooved !== 0 && is_aprooved !== 1) {
+      throw {
+        status: 400,
+        error: 'Invalid is_approved value. It must be either 0 or 1.'
+      };
+    }
+
+    admin.updatestudent(is_aprooved, userId, (error, result) => {
+      if (error) {
+        console.error('Error updating student status:', error);
+        throw {
+          status: 500,
+          error: 'Failed to update student status.'
+        };
+      }
+
+      console.log('student status updated successfully');
+
+      if (is_aprooved === 1) {
+        admin.sendapprovalstudent(email);
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: 'student status updated successfully'
+      });
+    });
+  } catch (error) {
+    res.status(error.status || 500).json(error);
+  }
+};
+
+
+
+
+const updateuniversity = async (req, res) => {
+  const { userId, email, 	is_approved } = req.body;
+
+  try {
+    if (req.user.role !== 'admin') {
+      throw {
+        status: 403,
+        error: 'Forbidden. Only admin can approve or reject applications.'
+      };
+    }
+
+    if (	is_approved !== 0 && 	is_approved !== 1) {
+      throw {
+        status: 400,
+        error: 'Invalid is_approved value. It must be either 0 or 1.'
+      };
+    }
+
+    admin.updateUNiversity	(is_approved, userId, (error, result) => {
+      if (error) {
+        console.error('Error  updateuniversity status:', error);
+        throw {
+          status: 500,
+          error: 'Failed to updateuniversity status.'
+        };
+      }
+
+      console.log('updateuniversity status  successfully');
+
+      if (	is_approved === 1) {
+        admin.sendupdateuniveristy(email);
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: 'updateuniversity status updateuniversity'
+      });
+    });
+  } catch (error) {
+    res.status(error.status || 500).json(error);
+  }
+};
+
 
 module.exports = {
   registerAdmin,
@@ -367,6 +456,8 @@ module.exports = {
   getallagent,
   getallstudent,
   getalluniversity,
-  updatestatusofagent
+  updatestatusofagent,
+  updatestudent,
+  updateuniversity
 
 }

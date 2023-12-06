@@ -34,7 +34,13 @@ router.get('/getallstudent' , authenticateToken,adminservice.getallstudent); //-
 
 router.get('/getalluniversity' , authenticateToken,adminservice.getalluniversity); //---->>> all university
 
-router.post('/updat11e',authenticateToken, adminservice.updatestatusofagent)
+router.post('/updat11e',authenticateToken, adminservice.updatestatusofagent)  // agent aprrove status update
+
+router.post('/updatestudent',authenticateToken, adminservice.updatestudent)
+
+
+router.post('/updateUniversity',authenticateToken, adminservice.updateuniversity)
+
 module.exports =router;
 
 
