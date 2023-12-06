@@ -1617,7 +1617,7 @@ function verifyOTP (otp, callback){
                                 university_name: row.university_name,
                             },
                             tution: {
-                                tution_id: row.tution_id,
+                                id: row.tuition_id,
                                 hostel_meals: row.hostel_meals,
                                 tuition_fees: row.tuition_fees,
                                 transportation: row.transportation,
