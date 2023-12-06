@@ -385,7 +385,6 @@ module.exports = {
     getallagent,
     getallstudent,
     getalluniversity,
-    sendApprovalIfApproved,
     updateagent,
     sendApprovalEmail,
     updatestudent,
