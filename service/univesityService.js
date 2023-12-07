@@ -872,7 +872,8 @@ const UniversityFAQ = async (req, res) => {
         return res.status(403).json({ error: 'Forbidden for regular users' });
     }
     const userId = req.user.id;
-    console.log("jdhfgfdjgdhfd", userId)
+    const role = req.user.role
+    console.log("jdhfgfdjgdhfd", userId,role)
     const { university_id,question,answer} = req.body;
 
     try {
@@ -929,6 +930,42 @@ const latestupdateUniversity = async (req, res) => {
     }
 };
 
+
+
+
+
+const getuniveristybyids = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        console.log('sdfsdfsdf', userId);
+
+      const  userApplications = await userservice.getallUniversityids(userId);
+
+       if(userApplications){
+            res.status(201).json({
+                message: "university fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        }
+        else {
+            const responseMessage = 'No university found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+};
+
+
+
 module.exports = {
     registerUniversity,
     getUniversityByIdHandler,
@@ -954,5 +991,6 @@ module.exports = {
     getallbyidcourses,
     updateCoursesAndTuitionController,
     UniversityFAQ,
-    latestupdateUniversity
+    latestupdateUniversity,
+    getuniveristybyids
 }

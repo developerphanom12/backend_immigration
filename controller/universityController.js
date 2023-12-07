@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer');
 const randomstring = require('randomstring');
-const fs = require('fs'); 
+const fs = require('fs');
 const emailTemplate = fs.readFileSync('controller/template.html', 'utf8');
 
 
@@ -464,7 +464,7 @@ function updateUserData(id, updatedUserData) {
                             JOIN user_address_by a ON u.id = a.user_id
                             WHERE u.id = ?;
                         `;
-                        
+
                         db.query(fetchQuery, [id], (fetchError, fetchResult) => {
                             if (fetchError) {
                                 reject(fetchError);
@@ -538,7 +538,7 @@ function updateStudentdata(id, updatedUserData) {
                             JOIN student_addresse a ON u.id = a.student_id
                             WHERE u.id = ?;
                         `;
-                        
+
                         db.query(fetchQuery, [id], (fetchError, fetchResult) => {
                             if (fetchError) {
                                 reject(fetchError);
@@ -756,14 +756,14 @@ function getallcourses() {
 
 function UniversityRegisterself(university) {
     return new Promise((resolve, reject) => {
-        const { university_name, ambassador_name, phone_number, email, username, password, addressId,year_established,type } = university;
+        const { university_name, ambassador_name, phone_number, email, username, password, addressId, year_established, type } = university;
         const query = `
         INSERT INTO UniversityRegistration  
         (university_name, ambassador_name, phone_number,email,username,password,address_id,year_established,type)
         VALUES (?, ?, ?,?,?,?,?,?,?)
       `;
 
-        db.query(query, [university_name, ambassador_name, phone_number, email, username, password, addressId,year_established,type], (error, result) => {
+        db.query(query, [university_name, ambassador_name, phone_number, email, username, password, addressId, year_established, type], (error, result) => {
             if (error) {
                 reject(error);
             } else {
@@ -833,31 +833,31 @@ function logiuniversity(username, password, callback) {
 
     const query = 'SELECT * FROM UniversityRegistration WHERE username = ?';
 
-    
-  db.query(query, [username], async (err, results) => {
-    if (err) {
-        return callback(err, null);
-    }
 
-    if (results.length === 0) {
-        return callback(null, { error: 'User not found' });
-    }
+    db.query(query, [username], async (err, results) => {
+        if (err) {
+            return callback(err, null);
+        }
 
-    const user = results[0];
+        if (results.length === 0) {
+            return callback(null, { error: 'User not found' });
+        }
 
-    if (user.is_deleted === 1) {
-        return callback(null, { error: 'User not found' });
-    }
-    if (user.is_approved !== 1) {
-        return callback(null, { error: 'You are not approved at this moment' });
-    }
+        const user = results[0];
+
+        if (user.is_deleted === 1) {
+            return callback(null, { error: 'User not found' });
+        }
+        if (user.is_approved !== 1) {
+            return callback(null, { error: 'You are not approved at this moment' });
+        }
 
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+        const passwordMatch = await bcrypt.compare(password, user.password);
 
-    if (!passwordMatch) {
-        return callback(null, { error: 'Invalid password' });
-    }
+        if (!passwordMatch) {
+            return callback(null, { error: 'Invalid password' });
+        }
 
         const secretKey = 'secretkey';
         const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, secretKey);
@@ -908,20 +908,20 @@ function updateaddressuniversity(userId, addressId) {
     });
 }
 
-function insertfees(hostel_meals,tuition_fees, transportation, phone_internet,total) {
+function insertfees(hostel_meals, tuition_fees, transportation, phone_internet, total) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO  tution_fees(hostel_meals, tuition_fees, transportation, phone_internet, total) VALUES (?, ?, ?, ?, ?)';
-      db.query(query, [hostel_meals, tuition_fees, transportation, phone_internet, total], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result.insertId);
-        }
-      });
+        const query = 'INSERT INTO  tution_fees(hostel_meals, tuition_fees, transportation, phone_internet, total) VALUES (?, ?, ?, ?, ?)';
+        db.query(query, [hostel_meals, tuition_fees, transportation, phone_internet, total], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.insertId);
+            }
+        });
     });
-  }
+}
 
-  function insertArrayDescription(description) {
+function insertArrayDescription(description) {
     return new Promise((resolve, reject) => {
         const query = 'INSERT INTO new_update_university (descpription) VALUES (?)';
         db.query(query, [description], (err, result) => {
@@ -948,7 +948,7 @@ function insertRequirement(courseId, requirement) {
     });
 }
 
-  function updatetution(courseId, tuitionId) {
+function updatetution(courseId, tuitionId) {
     return new Promise((resolve, reject) => {
         const query = 'UPDATE courses_list SET tuition_id = ? WHERE course_id = ?';
         db.query(query, [tuitionId, courseId], (err, result) => {
@@ -964,14 +964,14 @@ function insertRequirement(courseId, requirement) {
 
 function courseregister(university, userId) {
     return new Promise((resolve, reject) => {
-        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id ,tutionId} = university;
+        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId } = university;
         const query = `
         INSERT INTO courses_list 
         (course_name, department, subject,tuition_fee,duration_years,course_type,university_id,tuition_id)
         VALUES (?, ?, ?,?,?,?,?,?)
       `;
 
-        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id,tutionId], (error, result) => {
+        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);
@@ -997,18 +997,18 @@ function courseregister(university, userId) {
 
 // updateUserAddress function remains the same
 function updatetution(userId, addressId) {
-    return new Promise((resolve, reject) => { 
-      const query = 'UPDATE courses_list SET tuition_id = ? WHERE course_id = ?';
-      db.query(query, [addressId, userId], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
+    return new Promise((resolve, reject) => {
+        const query = 'UPDATE courses_list SET tuition_id = ? WHERE course_id = ?';
+        db.query(query, [addressId, userId], (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
     });
-  }
-  
+}
+
 function Tutionfess(university) {
     return new Promise((resolve, reject) => {
         const { course_id, hostel_meals, tuition_fees, transportation, phone_internet, total } = university;
@@ -1438,135 +1438,135 @@ function getallpgrequirement() {
 
 
 const transporter = nodemailer.createTransport({
-    service: 'Gmail', 
+    service: 'Gmail',
     auth: {
-      user: 'ashimavineet2729@gmail.com',
-      pass: 'suqo spfj ajsb fieb',   ////---->>>>>app password  from google
+        user: 'ashimavineet2729@gmail.com',
+        pass: 'suqo spfj ajsb fieb',   ////---->>>>>app password  from google
     },
-  });
-  
-  function generateOTP() {
+});
+
+function generateOTP() {
     return randomstring.generate({
-      length: 6, 
-      charset: 'numeric',
+        length: 6,
+        charset: 'numeric',
     });
-  }
+}
 
 
-  function sendotpuniversity(email) {
+function sendotpuniversity(email) {
     return new Promise((resolve, reject) => {
-      const emailQuery = 'SELECT email FROM UniversityRegistration WHERE email = ?';
-  
-      db.query(emailQuery, [email], (emailError, emailResults) => {
-        if (emailError) {
-          console.error('Error retrieving user email:', emailError);
-          reject(emailError);
-          return;
-        }
-  
-        if (emailResults.length === 0) {
-          reject('User not found');
-          return;
-        }
-  
-        // First, delete the previous OTP records associated with the user's email 
-        const deletePreviousQuery = 'DELETE FROM otp_table_verify WHERE email = ?';
-        db.query(deletePreviousQuery, [email], (deletePreviousError) => {
-          if (deletePreviousError) {
-            console.error('Error deleting previous OTP records:', deletePreviousError);
-            reject(deletePreviousError);
-            return;
-          }
-  
-          const otp = generateOTP();
-          const mailOptions = {
-            from: 'ashimavineet2729@gmail.com',
-            to: email,
-            subject: 'Your OTP for Password Reset',
-            html: emailTemplate.replace('${otp}', otp),
-          }
-  
-          // Send the OTP via email
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.error('Error sending email:', error);
-              reject(error);
-            } else {
-              console.log('Email sent:' ,email);
-  
-              // Store the new OTP in the 'otp_table' along with the user's email
-              const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
-              db.query(query, [email, otp], (dbError) => {
-                if (dbError) {
-                  console.error('Error storing OTP in the database:', dbError);
-                  reject(dbError);
-                } else {
-                  console.log('New OTP stored in the database.', otp);
-                  resolve(otp);
-                }
-              });
+        const emailQuery = 'SELECT email FROM UniversityRegistration WHERE email = ?';
+
+        db.query(emailQuery, [email], (emailError, emailResults) => {
+            if (emailError) {
+                console.error('Error retrieving user email:', emailError);
+                reject(emailError);
+                return;
             }
-          });
+
+            if (emailResults.length === 0) {
+                reject('User not found');
+                return;
+            }
+
+            // First, delete the previous OTP records associated with the user's email 
+            const deletePreviousQuery = 'DELETE FROM otp_table_verify WHERE email = ?';
+            db.query(deletePreviousQuery, [email], (deletePreviousError) => {
+                if (deletePreviousError) {
+                    console.error('Error deleting previous OTP records:', deletePreviousError);
+                    reject(deletePreviousError);
+                    return;
+                }
+
+                const otp = generateOTP();
+                const mailOptions = {
+                    from: 'ashimavineet2729@gmail.com',
+                    to: email,
+                    subject: 'Your OTP for Password Reset',
+                    html: emailTemplate.replace('${otp}', otp),
+                }
+
+                // Send the OTP via email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email:', error);
+                        reject(error);
+                    } else {
+                        console.log('Email sent:', email);
+
+                        // Store the new OTP in the 'otp_table' along with the user's email
+                        const query = 'INSERT INTO otp_table_verify (email, otp) VALUES (?, ?)';
+                        db.query(query, [email, otp], (dbError) => {
+                            if (dbError) {
+                                console.error('Error storing OTP in the database:', dbError);
+                                reject(dbError);
+                            } else {
+                                console.log('New OTP stored in the database.', otp);
+                                resolve(otp);
+                            }
+                        });
+                    }
+                });
+            });
         });
-      });
     });
-  }
-  
+}
 
 
-function verifyOTP (otp, callback){
+
+function verifyOTP(otp, callback) {
     const otpQuery = 'SELECT email, is_verified FROM otp_table_verify WHERE otp = ?';
-  
+
     db.query(otpQuery, [otp], (otpError, otpResults) => {
-      if (otpError) {
-        console.error('Error verifying OTP:', otpError);
-        return callback(otpError, null);
-      }
-  
-      if (otpResults.length === 0) {
-        return callback(null, 'invalid');
-      }
-  
-      const isVerified = otpResults[0].is_verified;
-      if (isVerified === 1) {
-        return callback(null, 'used');
-      }
-  
-      const email = otpResults[0].email;
-      const markVerifiedQuery = 'UPDATE otp_table_verify SET is_verified = 1 WHERE email = ? AND otp = ?';
-      db.query(markVerifiedQuery, [email, otp], (markVerifiedError) => {
-        if (markVerifiedError) {
-          console.error('Error marking OTP as verified:', markVerifiedError);
-          return callback(markVerifiedError, null);
+        if (otpError) {
+            console.error('Error verifying OTP:', otpError);
+            return callback(otpError, null);
         }
-  
-        callback(null, 'verified');
-      });
+
+        if (otpResults.length === 0) {
+            return callback(null, 'invalid');
+        }
+
+        const isVerified = otpResults[0].is_verified;
+        if (isVerified === 1) {
+            return callback(null, 'used');
+        }
+
+        const email = otpResults[0].email;
+        const markVerifiedQuery = 'UPDATE otp_table_verify SET is_verified = 1 WHERE email = ? AND otp = ?';
+        db.query(markVerifiedQuery, [email, otp], (markVerifiedError) => {
+            if (markVerifiedError) {
+                console.error('Error marking OTP as verified:', markVerifiedError);
+                return callback(markVerifiedError, null);
+            }
+
+            callback(null, 'verified');
+        });
     });
-  };
-  
-  const setNewPassword = (email, newPassword, callback) => {
+};
+
+const setNewPassword = (email, newPassword, callback) => {
     bcrypt.hash(newPassword, 10, (hashError, hashedPassword) => {
-      if (hashError) {
-        console.error('Error hashing the password:', hashError);
-        return callback(hashError);
-      }
-  
-      const updatePasswordQuery = 'UPDATE UniversityRegistration SET password = ? WHERE email = ?';
-  
-      db.query(updatePasswordQuery, [hashedPassword, email], (updateError) => {
-        if (updateError) {
-          console.error('Error updating password:', updateError);
-          return callback(updateError);
+        if (hashError) {
+            console.error('Error hashing the password:', hashError);
+            return callback(hashError);
         }
-  
-        callback(null);
-      });  
+
+        const updatePasswordQuery = 'UPDATE UniversityRegistration SET password = ? WHERE email = ?';
+
+        db.query(updatePasswordQuery, [hashedPassword, email], (updateError) => {
+            if (updateError) {
+                console.error('Error updating password:', updateError);
+                return callback(updateError);
+            }
+
+            callback(null);
+        });
     });
-  };
+};
 
 
-  function getallcoursesbyids(userId) {
+function getallcoursesbyids(userId) {
     return new Promise((resolve, reject) => {
         const query = `
         SELECT
@@ -1638,7 +1638,6 @@ function verifyOTP (otp, callback){
                     }
                 });
 
-                // Resolve with an array of course data
                 resolve(Object.values(courses));
 
                 logger.info('All courses retrieved successfully');
@@ -1647,7 +1646,7 @@ function verifyOTP (otp, callback){
     });
 }
 
-  
+
 // function updatecoursesandNew(id, updatedUniversityData) {
 //     return new Promise((resolve, reject) => {
 //         const { 	course_name, department, subject, 	tuition_fee, duration_years,course_type} = updatedUniversityData;
@@ -1699,11 +1698,11 @@ function verifyOTP (otp, callback){
 //         });
 //     });
 // }
-  
+
 
 function updatecoursesandNew(id, updatedUserData) {
     return new Promise((resolve, reject) => {
-        const { course_name, department, subject, 	tuition_fee, duration_years,course_type,tution} = updatedUserData;
+        const { course_name, department, subject, tuition_fee, duration_years, course_type, tution } = updatedUserData;
 
         const updateQuery = `
             UPDATE courses_list u
@@ -1744,15 +1743,13 @@ function updatecoursesandNew(id, updatedUserData) {
                     reject(updateError);
                     logger.error('Error updating courses information and tutionfees:', updateError);
                 } else {
-                    // Check if any rows were affected (indicating a successful update)
                     if (updateResult.affectedRows > 0) {
-                        // Fetch the updated data after the update
                         const fetchQuery = `
                             SELECT * FROM courses_list u
                             JOIN tution_fees a ON u.tuition_id = a.tution_id
                             WHERE u.tuition_id = ?;
                         `;
-                        
+
                         db.query(fetchQuery, [id], (fetchError, fetchResult) => {
                             if (fetchError) {
                                 reject(fetchError);
@@ -1778,7 +1775,7 @@ function updatecoursesandNew(id, updatedUserData) {
 
 function universityFaq(university, userId) {
     return new Promise((resolve, reject) => {
-        const { university_id, question, answer} = university;
+        const { university_id, question, answer } = university;
         const query = `
         INSERT INTO university_faq 
         (university_id, question, answer)
@@ -1807,14 +1804,14 @@ function universityFaq(university, userId) {
 
 function univeristyUpdatelatest(university, userId) {
     return new Promise((resolve, reject) => {
-        const { university_id,heading ,	descpription} = university;
+        const { university_id, heading, descpription } = university;
         const query = `
         INSERT INTO new_update_university 
         (university_id, heading,descpription)
         VALUES (?, ?,?)
       `;
 
-        db.query(query, [ university_id,heading,descpription], (error, result) => {
+        db.query(query, [university_id, heading, descpription], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering Update latest:', error);
@@ -1832,6 +1829,85 @@ function univeristyUpdatelatest(university, userId) {
         });
     });
 }
+function getallUniversityids(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `
+        SELECT 
+            c.id,
+            c.university_name,
+            c.ambassador_name,
+            c.phone_number,
+            c.email,
+            c.university_image,
+            c.registration_certificate,
+            c.year_established,
+            c.type,
+            a.address_id AS address_id,
+            a.street_address,
+            a.city,
+            a.state,
+            a.country,
+            a.postal_code,
+            u.faq_id,
+            u.university_id AS university_id,
+            u.question AS entry_requirement,
+            u.answer
+        FROM UniversityRegistration c
+        LEFT JOIN university_faq u ON c.id = u.university_id
+        LEFT JOIN university_address a ON c.address_id = a.address_id
+        WHERE c.id = ?;`;
+
+        db.query(query, [userId], (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting university by ID:', error);
+            } else {
+                if (results.length === 0) {
+                    reject(new Error('University not found'));
+                } else {
+                    const universities = {};
+                    results.forEach((row) => {
+                        if (!universities[row.id]) {
+                            universities[row.id] = {
+                                id: row.id,
+                                university_name: row.university_name,
+                                ambassador_name: row.ambassador_name,
+                                phone_number: row.phone_number,
+                                email: row.email,
+                                university_image: row.university_image,
+                                registration_certificate: row.registration_certificate,
+                                year_established: row.year_established,
+                                type: row.type,
+                                address: {
+                                    address_id: row.address_id,
+                                    street_address: row.street_address,
+                                    city: row.city,
+                                    state: row.state,
+                                    postal_code: row.postal_code,
+                                },
+                                faqs: [],
+                                Update : []
+                            };
+                        }
+                        if (row.university_id) {
+                            universities[row.id].faqs.push({
+                                university_id: row.university_id,
+                                question: row.entry_requirement,
+                                answer: row.answer,
+                            });
+                        }
+                        
+                    });
+                    resolve(Object.values(universities));
+
+                    logger.info('University retrieved by ID successfully');
+                }
+            }
+        });
+    });
+}
+
 module.exports = {
     UniversityRegister,
     getUniversityById,
@@ -1872,6 +1948,7 @@ module.exports = {
     updatecoursesandNew,
     universityFaq,
     univeristyUpdatelatest,
-    insertArrayDescription
-    
+    insertArrayDescription,
+    getallUniversityids
+
 }
