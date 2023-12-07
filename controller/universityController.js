@@ -337,22 +337,21 @@ WHERE a.application_id = ?`;
  */
 function getalluniversity() {
     return new Promise((resolve, reject) => {
-        const query = `SELECT  * FROM university WHERE is_deleted = 0`
+        const query = `SELECT  * FROM UniversityRegistration WHERE is_deleted = 0`
 
         db.query(query, (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
-                logger.error('Error getting all users:', error); // Log the error
+                logger.error('Error getting all university:', error); // Log the error
             } else {
                 const usersWithAddresses = results.map((row) => ({
-                    university_id: row.university_id,
+                    id: row.id,
                     university_name: row.university_name,
-                    course_type: row.course_type,
-                    person_name: row.person_name,
-                    contact_number: row.contact_number,
-                    founded_year: row.founded_year,
+                    ambassador_name: row.ambassador_name,
+                    phone_number: row.phone_number,
                     university_image: row.university_image,
+                    year_established:row.year_established,
                     is_active: row.is_active,
                     create_date: row.create_date,
                     update_date: row.update_date,
@@ -360,7 +359,7 @@ function getalluniversity() {
 
                 }));
                 resolve(usersWithAddresses);
-                logger.info('All users retrieved successfully');
+                logger.info('All university retrieved successfully');
             }
         });
     });
