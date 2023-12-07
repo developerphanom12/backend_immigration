@@ -1832,7 +1832,7 @@ function univeristyUpdatelatest(university, userId) {
 function getallUniversityids(userId) {
     return new Promise((resolve, reject) => {
         const query = `
-        SELECT 
+        SELECT DISTINCT
             c.id,
             c.university_name,
             c.ambassador_name,
@@ -1851,9 +1851,14 @@ function getallUniversityids(userId) {
             u.faq_id,
             u.university_id AS university_id,
             u.question AS entry_requirement,
-            u.answer
+            u.answer,
+            un.latest_id,
+            un.university_id AS university_idBTDATA,
+            un.heading AS heading_requirmrnet,
+            un.descpription
         FROM UniversityRegistration c
         LEFT JOIN university_faq u ON c.id = u.university_id
+        LEFT JOIN new_update_university un ON c.id = un.university_id
         LEFT JOIN university_address a ON c.address_id = a.address_id
         WHERE c.id = ?;`;
 
@@ -1887,20 +1892,30 @@ function getallUniversityids(userId) {
                                     postal_code: row.postal_code,
                                 },
                                 faqs: [],
-                                Update : []
+                                updates: []
                             };
                         }
-                        if (row.university_id) {
+
+                        if (row.faq_id && !universities[row.id].faqs.some(faq => faq.faq_id === row.faq_id)) {
                             universities[row.id].faqs.push({
+                                faq_id: row.faq_id,
                                 university_id: row.university_id,
                                 question: row.entry_requirement,
                                 answer: row.answer,
                             });
                         }
-                        
-                    });
-                    resolve(Object.values(universities));
 
+                        if (row.university_idBTDATA && !universities[row.id].updates.some(update => update.latest_id === row.latest_id)) {
+                            universities[row.id].updates.push({
+                                latest_id: row.latest_id,
+                                university_id: row.university_id,
+                                heading: row.heading_requirmrnet,
+                                description: row.descpription,
+                            });
+                        }
+                    });
+
+                    resolve(Object.values(universities));
                     logger.info('University retrieved by ID successfully');
                 }
             }
