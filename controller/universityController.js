@@ -1855,7 +1855,8 @@ function getallUniversityids(userId) {
             un.latest_id,
             un.university_id AS university_idBTDATA,
             un.heading AS heading_requirmrnet,
-            un.descpription
+            un.descpription,
+            un.updated_at
         FROM UniversityRegistration c
         LEFT JOIN university_faq u ON c.id = u.university_id
         LEFT JOIN new_update_university un ON c.id = un.university_id
@@ -1911,6 +1912,7 @@ function getallUniversityids(userId) {
                                 university_id: row.university_id,
                                 heading: row.heading_requirmrnet,
                                 description: row.descpription,
+                                updated_at : row.updated_at
                             });
                         }
                     });
