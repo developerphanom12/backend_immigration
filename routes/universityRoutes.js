@@ -21,7 +21,6 @@ router.post('/unilogin', univeristy.uniersitylogin)  //allnewapi
 
 router.post('/universitys', authenticateToken, universityValid, univeristy.registerUniversity)
 
-router.get('/:id', univeristy.getUniversityByIdHandler)
 
 router.get('/getall/university', authenticateToken, univeristy.getalluniversity) //------------>>>>>s
 
@@ -39,7 +38,7 @@ router.get('/getbyUniversity/:id', authenticateToken, univeristy.getuniveristyby
 
 /******************************Courses Api********************************************************** */
 
-router.post('/newcoursesadd', authenticateToken,coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
+router.post('/newcoursesadd', authenticateToken, upload.single('image'),coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
 
 router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 
@@ -78,5 +77,6 @@ router.post('/verify-otp',univeristy.VERIFYOTP)
 
 router.post('/set-new-password', univeristy.SETNEWpassWORD)
 
+router.get('/getiduniveirsty', authenticateToken, univeristy.getbyownuniversitydata)
 
 module.exports = router;

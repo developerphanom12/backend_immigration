@@ -4,7 +4,6 @@ const universityStatusMessages = require('../constants/universitymssg')
 const bcrypt = require('bcrypt');
 const { add, error } = require('winston');
 
-
 const handleServerError = (res, error) => {
     console.error('Internal server error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -41,35 +40,6 @@ const registerUniversity = async (req, res) => {
         }
     }
 };
-
-const getUniversityByIdHandler = async (req, res) => {
-    const universityId = req.params.id;
-
-    try {
-        if (!validateUniversityId(universityId)) {
-            const invalidIdMessage = universityStatusMessages.common.invalidId;
-            return res.status(invalidIdMessage.status).json({ error: invalidIdMessage.message });
-        }
-
-        const university = await userservice.getUniversityById(universityId);
-
-        if (!university) {
-            const notFoundMessage = universityStatusMessages.common.universityNotFound;
-            return res.status(notFoundMessage.status).json({ error: notFoundMessage.message });
-        }
-
-
-        const successMessage = universityStatusMessages.universityApi.universityFetchSuccess;
-        res.status(successMessage.status).json({
-            message: successMessage.message,
-            data: university,
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-
-}
 
 const updateUniversity1 = async (req, res) => {
     const universityId = req.user.id;
@@ -467,57 +437,71 @@ const uniersitylogin = async (req, res) => {
 };
 
 
-
 const courseadd = async (req, res) => {
     if (req.user.role !== 'university') {
-        return res.status(403).json({ error: 'Forbidden for regular users' });
+      return res.status(403).json({ error: 'Forbidden for regular users' });
     }
+  
     const userId = req.user.id;
-    console.log("jdhfgfdjgdhfd", userId)
-    const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id ,tution,requirements} = req.body;
-
+    const {
+      course_name,
+      department,
+      subject,
+      tuition_fee,
+      duration_years,
+      course_type,
+      university_id,
+      tution,
+      requirements
+    } = req.body;
+  
+    // Assuming 'image' is the key for the image file in the form data
+    const imagePath = req.file.filename;
+ // Assuming you're using a middleware like multer for file uploads
+  
     try {
-        // Insert course information
-        const universityData = await userservice.courseregister({
-            course_name,
-            department,
-            subject,
-            tuition_fee,
-            duration_years,
-            course_type,
-            university_id: userId,
-            tution: null,
-        });
-
-        // Insert tuition fees information
-        const addressId = await userservice.insertfees(
-            tution.hostel_meals,
-            tution.tuition_fees,
-            tution.transportation,
-            tution.phone_internet,
-            tution.total,
-        );
-
-        // Update the corresponding course entry with the tuition ID
-        await userservice.updatetution(universityData.id, addressId);
-
-        for (const requirement of requirements) {
-            await userservice.insertRequirement(universityData.id, requirement);
-        }
-        
-        res.status(201).json({
-            message: "course add successfully",
-            data: universityData
-        });
+      // Insert course information
+      const universityData = await userservice.courseregister({
+        course_name,
+        department,
+        subject,
+        tuition_fee,
+        duration_years,
+        course_type,
+        university_id: userId,
+        tution: null, // Update this if necessary
+        image: imagePath, // Assuming 'image' is the key for the image file
+      });
+  
+      // Insert tuition fees information
+      const addressId = await userservice.insertfees(
+        tution.hostel_meals,
+        tution.tuition_fees,
+        tution.transportation,
+        tution.phone_internet,
+        tution.total
+      );
+  
+      // Update the corresponding course entry with the tuition ID
+      await userservice.updatetution(universityData.id, addressId);
+  
+      for (const requirement of requirements) {
+        await userservice.insertRequirement(universityData.id, requirement);
+      }
+  
+      res.status(201).json({
+        message: 'course add successfully',
+        data: universityData
+      });
     } catch (error) {
-        if (error) {
-            res.status(401).json({ error: error.message });
-        } else {
-
-            handleServerError(res, error);                          
-        }
+      if (error) {
+        res.status(401).json({ error: error.message });
+      } else {
+        handleServerError(res, error);
+      }
     }
-};
+  };
+  
 
 
 const tutionfess = async (req, res) => {
@@ -966,9 +950,44 @@ const getuniveristybyids = async (req, res) => {
 
 
 
+
+const getbyownuniversitydata = async (req, res) => {
+    try {
+         if (req.user.role !== 'university') {
+        return res.status(403).json({ error: 'Forbidden for regular users' });
+    }
+        const userId = req.user.id;
+        const role = req.user.role;
+        console.log('sdfsdfsdf', userId,role);
+
+      const  userApplications = await userservice.getownbyid(userId);
+
+       if(userApplications){
+            res.status(201).json({
+                message: "university fetched successfully",
+                status: 201,
+                data: userApplications
+            });
+        }
+        else {
+            const responseMessage = 'No university found for the provided ID.';
+            res.status(404).json({
+                message: responseMessage,
+                status: 404
+            });
+        }
+    } catch (error) {
+        console.error('Error in getallacoursebyid:', error);
+        res.status(500).json({
+            message: 'Internal server error',
+            status: 500
+        });
+    }
+};
+
+
 module.exports = {
     registerUniversity,
-    getUniversityByIdHandler,
     updateUniversity1,
     courseCreate,
     getAllCoursesHandler,
@@ -992,5 +1011,6 @@ module.exports = {
     updateCoursesAndTuitionController,
     UniversityFAQ,
     latestupdateUniversity,
-    getuniveristybyids
+    getuniveristybyids,
+    getbyownuniversitydata
 }

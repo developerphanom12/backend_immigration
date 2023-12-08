@@ -596,32 +596,6 @@ VALUES (?, ?, ?, ?,  true, NOW(), NOW(), 0)
     });
 }
 
-function getUniversityById(universityId) {
-    return new Promise((resolve, reject) => {
-
-        const query = `
-            SELECT * FROM university
-            WHERE university_id = ?;
-        `;
-
-
-        db.query(query, [universityId], (error, results) => {
-            if (error) {
-                console.error('Error getting university by ID:', error);
-                reject(error);
-            } else {
-                if (results.length > 0) {
-                    const university = results[0];
-                    resolve(university);
-                } else {
-                    resolve(null);
-                }
-            }
-        });
-    });
-}
-
-
 
 
 function getAllCoursesWithUserDataAndUniversity() {
@@ -963,14 +937,14 @@ function updatetution(courseId, tuitionId) {
 
 function courseregister(university, userId) {
     return new Promise((resolve, reject) => {
-        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId } = university;
+        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId ,image} = university;
         const query = `
         INSERT INTO courses_list 
-        (course_name, department, subject,tuition_fee,duration_years,course_type,university_id,tuition_id)
-        VALUES (?, ?, ?,?,?,?,?,?)
+        (course_name, department, subject,tuition_fee,duration_years,course_type,university_id,tuition_id,image)
+        VALUES (?, ?, ?,?,?,?,?,?,?)
       `;
 
-        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId], (error, result) => {
+        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId,image], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);
@@ -984,6 +958,7 @@ function courseregister(university, userId) {
                     duration_years,
                     course_type,
                     userId,
+                    image,
 
                 };
                 resolve(insertedUniversity);
@@ -1828,6 +1803,7 @@ function univeristyUpdatelatest(university, userId) {
         });
     });
 }
+
 function getallUniversityids(userId) {
     return new Promise((resolve, reject) => {
         const query = `
@@ -1924,12 +1900,78 @@ function getallUniversityids(userId) {
     });
 }
 
+
+function getownbyid(userId) {
+    return new Promise((resolve, reject) => {
+        const query = `
+        SELECT DISTINCT
+            c.id,
+            c.university_name,
+            u.faq_id,
+            u.university_id AS university_id,
+            u.question AS entry_requirement,
+            u.answer,
+            un.latest_id,
+            un.university_id AS university_idBTDATA,
+            un.heading AS heading_requirmrnet,
+            un.descpription,
+            un.updated_at
+        FROM UniversityRegistration c
+        LEFT JOIN university_faq u ON c.id = u.university_id
+        LEFT JOIN new_update_university un ON c.id = un.university_id
+        WHERE c.id = ?;`;
+
+        db.query(query, [userId], (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting university by ID:', error);
+            } else {
+                if (results.length === 0) {
+                    reject(new Error('University not found'));
+                } else {
+                    const universities = {};
+                    results.forEach((row) => {
+                        if (!universities[row.id]) {
+                            universities[row.id] = {
+                                id: row.id,
+                                university_name: row.university_name,
+                                faqs: [],
+                                updates: []
+                            };
+                        }
+
+                        if (row.faq_id && !universities[row.id].faqs.some(faq => faq.faq_id === row.faq_id)) {
+                            universities[row.id].faqs.push({
+                                faq_id: row.faq_id,
+                                university_id: row.university_id,
+                                question: row.entry_requirement,
+                                answer: row.answer,
+                            });
+                        }
+
+                        if (row.university_idBTDATA && !universities[row.id].updates.some(update => update.latest_id === row.latest_id)) {
+                            universities[row.id].updates.push({
+                                latest_id: row.latest_id,
+                                university_id: row.university_id,
+                                heading: row.heading_requirmrnet,
+                                description: row.descpription,
+                                updated_at : row.updated_at
+                            });
+                        }
+                    });
+
+                    resolve(Object.values(universities));
+                    logger.info('University retrieved by ID successfully');
+                }
+            }
+        });
+    });
+}
 module.exports = {
     UniversityRegister,
-    getUniversityById,
     updateUniversity,
     createCourse,
-    getUniversityById,
     getAllCoursesWithUserDataAndUniversity,
     getalluniversity,
     getCourseById,
@@ -1965,6 +2007,7 @@ module.exports = {
     universityFaq,
     univeristyUpdatelatest,
     insertArrayDescription,
-    getallUniversityids
+    getallUniversityids,
+    getownbyid
 
 }
