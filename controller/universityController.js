@@ -937,14 +937,14 @@ function updatetution(courseId, tuitionId) {
 
 function courseregister(university, userId) {
     return new Promise((resolve, reject) => {
-        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId ,image} = university;
+        const { course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId } = university;
         const query = `
         INSERT INTO courses_list 
-        (course_name, department, subject,tuition_fee,duration_years,course_type,university_id,tuition_id,image)
-        VALUES (?, ?, ?,?,?,?,?,?,?)
+        (course_name, department, subject,tuition_fee,duration_years,course_type,university_id,tuition_id)
+        VALUES (?, ?, ?,?,?,?,?,?)
       `;
 
-        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId,image], (error, result) => {
+        db.query(query, [course_name, department, subject, tuition_fee, duration_years, course_type, university_id, tutionId], (error, result) => {
             if (error) {
                 reject(error);
                 logger.error('Error registering courses:', error);

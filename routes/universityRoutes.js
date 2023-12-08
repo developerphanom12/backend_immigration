@@ -38,7 +38,7 @@ router.get('/getbyUniversity/:id', authenticateToken, univeristy.getuniveristyby
 
 /******************************Courses Api********************************************************** */
 
-router.post('/newcoursesadd', authenticateToken, upload.single('image'),coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
+router.post('/newcoursesadd', authenticateToken,coursenewschemma, univeristy.courseadd) //---------->>> //by ambassdor new api //allnewapi
 
 router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 

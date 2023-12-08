@@ -456,7 +456,7 @@ const courseadd = async (req, res) => {
     } = req.body;
   
     // Assuming 'image' is the key for the image file in the form data
-    const imagePath = req.file.filename;
+    // const imagePath = req.file.filename;
  // Assuming you're using a middleware like multer for file uploads
   
     try {
@@ -470,7 +470,7 @@ const courseadd = async (req, res) => {
         course_type,
         university_id: userId,
         tution: null, // Update this if necessary
-        image: imagePath, // Assuming 'image' is the key for the image file
+        // image: imagePath, 
       });
   
       // Insert tuition fees information
