@@ -958,7 +958,6 @@ function courseregister(university, userId) {
                     duration_years,
                     course_type,
                     userId,
-                    image,
 
                 };
                 resolve(insertedUniversity);
