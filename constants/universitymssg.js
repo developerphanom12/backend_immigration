@@ -63,6 +63,10 @@ module.exports = {
         message: "course fetched successfully",
         status: 200
       },
+      staff: {
+        message: "course fetched successfully",
+        status: 200
+      },
       universityAlreadyRegistered: {
         message: "University already registered",
         status: 400

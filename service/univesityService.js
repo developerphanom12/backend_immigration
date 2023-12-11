@@ -254,6 +254,28 @@ const getallcourses1 = async (req, res) => {
     }
 };
 
+
+
+// add role in this page  
+const getallstraff = async (req, res) => {
+
+    try {
+        const allUsers = await userservice.getallstaff();
+
+        const successMessage = universityStatusMessages.universityApi.staff;
+        res.status(successMessage.status).json({
+            message: successMessage.message,
+            status: 200,
+            data: allUsers,
+        });
+    } catch (error) {
+        console.error('Error retrieving all staff:', error);
+        res.status(500).json({
+            message: 'Error retrieving all staff',
+        });
+    }
+};
+
 // //GET USER BY ID
 const getById = async (req, res) => {
     try {
@@ -1012,5 +1034,6 @@ module.exports = {
     UniversityFAQ,
     latestupdateUniversity,
     getuniveristybyids,
-    getbyownuniversitydata
+    getbyownuniversitydata,
+    getallstraff
 }

@@ -53,7 +53,7 @@ router.get('/get/allcourse', univeristy.getAllCoursesHandler);
 
 router.get('/all/courseonly', authenticateToken, univeristy.getallcourses1)   //----->>>>>>>>>>courses  //allnewapi
 
-
+router.get('/allstaffget',authenticateToken,univeristy.getallstraff)
 
 router.get('/get/:id',authenticateToken, univeristy.getallbyidcourses)//////------>>>>>>>>getftech new courses //allnewapi
 

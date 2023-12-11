@@ -700,7 +700,7 @@ function addimageuniversity(userId, imagePath, callback) {
 
 function getallcourses() {
     return new Promise((resolve, reject) => {
-        const query = `SELECT  * FROM courses WHERE is_deleted = 0`
+        const query = `SELECT  * FROM courses_list WHERE is_deleted = 0`
 
         db.query(query, (error, results) => {
             if (error) {
@@ -711,12 +711,6 @@ function getallcourses() {
                 const usersWithAddresses = results.map((row) => ({
                     course_id: row.course_id,
                     course_name: row.course_name,
-                    course_level: row.course_type,
-                    is_active: row.is_active,
-                    create_date: row.create_date,
-                    update_date: row.update_date,
-                    is_deleted: row.is_deleted,
-
                 }));
                 resolve(usersWithAddresses);
                 logger.info('All courses retrieved successfully');
@@ -725,6 +719,28 @@ function getallcourses() {
     });
 }
 
+
+
+function getallstaff() {
+    return new Promise((resolve, reject) => {
+        const query = `SELECT  * FROM staff WHERE is_deleted = 0`
+
+        db.query(query, (error, results) => {
+            if (error) {
+                console.error('Error executing query:', error);
+                reject(error);
+                logger.error('Error getting all staff:', error); // Log the error
+            } else {
+                const usersWithAddresses = results.map((row) => ({
+                    id: row.id,
+                    staff_name: row.staff_name,
+                }));
+                resolve(usersWithAddresses);
+                logger.info('All staff retrieved successfully');
+            }
+        });
+    });
+}
 
 
 function UniversityRegisterself(university) {
@@ -2007,6 +2023,7 @@ module.exports = {
     univeristyUpdatelatest,
     insertArrayDescription,
     getallUniversityids,
-    getownbyid
+    getownbyid,
+    getallstaff
 
 }
