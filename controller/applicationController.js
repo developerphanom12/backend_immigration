@@ -482,7 +482,6 @@ WHERE a.application_id = ?`;
   return new Promise((resolve, reject) => {
     db.query(query, params, (error, results) => {
       if (error) {
-        // Handle the error
         reject(error);
       } else {
         const applications = [];  
@@ -535,7 +534,7 @@ WHERE a.application_id = ?`;
               course_id: {
                 course_id: row.course_id,
                 course_name: row.course_name,
-                course_level: row.course_level,
+                course_type: row.course_type,
                 update_date: row.update_date,
               },
               documents: [],
@@ -828,8 +827,8 @@ async function getAllUserApplications(userId) {
     LEFT JOIN university au ON a.university_id = au.university_id
     LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses_list c ON a.course_id = c.course_id
-    WHERE u.id = ?;`;
-
+    WHERE u.id = ?  AND a.is_deleted = 0 ;`;
+   
   const params = [userId];
 
   return new Promise((resolve, reject) => {
@@ -1114,7 +1113,7 @@ async function getallapplication() {
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN university au ON a.university_id = au.university_id
       LEFT JOIN courses_list c ON a.course_id = c.course_id
-      WHERE is_deleted = 0
+      WHERE a.is_deleted = 0;
     `;
 
     db.query(query, (error, results) => {
