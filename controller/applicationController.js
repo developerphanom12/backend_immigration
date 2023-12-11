@@ -407,7 +407,6 @@ async function getUserApplications(userId, studentName, applicationId) {
           }
         });
 
-        // Convert the object values to an array to get the final result  //
         const mergedData = Object.values(mergedDataByUserId);
 
         resolve(mergedData);
@@ -441,10 +440,10 @@ async function getbyid(applicationId) {
     WHEN a.role = 'user' THEN u.phone_number
     WHEN a.role = 'student' THEN s.phone_number
   END AS user_phone_number,
-  au.university_id AS university_id,
+  au.id AS university_id,
   au.university_name,
-  au.person_name,
-  au.contact_number,
+  au.ambassador_name,
+  au.phone_number,
   d.file_type,
   d.file_path,
   c.course_id AS course_id,
@@ -465,7 +464,7 @@ async function getbyid(applicationId) {
 FROM applications_table a
 LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
 LEFT JOIN students s ON a.user_id = s.id AND a.role = 'student'
-LEFT JOIN university au ON a.university_id = au.university_id
+LEFT JOIN university au ON a.university_id = au.id
 LEFT JOIN documnets d ON a.application_id = d.application_id
 LEFT JOIN courses_list c ON a.course_id = c.course_id 
 LEFT JOIN comment_table cc ON cc.application_id = a.application_id
@@ -523,8 +522,8 @@ WHERE a.application_id = ?`;
               role:row.role,
               university_id: {
                 university_name: row.university_name,
-                person_name: row.person_name,
-                contact_number: row.contact_number,
+                ambassador_name: row.ambassador_name,
+                phone_number: row.phone_number,
               },
               user_id: {
                 id: row.user_id,
@@ -813,10 +812,10 @@ async function getAllUserApplications(userId) {
       u.id AS user_id,
       u.username,
       u.phone_number,
-      au.university_id AS university_id,
+      au.id AS university_id,
       au.university_name,
-      au.person_name,
-      au.contact_number,
+      au.ambassador_name,
+      au.phone_number,
       d.file_type,
       d.file_path,
       c.course_id AS course_id,
@@ -824,7 +823,7 @@ async function getAllUserApplications(userId) {
       c.course_type
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
-    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN UniversityRegistration au ON a.university_id = au.id
     LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses_list c ON a.course_id = c.course_id
     WHERE u.id = ?  AND a.is_deleted = 0 ;`;
@@ -864,8 +863,8 @@ async function getAllUserApplications(userId) {
               created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name: row.person_name,
-                contact_number: row.contact_number
+                ambassador_name: row.ambassador_name,
+                phone_number: row.phone_number
               },
               user_id: {
                 id: user_id,
@@ -1099,10 +1098,10 @@ async function getallapplication() {
         u.id AS user_id,
         u.username,
         u.phone_number,
-        au.university_id AS university_id,
+        au.id AS university_id,
         au.university_name,
-        au.person_name,
-        au.contact_number,
+        au.ambassador_name,
+        au.phone_number,
         c.course_id AS course_id,
         c.course_name,
         c.course_type,
@@ -1111,7 +1110,7 @@ async function getallapplication() {
       FROM applications_table a
       INNER JOIN user01 u ON a.user_id = u.id
       LEFT JOIN documnets d ON a.application_id = d.application_id
-      LEFT JOIN university au ON a.university_id = au.university_id
+      LEFT JOIN UniversityRegistration au ON a.university_id = au.id
       LEFT JOIN courses_list c ON a.course_id = c.course_id
       WHERE a.is_deleted = 0;
     `;
@@ -1120,16 +1119,14 @@ async function getallapplication() {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
-        logger.error('Error getting all applications:', error); // Log the error
+        logger.error('Error getting all applications:', error);
       } else {
         const allApplications = [];
 
         results.forEach((row) => {
-          // Check if the application already exists in the array
           const existingApplication = allApplications.find((app) => app.application_id === row.application_id);
 
           if (existingApplication) {
-            // If the application already exists, add the document if it exists
             if (row.file_type !== null && row.file_path !== null) {
               const document = {
                 file_type: row.file_type,
@@ -1148,8 +1145,8 @@ async function getallapplication() {
               created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name: row.person_name,
-                contact_number: row.contact_number,
+                ambassador_name: row.ambassador_name,
+                phone_number: row.phone_number,
               },
               user_id: {
                 id: row.user_id,
@@ -1952,10 +1949,10 @@ async function getallstudent(userId) {
       u.id AS user_id,
       u.username,
       u.phone_number,
-      au.university_id AS university_id,
+      au.id AS university_id,
       au.university_name,
-      au.person_name,
-      au.contact_number,
+      au.ambassador_name,
+      au.phone_number,
       d.file_type,
       d.file_path,
       c.course_id AS course_id,
@@ -1963,7 +1960,7 @@ async function getallstudent(userId) {
       c.course_level
     FROM applications_table a
     INNER JOIN students u ON a.user_id = u.id
-    LEFT JOIN university au ON a.university_id = au.university_id
+    LEFT JOIN UniversityRegistration au ON a.university_id = au.id
     LEFT JOIN documnets d ON a.application_id = d.application_id
     LEFT JOIN courses c ON a.course_id = c.course_id
     WHERE u.id = ?;`;
@@ -2003,8 +2000,8 @@ async function getallstudent(userId) {
               created_at: row.created_at,
               university_id: {
                 university_name: row.university_name,
-                person_name: row.person_name,
-                contact_number: row.contact_number
+                ambassador_name: row.ambassador_name,
+                phone_number: row.phone_number
               },
               user_id: {
                 id: user_id,
