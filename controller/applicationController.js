@@ -464,7 +464,7 @@ async function getbyid(applicationId) {
 FROM applications_table a
 LEFT JOIN user01 u ON a.user_id = u.id AND a.role = 'user'
 LEFT JOIN students s ON a.user_id = s.id AND a.role = 'student'
-LEFT JOIN university au ON a.university_id = au.id
+LEFT JOIN UniversityRegistration au ON a.university_id = au.id
 LEFT JOIN documnets d ON a.application_id = d.application_id
 LEFT JOIN courses_list c ON a.course_id = c.course_id 
 LEFT JOIN comment_table cc ON cc.application_id = a.application_id
