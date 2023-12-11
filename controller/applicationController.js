@@ -1114,6 +1114,7 @@ async function getallapplication() {
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN university au ON a.university_id = au.university_id
       LEFT JOIN courses_list c ON a.course_id = c.course_id
+      WHERE is_deleted = 0
     `;
 
     db.query(query, (error, results) => {
