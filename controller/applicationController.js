@@ -822,12 +822,12 @@ async function getAllUserApplications(userId) {
       d.file_path,
       c.course_id AS course_id,
       c.course_name,
-      c.course_level
+      c.course_type
     FROM applications_table a
     INNER JOIN user01 u ON a.user_id = u.id
     LEFT JOIN university au ON a.university_id = au.university_id
     LEFT JOIN documnets d ON a.application_id = d.application_id
-    LEFT JOIN courses c ON a.course_id = c.course_id
+    LEFT JOIN courses_list c ON a.course_id = c.course_id
     WHERE u.id = ?;`;
 
   const params = [userId];
@@ -876,7 +876,7 @@ async function getAllUserApplications(userId) {
               course_id: {
                 course_id: row.course_id,
                 course_name: row.course_name,
-                course_level: row.course_level,
+                course_type: row.course_type,
               },
             };
 
@@ -1106,14 +1106,14 @@ async function getallapplication() {
         au.contact_number,
         c.course_id AS course_id,
         c.course_name,
-        c.course_level,
+        c.course_type,
         d.file_type,
         d.file_path
       FROM applications_table a
       INNER JOIN user01 u ON a.user_id = u.id
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN university au ON a.university_id = au.university_id
-      LEFT JOIN courses c ON a.course_id = c.course_id
+      LEFT JOIN courses_list c ON a.course_id = c.course_id
     `;
 
     db.query(query, (error, results) => {
@@ -1159,7 +1159,7 @@ async function getallapplication() {
               course_id: {
                 course_id: row.course_id,
                 course_name: row.course_name,
-                course_level: row.course_level,
+                course_type: row.course_type,
               },
               documents: [],
             };
