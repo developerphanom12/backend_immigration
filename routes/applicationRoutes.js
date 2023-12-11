@@ -3,10 +3,10 @@ const router = express.Router()
 const application = require ('../service/applicationService')
 const {upload1} =  require('../service/multerfileforapp');
 const authenticateToken = require('../service/token');
-// const { validateApplicationData } = require('../validation/validation');
+const { validateApplicationData } = require('../validation/validation');
 
 
-router.post('/addappplications',authenticateToken, application.addApplication) 
+router.post('/addappplications',authenticateToken,validateApplicationData, application.addApplication) 
 
 router.put('/upload/documents/:id',upload1.fields([{ name: 'aadhar' }, { name: 'pan' },{ name: 'pass_front' },{ name: 'pass_back' },{ name: '10th' },{ name: '12th' }]),application.uploadDocuments);
 

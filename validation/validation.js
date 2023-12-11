@@ -148,7 +148,9 @@ const applicationSchema = Joi.object({
   ielts_listening: Joi.number().precision(2).min(0).max(9.99).required(),
   ielts_writing: Joi.number().precision(2).min(0).max(9.99).required(),
   ielts_speaking: Joi.number().precision(2).min(0).max(9.99).required(),
- 
+  country_id: Joi.number().integer().required(),
+  gender : Joi.string().valid('male','female').required(),
+  staff_id : Joi.number().integer().required(),
 });   
 
 const validateApplicationData = (req, res, next) => {

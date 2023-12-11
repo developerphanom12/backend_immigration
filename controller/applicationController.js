@@ -9,8 +9,8 @@ function addApplication(courseData,userId,userRole) {
 
         const insertSql = `INSERT INTO applications_table (user_id,course_id,university_id,student_firstname, student_lastname,
           student_email,student_whatsapp_number,student_passport_no,marital_status,previous_visa_refusals,ielts_reading,
-          ielts_listening,ielts_writing,ielts_speaking,country_id,gender,role) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`;
+          ielts_listening,ielts_writing,ielts_speaking,country_id,gender,role,staff_id) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`;
 
 
         const values = [
@@ -30,7 +30,8 @@ function addApplication(courseData,userId,userRole) {
             courseData.ielts_speaking,
             courseData.country_id,
             courseData.gender,
-            userRole
+            userRole,
+            courseData.staff_id
          ];
         db.query(insertSql, values, (error, result) => {
             if (error) {
