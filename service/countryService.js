@@ -74,6 +74,7 @@ const addcountry = async (req, res) => {
 
 
         res.status(201).json({
+            status :201,
             message: "staff add succesfully",
             data: staffdata
         });
@@ -103,6 +104,7 @@ try{
 
     
       res.status(201).json({
+        status:201,
         message: "staff login succesffully",
         data: result.data,
         token: result.token,

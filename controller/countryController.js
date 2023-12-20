@@ -107,7 +107,7 @@ function sendRegistrationEmail(email, username, password) {
 }
 
 
-function stafflogin(staff_name, password, callback) {
+function    stafflogin(staff_name, password, callback) {
     const query = 'SELECT * FROM staff WHERE staff_name = ?';
     db.query(query, [staff_name], async (err, results) => {
       if (err) {
