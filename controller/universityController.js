@@ -335,11 +335,12 @@ WHERE a.application_id = ?`;
   });
 }
  */
-function getalluniversity() {
+function getalluniversity(offset,pageSize) {
     return new Promise((resolve, reject) => {
-        const query = `SELECT  * FROM UniversityRegistration WHERE is_deleted = 0`
+        const query = `SELECT  * FROM UniversityRegistration WHERE is_deleted = 0
+        LIMIT ?, ?;`
 
-        db.query(query, (error, results) => {
+        db.query(query, [offset, parseInt(pageSize, 10)],(error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
@@ -353,8 +354,7 @@ function getalluniversity() {
                     university_image: row.university_image,
                     year_established:row.year_established,
                     is_active: row.is_active,
-                    create_date: row.create_date,
-                    update_date: row.update_date,
+                    created_at: row.created_at,
                     is_deleted: row.is_deleted,
 
                 }));
@@ -562,40 +562,6 @@ function updateStudentdata(id, updatedUserData) {
     });
 }
 
-function createCourse(courseData, userId) {
-    return new Promise((resolve, reject) => {
-        // Prepare the INSERT query
-        const query = `
-        INSERT INTO courses
-(user_id, university_id, course_name, course_level, is_active, create_date, update_date, is_deleted) 
-VALUES (?, ?, ?, ?,  true, NOW(), NOW(), 0)
-`;
-
-        // Prepare the values to be inserted  //
-        const values = [
-            userId,
-            courseData.university_id,
-            courseData.course_name,
-            courseData.course_level,
-            courseData.is_active,
-            courseData.create_date,
-            courseData.update_date,
-            courseData.is_deleted
-        ];
-
-        // Execute the INSERT query
-        db.query(query, values, (error, results) => {
-            if (error) {
-                console.error('Error creating course:', error);
-                reject(error);
-            } else {
-                const courseId = results.insertId;
-                resolve(courseId);
-            }
-        });
-    });
-}
-
 
 
 function getAllCoursesWithUserDataAndUniversity(offset, pageSize) {
@@ -681,20 +647,6 @@ function getAllCoursesWithUserDataAndUniversity(offset, pageSize) {
     });
 }
 
-
-
-// function for upload image 
-function addimageuniversity(userId, imagePath, callback) {
-    const sql = 'UPDATE university SET  university_image = ? WHERE university_id = ?';
-    db.query(sql, [imagePath, userId], (err, result) => {
-        if (err) {
-            return callback(err);
-        }
-
-        return callback(null, result);
-
-    })
-}
 
 
 
@@ -1229,6 +1181,24 @@ function getTotalUniversityCoursesCount(universityId) {
       const countQuery = 'SELECT COUNT(*) AS totalCount FROM courses_list WHERE university_id = ?;';
     
       db.query(countQuery, [universityId], (error, results) => {
+        if (error) {
+          console.error('Error executing count query:', error);
+          reject(error);
+        } else {
+          const totalCount = results[0].totalCount;
+          resolve(totalCount);
+        }
+      });
+    });
+  }
+
+
+
+  function GetTotalUnveristy(allUsers) {
+    return new Promise((resolve, reject) => {
+      const countQuery = 'SELECT COUNT(*) AS totalCount FROM UniversityRegistration;';
+    
+      db.query(countQuery, [allUsers], (error, results) => {
         if (error) {
           console.error('Error executing count query:', error);
           reject(error);
@@ -2018,11 +1988,9 @@ function getownbyid(userId) {
 module.exports = {
     UniversityRegister,
     updateUniversity,
-    createCourse,
     getAllCoursesWithUserDataAndUniversity,
     getalluniversity,
     getCourseById,
-    addimageuniversity,
     getallcourses,
     UniversityRegisterself,
     addimg,
@@ -2058,6 +2026,7 @@ module.exports = {
     getownbyid,
     getallstaff,
     getTotalCoursesCount,
-    getTotalUniversityCoursesCount
+    getTotalUniversityCoursesCount,
+    GetTotalUnveristy
 
 }

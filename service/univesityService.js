@@ -9,41 +9,6 @@ const handleServerError = (res, error) => {
   res.status(500).json({ error: "Internal server error" });
 };
 
-const registerUniversity = async (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Forbidden for regular users" });
-  }
-  console.log("User Role:", req.user.role);
-
-  const {
-    university_name,
-    course_type,
-    founded_year,
-    contact_number,
-    person_name,
-  } = req.body;
-
-  try {
-    const universityData = await userservice.UniversityRegister({
-      university_name,
-      course_type,
-      founded_year,
-      person_name,
-      contact_number,
-    });
-
-    res.status(univeristy.universityApi.universityCreateSuccess.status).json({
-      message: messages.universityApi.universityCreateSuccess.message,
-      data: universityData,
-    });
-  } catch (error) {
-    if (error instanceof CustomError) {
-      res.status(error.statusCode).json({ error: error.message });
-    } else {
-      handleServerError(res, error);
-    }
-  }
-};
 
 const updateUniversity1 = async (req, res) => {
   const universityId = req.user.id;
@@ -167,55 +132,6 @@ const updateUniversity1 = async (req, res) => {
   }
 };
 
-const courseCreate = async (req, res) => {
-  try {
-    const courseData = req.body;
-    const userId = req.user.id;
-    console.log("jhfjd", userId);
-
-    const university = await userservice.getUniversityById(
-      courseData.university_id
-    );
-
-    if (!university) {
-      // Handle the case where the university is not found
-      const errorMessage = "University not found";
-      return res.status(404).json({ error: errorMessage });
-    }
-
-    const courseId = await userservice.createCourse(courseData, userId);
-
-    const currentDate = new Date().toISOString();
-
-    const responseData = {
-      course_id: courseId,
-      user_id: userId,
-      university_id: courseData.university_id,
-      course_name: courseData.course_name,
-      course_level: courseData.course_level,
-      is_active: courseData.is_active || 1,
-      is_deleted: courseData.is_deleted || 0,
-      create_date: currentDate,
-      update_date: currentDate,
-    };
-
-    console.log("Course created with ID:", courseId);
-
-    const successMessage = "Course created successfully";
-    res.status(201).json({
-      message: successMessage,
-      data: responseData,
-    });
-  } catch (error) {
-    console.error("Error creating course:", error);
-
-    const errorMessage = "Error creating course";
-
-    res.status(500).json({
-      error: errorMessage,
-    });
-  }
-};
 
 const getAllCoursesHandler = async (req, res) => {
   const { page = 1, pageSize = 10 } = req.query;
@@ -243,15 +159,27 @@ const getAllCoursesHandler = async (req, res) => {
 
 // add role in this page
 const getalluniversity = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
   try {
-    const allUsers = await userservice.getalluniversity();
+    const allUsers = await userservice.getalluniversity(offset, pageSize);
+    totalCount = await userservice.GetTotalUnveristy();
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     const successMessage =
       universityStatusMessages.universityApi.universityFetchSuccess;
     res.status(successMessage.status).json({
       message: successMessage.message,
       status: 200,
-      data: allUsers,
+      data: {
+        allUsers,
+        pagination: {
+          page: parseInt(page),
+          pageSize: parseInt(pageSize),
+          totalItems: totalCount,
+          totalPages,
+        },
+      },
     });
   } catch (error) {
     console.error("Error retrieving all universities:", error);
@@ -319,27 +247,6 @@ const getById = async (req, res) => {
       message: messages.USER_API.USER_ERROR.message,
     });
   }
-};
-
-const uploadImage1 = async (req, res) => {
-  const id = req.params.id;
-  if (!req.file) {
-    return res.status(400).json({ error: "No image file provided" });
-  }
-  const imagePath = req.file.path;
-  const imageName = imagePath.replace(/\\/g, "/").split("/").pop(); // Normalize path and get the image name
-
-  userservice.addimageuniversity(id, imageName, (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: "Profile image update failed" });
-    }
-    res
-      .status(univeristy.universityApi.universityPhotoUploadSuccess.status)
-      .json({
-        message: univeristy.universityApi.universityPhotoUploadSuccess.message,
-        data: id,
-      });
-  });
 };
 
 const registerUniversityAndUploadImage = async (req, res) => {
@@ -667,11 +574,7 @@ const getallacoursebyid = async (req, res) => {
     let courses;
 
     if (userRole === "university") {
-        courses = await userservice.getallcoursesbyid(
-        userId,
-        offset,
-        pageSize
-      );
+      courses = await userservice.getallcoursesbyid(userId, offset, pageSize);
       totalCount = await userservice.getTotalUniversityCoursesCount(userId);
       const totalPages = Math.ceil(totalCount / pageSize);
       if (courses.length > 0) {
@@ -696,12 +599,8 @@ const getallacoursebyid = async (req, res) => {
           status: 404,
         });
       }
-    }
-    else {
-        courses = await userservice.getallcoursesbyftehc(
-        offset,
-        pageSize
-      );
+    } else {
+      courses = await userservice.getallcoursesbyftehc(offset, pageSize);
       totalCount = await userservice.getTotalCoursesCount(courses);
       const totalPages = Math.ceil(totalCount / pageSize);
       if (courses.length > 0) {
@@ -1076,13 +975,10 @@ const getbyownuniversitydata = async (req, res) => {
 };
 
 module.exports = {
-  registerUniversity,
   updateUniversity1,
-  courseCreate,
   getAllCoursesHandler,
   getalluniversity,
   getById,
-  uploadImage1,
   getallcourses1,
   registerUniversityAndUploadImage,
   uniersitylogin,

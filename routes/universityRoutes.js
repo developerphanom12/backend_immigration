@@ -19,16 +19,13 @@ router.post('/register',upload.fields([{ name: 'university_image' }, { name: 're
 
 router.post('/unilogin', univeristy.uniersitylogin) 
 
-router.post('/universitys', authenticateToken, universityValid, univeristy.registerUniversity)
 
-
-router.get('/getall/university', authenticateToken, univeristy.getalluniversity) //------------>>>>>s
+router.get('/getall/university', authenticateToken, univeristy.getalluniversity) 
 
 
 router.put('/updateUniversity',authenticateToken, univeristy.updateUniversity1);
 
 
-router.put('/image/:id', upload.single('university_image'), univeristy.uploadImage1)
 
 router.post('/universityFaq', authenticateToken,FAqschema, univeristy.UniversityFAQ) //---------->>> //by ambassdor new api //allnewapi
 
@@ -43,10 +40,6 @@ router.post('/newcoursesadd', authenticateToken,coursenewschemma, univeristy.cou
 router.post('/ugrequirement', authenticateToken, ugschema, univeristy.ugRequirement) //---------->>> //by ambassdor new api //allnewapi
 
 router.post('/pgrequirement', authenticateToken, ugschema, univeristy.pgRequirement) //---------->>> //by ambassdor new api //allnewapi
-
-
-router.post('/courses1', coursesValid, authenticateToken, univeristy.courseCreate)
-
 
 router.get('/get/allcourse', univeristy.getAllCoursesHandler);
 
