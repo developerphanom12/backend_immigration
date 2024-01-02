@@ -1086,7 +1086,7 @@ async function getUserApplicationByPhoneNumber11(userId, application) {
 }
 
 
-async function getallapplication() {
+async function getallapplication(offset, pageSize) {
   return new Promise((resolve, reject) => {
     const query = `
       SELECT
@@ -1113,10 +1113,10 @@ async function getallapplication() {
       LEFT JOIN documnets d ON a.application_id = d.application_id
       LEFT JOIN UniversityRegistration au ON a.university_id = au.id
       LEFT JOIN courses_list c ON a.course_id = c.course_id
-      WHERE a.is_deleted = 0;
-    `;
+      WHERE a.is_deleted = 0
+      LIMIT ?, ?; `;
 
-    db.query(query, (error, results) => {
+    db.query(query, [offset, parseInt(pageSize, 10)],(error, results) => {
       if (error) {
         console.error('Error executing query:', error);
         reject(error);
@@ -1782,7 +1782,7 @@ const countuser = (userId) => {
   });
 };
 
-async function getApplicationsByAdminCountry(adminCountryId) {
+async function getApplicationsByAdminCountry(userId,offset, pageSize) {
     const query = `
     SELECT
     a.application_id,
@@ -1837,12 +1837,13 @@ async function getApplicationsByAdminCountry(adminCountryId) {
   LEFT JOIN admintable ad ON cc.role = 'admin' AND ad.id = cc.user_id
   LEFT JOIN students sd ON cc.role = 'student' AND sd.id = cc.user_id
   LEFT JOIN user01 u1 ON cc.role = 'user' AND u1.id = cc.user_id
-      WHERE a.country_id = ?; 
+      WHERE a.staff_id = ?
+      LIMIT ?, ?; 
     `;
 
   
     return new Promise((resolve, reject) => {
-      db.query(query, adminCountryId, (error, results) => {
+      db.query(query, [userId,offset, parseInt(pageSize, 10)], (error, results) => {
         if (error) {
           // Handle the error
           reject(error);
@@ -1935,9 +1936,40 @@ async function getApplicationsByAdminCountry(adminCountryId) {
   }
   
 
+  function getTotalApplicationCount() {
+    return new Promise((resolve, reject) => {
+      const countQuery = 'SELECT COUNT(*) AS totalCount FROM applications_table;';
+  
+      db.query(countQuery, (error, results) => {
+        if (error) {
+          console.error('Error executing count query:', error);
+          reject(error);
+        } else {
+          const totalCount = results[0].totalCount;
+          resolve(totalCount);
+        }
+      });
+    });
+  }
+  
+function getTotalstaffdata(userId) {
+  return new Promise((resolve, reject) => {
+    const countQuery = 'SELECT COUNT(*) AS totalCount FROM  applications_table WHERE staff_id = ?;';
+  
+    db.query(countQuery, [userId], (error, results) => {
+      if (error) {
+        console.error('Error executing count query:', error);
+        reject(error);
+      } else {
+        const totalCount = results[0].totalCount;
+        resolve(totalCount);
+      }
+    });
+  });
+}
+
 
 async function getallstudent(userId) {
-  // Modify your database query to get all user applications for a specific user
   const query = `
     SELECT
       a.application_id,
@@ -2057,7 +2089,9 @@ module.exports = {
     getusercount,
     getbyidstudent,
     studenteceldata,
-    staffcount
+    staffcount,
+    getTotalApplicationCount,
+    getTotalstaffdata
 };
 
 

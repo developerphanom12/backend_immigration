@@ -17,7 +17,7 @@ router.get('/getdatabyid', authenticateToken, univeristy.getallacoursebyid) //--
 
 router.post('/register',upload.fields([{ name: 'university_image' }, { name: 'registration_certificate' }]), validateUniversityRegisastration,univeristy.registerUniversityAndUploadImage); //allnewapi
 
-router.post('/unilogin', univeristy.uniersitylogin)  //allnewapi
+router.post('/unilogin', univeristy.uniersitylogin) 
 
 router.post('/universitys', authenticateToken, universityValid, univeristy.registerUniversity)
 

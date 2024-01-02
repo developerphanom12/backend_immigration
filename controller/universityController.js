@@ -598,7 +598,7 @@ VALUES (?, ?, ?, ?,  true, NOW(), NOW(), 0)
 
 
 
-function getAllCoursesWithUserDataAndUniversity() {
+function getAllCoursesWithUserDataAndUniversity(offset, pageSize) {
     return new Promise((resolve, reject) => {
         const query = `
             SELECT
@@ -626,9 +626,10 @@ function getAllCoursesWithUserDataAndUniversity() {
             FROM courses c
             INNER JOIN user01 u ON c.user_id = u.id
             LEFT JOIN university au ON c.university_id = au.university_id
+            LIMIT ?, ?;
         `;
 
-        db.query(query, (error, results) => {
+        db.query(query,  [offset, parseInt(pageSize, 10)], (error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
@@ -1155,7 +1156,7 @@ function getallcoursesbyid(userId) {
 
 
 
-function getallcoursesbyftehc() {
+function getallcoursesbyftehc(offset,pageSize) {
     return new Promise((resolve, reject) => {
         const query = ` 
         SELECT
@@ -1169,9 +1170,10 @@ function getallcoursesbyftehc() {
         u.id AS university_id,
         u.university_image
       FROM courses_list c
-      INNER JOIN UniversityRegistration u ON c.university_id = u.id;`
+      INNER JOIN UniversityRegistration u ON c.university_id = u.id
+      LIMIT ?, ?;`
 
-        db.query(query, (error, results) => {
+        db.query(query, [offset, parseInt(pageSize, 10)],(error, results) => {
             if (error) {
                 console.error('Error executing query:', error);
                 reject(error);
@@ -1207,7 +1209,37 @@ function getallcoursesbyftehc() {
 }
 
 
-
+function getTotalCoursesCount() {
+    return new Promise((resolve, reject) => {
+      const countQuery = 'SELECT COUNT(*) AS totalCount FROM courses_list;';
+  
+      db.query(countQuery, (error, results) => {
+        if (error) {
+          console.error('Error executing count query:', error);
+          reject(error);
+        } else {
+          const totalCount = results[0].totalCount;
+          resolve(totalCount);
+        }
+      });
+    });
+  }
+function getTotalUniversityCoursesCount(universityId) {
+    return new Promise((resolve, reject) => {
+      const countQuery = 'SELECT COUNT(*) AS totalCount FROM courses_list WHERE university_id = ?;';
+    
+      db.query(countQuery, [universityId], (error, results) => {
+        if (error) {
+          console.error('Error executing count query:', error);
+          reject(error);
+        } else {
+          const totalCount = results[0].totalCount;
+          resolve(totalCount);
+        }
+      });
+    });
+  }
+  
 function getallugbyid(userId) {
     return new Promise((resolve, reject) => {
         const query = ` 
@@ -2024,6 +2056,8 @@ module.exports = {
     insertArrayDescription,
     getallUniversityids,
     getownbyid,
-    getallstaff
+    getallstaff,
+    getTotalCoursesCount,
+    getTotalUniversityCoursesCount
 
 }
