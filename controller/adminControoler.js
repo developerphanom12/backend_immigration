@@ -404,6 +404,70 @@ const updateuniversity = async (req, res) => {
 };
 
 
+const checkadminallsales = async (req, res) => {
+  const selectedYear = req.query.year;
+
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden for regular users" });
+  }
+  console.log("User Role:", req.user.role);
+
+  try {
+    let salesData;
+
+      if (!isNaN(selectedYear)) {
+      salesData = await admin.adminchecksalesBYYear(selectedYear);
+      if (salesData.length === 0) {
+        return res
+          .status(404)
+          .json({
+            status: 404,
+            error: `No sales data found for the year ${selectedYear}`,
+          });
+      }
+    }
+    res.status(201).json({
+      success: 201,
+      data: salesData,
+    });
+  }  catch (error) {
+    res.status(error.status || 500).json(error);
+  }
+};
+
+
+const checkadminallsales1 = async (req, res) => {
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
+
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ error: "Forbidden for regular users" });
+  }
+  console.log("User Role:", req.user.role);
+
+  try {
+    let salesData;
+
+    salesData = await admin.admincheckbymonthallsales(currentMonth);
+
+    if (salesData.length === 0) {
+      return res.status(404).json({
+        status: 404,
+        error: `No sales data found for the current month (${currentMonth})`,
+      });
+    }
+
+    res.status(201).json({
+      success: 201,
+      data: salesData,
+    });
+  } catch (error) {
+    res.status(error.status || 500).json(error);
+  }
+};
+
+
+
 module.exports = {
   registerAdmin,
   loginUser,
@@ -414,6 +478,9 @@ module.exports = {
   getalluniversity,
   updatestatusofagent,
   updatestudent,
-  updateuniversity
+  updateuniversity,
+  checkadminallsales,
+  checkadminallsales1
+  
 
 }

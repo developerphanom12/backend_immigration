@@ -41,6 +41,11 @@ router.post('/updatestudent',authenticateToken, adminservice.updatestudent)
 
 router.post('/updateUniversity',authenticateToken, adminservice.updateuniversity)
 
+
+router.get('/getsales', authenticateToken,adminservice.checkadminallsales);
+
+router.get('/getsalescurrentmonth', authenticateToken,adminservice.checkadminallsales1);
+
 module.exports =router;
 
 

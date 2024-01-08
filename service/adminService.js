@@ -375,6 +375,86 @@ function getalluniversity() {
 }
 
 
+async function adminchecksalesBYYear(year = null) {
+  return new Promise(async (resolve, reject) => {
+    let query = `
+      SELECT
+      months.month_num AS month,
+      COALESCE(COUNT(applications_table.application_id), 0) AS total_sales
+    FROM (
+      SELECT 1 AS month_num UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6
+      UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+    ) AS months
+    LEFT JOIN applications_table ON months.month_num = MONTH(applications_table.created_at)
+                                 AND application_status = 'approved'
+                                 AND YEAR(applications_table.created_at) = ? 
+    GROUP BY months.month_num;    
+      `;
+
+    const queryParams = [year];
+
+    db.query(query, queryParams, (err, result) => {
+      if (err) {
+        console.error("Error in query:", err);
+
+        if (err.code === "404") {
+          reject("Specific error occurred in the query.");
+        } else {
+          reject(err);
+        }
+      } else {
+        resolve(result);
+      }
+    });
+  });
+}
+
+
+
+
+const admincheckbymonthallsales = async (month = null) => {
+  return new Promise(async (resolve, reject) => {
+    let query = `
+            SELECT
+                DAY(created_at) AS day,
+                WEEK(created_at) AS week,
+                MONTH(created_at) AS month,
+                DATE(created_at) AS date,
+                COUNT(*) AS total_sales
+            FROM
+            applications_table
+            WHERE
+            application_status = 'approved'
+        `;
+
+    if (month) {
+      query += ` AND MONTH(created_at) = ? `;
+    }
+
+    query += `
+            GROUP BY
+                day, week, month, date
+            ORDER BY
+                month, week, day, date;
+        `;
+
+    const queryParams = month ? [month] : [];
+
+    db.query(query, queryParams, (err, result) => {
+      if (err) {
+        console.error("Error in query:", err);
+
+        if (err.code === "404") {
+          reject("Specific error occurred in the query.");
+        } else {
+          reject(err);
+        }
+      } else {
+        resolve(result);
+      }
+    });
+  });
+};
 
 
 module.exports = {
@@ -390,7 +470,9 @@ module.exports = {
     updatestudent,
     sendapprovalstudent,
     updateUNiversity,
-    sendupdateuniveristy
+    sendupdateuniveristy,
+    adminchecksalesBYYear,
+    admincheckbymonthallsales
     // sendApprovalEmailofagent
 }
 
